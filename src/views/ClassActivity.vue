@@ -825,7 +825,9 @@ Utilizing tools and software designed to aid in computational tasks, such as spr
 												<!--begin::Bottom-->
 												<div class="pt-4">
 													<!--begin::Image-->
-													<div class="bgi-no-repeat bgi-size-cover rounded min-h-250px" style="background-image:url('/src/assets/media/stock/900x600/3.jpg');"></div>
+													<div class="bgi-no-repeat bgi-size-cover rounded min-h-250px" :style="{
+														backgroundImage: `url(${'/src/assets/media/stock/900x600/3.jpg'})`
+													}"></div>
 													<!--end::Image-->
 													<!--begin::Text-->
 													<p class="text-gray-800 fs-6 fw-normal pt-5 mb-2">Outlines keep you honest. They stop you from indulging in poorly thought-out metaphors about driving and keep you focused on the overall structure of your post</p>
