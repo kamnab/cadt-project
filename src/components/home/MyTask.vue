@@ -8,64 +8,13 @@
     <!--begin::Header-->
     <div class="card-header align-items-center border-0 mt-5">
       <h3 class="card-title align-items-start flex-column">
-        <span class="fw-bolder text-dark fs-3">My Tasks</span>
-        <span class="text-muted mt-2 fw-bold fs-6">Updates &amp; due date</span>
+        <span class="fw-bolder text-dark fs-3">Latest Activities</span>
+        <span class="text-muted mt-2 fw-bold fs-6">Class Participation Updates</span>
       </h3>
 
       <div class="card-toolbar">
         <!--begin::Dropdown-->
-        <button
-          type="button"
-          class="btn btn-sm btn-icon btn-color-primary btn-active-light-primary"
-          NOTKT-data-kt-menu-trigger="click"
-          data-kt-menu-placement="bottom-end"
-          data-kt-menu-flip="top-end"
-          data-bs-toggle="dropdown"
-        >
-          <!--begin::Svg Icon | path: icons/duotone/Layout/Layout-4-blocks-2.svg-->
-          <span class="svg-icon svg-icon-1">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              xmlns:xlink="http://www.w3.org/1999/xlink"
-              width="24px"
-              height="24px"
-              viewBox="0 0 24 24"
-              version="1.1"
-            >
-              <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                <rect x="5" y="5" width="5" height="5" rx="1" fill="#000000" />
-                <rect
-                  x="14"
-                  y="5"
-                  width="5"
-                  height="5"
-                  rx="1"
-                  fill="#000000"
-                  opacity="0.3"
-                />
-                <rect
-                  x="5"
-                  y="14"
-                  width="5"
-                  height="5"
-                  rx="1"
-                  fill="#000000"
-                  opacity="0.3"
-                />
-                <rect
-                  x="14"
-                  y="14"
-                  width="5"
-                  height="5"
-                  rx="1"
-                  fill="#000000"
-                  opacity="0.3"
-                />
-              </g>
-            </svg>
-          </span>
-          <!--end::Svg Icon-->
-        </button>
+
         <!--begin::Menu-->
         <div
           class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold w-200px dropdown-menu"
@@ -138,7 +87,7 @@
           <!--end::Badge-->
           <!--begin::Text-->
           <div class="fw-mormal timeline-content text-muted ps-3">
-            Outlines keep you honest. And keep structure
+            Math: 2nd degree equation.
           </div>
           <!--end::Text-->
         </div>
@@ -155,7 +104,7 @@
           <!--end::Badge-->
           <!--begin::Content-->
           <div class="timeline-content d-flex">
-            <span class="fw-bolder text-gray-800 ps-3">AEOL meeting</span>
+            <span class="fw-bolder text-gray-800 ps-3">ICT: What is Computational Thinking?</span>
           </div>
           <!--end::Content-->
         </div>
@@ -230,41 +179,7 @@
           <!--end::Text-->
         </div>
         <!--end::Item-->
-        <!--begin::Item-->
-        <div class="timeline-item">
-          <!--begin::Label-->
-          <div class="timeline-label fw-bolder text-gray-800 fs-6">21:03</div>
-          <!--end::Label-->
-          <!--begin::Badge-->
-          <div class="timeline-badge">
-            <i class="fa fa-genderless text-danger fs-1"></i>
-          </div>
-          <!--end::Badge-->
-          <!--begin::Desc-->
-          <div class="timeline-content fw-bold text-gray-800 ps-3">
-            New order placed
-            <a href="#" class="text-primary">#XF-2356</a>.
-          </div>
-          <!--end::Desc-->
-        </div>
-        <!--end::Item-->
-        <!--begin::Item-->
-        <div class="timeline-item">
-          <!--begin::Label-->
-          <div class="timeline-label fw-bolder text-gray-800 fs-6">10:30</div>
-          <!--end::Label-->
-          <!--begin::Badge-->
-          <div class="timeline-badge">
-            <i class="fa fa-genderless text-success fs-1"></i>
-          </div>
-          <!--end::Badge-->
-          <!--begin::Text-->
-          <div class="timeline-content fw-mormal text-muted ps-3">
-            Finance KPI Mobile app launch preparion meeting
-          </div>
-          <!--end::Text-->
-        </div>
-        <!--end::Item-->
+
       </div>
       <!--end::Timeline-->
     </div>

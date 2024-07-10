@@ -2,10 +2,18 @@
 import ClassList from '@/components/home/ClassList.vue';
 import MyTask from '@/components/home/MyTask.vue';
 import { RouterLink } from 'vue-router';
+import imageHelper from '@/utilities/imageHelper';
+import { onMounted } from 'vue';
+
+const imgUrl = new URL('/src/assets/media/stock/900x600/3.jpg', import.meta.url).href
+const styleObject = {
+	backgroundImage: `url(${imgUrl})`
+}
 
 </script>
 
 <template>
+
   <div class="d-flex flex-column flex-column-fluid">
 
 <!--begin::toolbar-->
@@ -74,7 +82,7 @@ import { RouterLink } from 'vue-router';
 													<!--end::Symbol-->
 													<!--begin::Title-->
 													<div>
-														<a href="#" class="fs-4 text-gray-800 text-hover-primary fw-bolder">Content and Materials</a>
+														<RouterLink to="/class-content" class="fs-4 text-gray-800 text-hover-primary fw-bolder">Content and Materials</RouterLink>
 														<div class="fs-7 text-muted fw-bold mt-1">2 Posts</div>
 													</div>
 													<!--end::Title-->
@@ -121,16 +129,17 @@ import { RouterLink } from 'vue-router';
 													<!--end::Symbol-->
 													<!--begin::Title-->
 													<div>
-														<a href="#" class="fs-4 text-gray-800 text-hover-primary fw-bolder">Activity</a>
-														<div class="fs-7 text-muted fw-bold mt-1">0 Post</div>
+														<RouterLink to="/class-activity" class="fs-4 text-gray-800 text-hover-primary fw-bolder">Activity</RouterLink>
+
+														<div class="fs-7 text-muted fw-bold mt-1">3 Post</div>
 													</div>
 													<!--end::Title-->
 												</div>
 												<!--end::Section-->
 												<!--begin::Info-->
 												<div class="fw-bolder text-muted pt-7">
-													<span class="d-block">2 Persons</span>
-													<span class="d-block pt-2">140 Comments</span>
+													<span class="d-block">4 Persons</span>
+													<span class="d-block pt-2">2 Comments</span>
 												</div>
 												<!--end::Info-->
 												<!--begin::Progress-->
@@ -304,7 +313,7 @@ import { RouterLink } from 'vue-router';
 																	<path d="M1.98505595,18 L1.98505595,13 C1.98505595,11.8954305 2.88048645,11 3.98505595,11 L11.9850559,11 C13.0896254,11 13.9850559,11.8954305 13.9850559,13 L13.9850559,18 C13.9850559,19.1045695 13.0896254,20 11.9850559,20 L4.10078614,20 L2.85693427,21.1905292 C2.65744295,21.3814685 2.34093638,21.3745358 2.14999706,21.1750444 C2.06092565,21.0819836 2.01120804,20.958136 2.01120804,20.8293182 L2.01120804,18.32426 C1.99400175,18.2187196 1.98505595,18.1104045 1.98505595,18 Z M6.5,14 C6.22385763,14 6,14.2238576 6,14.5 C6,14.7761424 6.22385763,15 6.5,15 L11.5,15 C11.7761424,15 12,14.7761424 12,14.5 C12,14.2238576 11.7761424,14 11.5,14 L6.5,14 Z M9.5,16 C9.22385763,16 9,16.2238576 9,16.5 C9,16.7761424 9.22385763,17 9.5,17 L11.5,17 C11.7761424,17 12,16.7761424 12,16.5 C12,16.2238576 11.7761424,16 11.5,16 L9.5,16 Z" fill="#000000" opacity="0.3" />
 																</svg>
 															</span>
-															<!--end::Svg Icon-->24</a>
+															<!--end::Svg Icon-->2</a>
 															<a href="#" class="btn btn-sm btn-color-muted btn-active-light-danger fw-bolder">
 															<!--begin::Svg Icon | path: icons/duotone/General/Heart.svg-->
 															<span class="svg-icon svg-icon-3 pe-1">
@@ -315,7 +324,7 @@ import { RouterLink } from 'vue-router';
 																	</g>
 																</svg>
 															</span>
-															<!--end::Svg Icon-->75</a>
+															<!--end::Svg Icon-->10</a>
 														</div>
 														<!--end::Action-->
 														<!--begin::Item-->
@@ -338,8 +347,8 @@ import { RouterLink } from 'vue-router';
 																<span class="text-gray-800 fs-7 fw-normal pt-1">
                                   <pre>
 There are 4 Components of Computational Thinking:
-1. Decomposition:
 
+1. Decomposition:
 Breaking down complex problems into smaller, more manageable parts.
 Example: Splitting a large software project into individual modules or tasks.
 
@@ -505,7 +514,7 @@ Utilizing tools and software designed to aid in computational tasks, such as spr
 																<path d="M1.98505595,18 L1.98505595,13 C1.98505595,11.8954305 2.88048645,11 3.98505595,11 L11.9850559,11 C13.0896254,11 13.9850559,11.8954305 13.9850559,13 L13.9850559,18 C13.9850559,19.1045695 13.0896254,20 11.9850559,20 L4.10078614,20 L2.85693427,21.1905292 C2.65744295,21.3814685 2.34093638,21.3745358 2.14999706,21.1750444 C2.06092565,21.0819836 2.01120804,20.958136 2.01120804,20.8293182 L2.01120804,18.32426 C1.99400175,18.2187196 1.98505595,18.1104045 1.98505595,18 Z M6.5,14 C6.22385763,14 6,14.2238576 6,14.5 C6,14.7761424 6.22385763,15 6.5,15 L11.5,15 C11.7761424,15 12,14.7761424 12,14.5 C12,14.2238576 11.7761424,14 11.5,14 L6.5,14 Z M9.5,16 C9.22385763,16 9,16.2238576 9,16.5 C9,16.7761424 9.22385763,17 9.5,17 L11.5,17 C11.7761424,17 12,16.7761424 12,16.5 C12,16.2238576 11.7761424,16 11.5,16 L9.5,16 Z" fill="#000000" opacity="0.3" />
 															</svg>
 														</span>
-														<!--end::Svg Icon-->24</a>
+														<!--end::Svg Icon-->5</a>
 														<a href="#" class="btn btn-sm btn-color-muted btn-active-light-danger fw-bolder">
 														<!--begin::Svg Icon | path: icons/duotone/General/Heart.svg-->
 														<span class="svg-icon svg-icon-3 pe-1">
@@ -516,7 +525,7 @@ Utilizing tools and software designed to aid in computational tasks, such as spr
 																</g>
 															</svg>
 														</span>
-														<!--end::Svg Icon-->75</a>
+														<!--end::Svg Icon-->5</a>
 													</div>
 													<!--end::Action-->
 												</div>
@@ -824,10 +833,9 @@ Utilizing tools and software designed to aid in computational tasks, such as spr
 												<!--end::Top-->
 												<!--begin::Bottom-->
 												<div class="pt-4">
+													<!-- :style="{backgroundImage: `url({{ imgUrl }})`}" -->
 													<!--begin::Image-->
-													<div class="bgi-no-repeat bgi-size-cover rounded min-h-250px" :style="{
-														backgroundImage: `url(${'/src/assets/media/stock/900x600/3.jpg'})`
-													}"></div>
+													<div class="bgi-no-repeat bgi-size-cover rounded min-h-250px" :style="styleObject"></div>
 													<!--end::Image-->
 													<!--begin::Text-->
 													<p class="text-gray-800 fs-6 fw-normal pt-5 mb-2">Outlines keep you honest. They stop you from indulging in poorly thought-out metaphors about driving and keep you focused on the overall structure of your post</p>
@@ -842,7 +850,7 @@ Utilizing tools and software designed to aid in computational tasks, such as spr
 																<path d="M1.98505595,18 L1.98505595,13 C1.98505595,11.8954305 2.88048645,11 3.98505595,11 L11.9850559,11 C13.0896254,11 13.9850559,11.8954305 13.9850559,13 L13.9850559,18 C13.9850559,19.1045695 13.0896254,20 11.9850559,20 L4.10078614,20 L2.85693427,21.1905292 C2.65744295,21.3814685 2.34093638,21.3745358 2.14999706,21.1750444 C2.06092565,21.0819836 2.01120804,20.958136 2.01120804,20.8293182 L2.01120804,18.32426 C1.99400175,18.2187196 1.98505595,18.1104045 1.98505595,18 Z M6.5,14 C6.22385763,14 6,14.2238576 6,14.5 C6,14.7761424 6.22385763,15 6.5,15 L11.5,15 C11.7761424,15 12,14.7761424 12,14.5 C12,14.2238576 11.7761424,14 11.5,14 L6.5,14 Z M9.5,16 C9.22385763,16 9,16.2238576 9,16.5 C9,16.7761424 9.22385763,17 9.5,17 L11.5,17 C11.7761424,17 12,16.7761424 12,16.5 C12,16.2238576 11.7761424,16 11.5,16 L9.5,16 Z" fill="#000000" opacity="0.3" />
 															</svg>
 														</span>
-														<!--end::Svg Icon-->24</a>
+														<!--end::Svg Icon-->0</a>
 														<a href="#" class="btn btn-sm btn-color-muted btn-active-light-danger fw-bolder">
 														<!--begin::Svg Icon | path: icons/duotone/General/Heart.svg-->
 														<span class="svg-icon svg-icon-3 pe-1">
@@ -853,7 +861,7 @@ Utilizing tools and software designed to aid in computational tasks, such as spr
 																</g>
 															</svg>
 														</span>
-														<!--end::Svg Icon-->75</a>
+														<!--end::Svg Icon-->1</a>
 													</div>
 													<!--end::Action-->
 												</div>
