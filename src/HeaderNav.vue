@@ -52,7 +52,7 @@
         <a href="/">
           <img
             alt="Logo"
-            src="/src/assets/media/logos/logo-default.svg"
+            src="/src/assets/media/logos/logo-v2.jpg"
             class="h-30px"
           />
         </a>

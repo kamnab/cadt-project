@@ -9,18 +9,8 @@ import HeaderNav from "./HeaderNav.vue";
 
   <!--begin::Main-->
 
-  <div class="d-flex flex-column flex-column-fluid">
-    <!--begin::Content-->
-    <div class="content fs-6 d-flex flex-column-fluid" id="kt_content">
-      <!--begin::Container-->
-      <div class="container">
-        <router-view/>
-      </div>
-      <!--end::Container-->
-    </div>
-    <!--end::Content-->
-  </div>
-
+  <router-view/>
+  
   <!--end::Main-->
 
   <!--begin::Footer-->
