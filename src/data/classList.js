@@ -1,7 +1,7 @@
 const classList = 
 [
-    
     { 
+        
         name : 'Biology', 
         schedule: 
         [

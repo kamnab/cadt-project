@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import ClassActivity from '@/views/ClassActivity.vue'
 import ClassContentAndMaterials from '@/views/ClassContentAndMaterials.vue'
+import NotFound from '@/components/NotFound.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -28,7 +29,8 @@ const router = createRouter({
       path: '/class-activity',
       name: 'class-activity',
       component: ClassActivity
-    }
+    },
+    { path: '/:pathMatch(.*)*', component: NotFound }, // 404 route
   ]
 })
 
