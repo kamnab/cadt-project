@@ -21,12 +21,12 @@ const router = createRouter({
       component: () => import('../views/AboutView.vue')
     },
     {
-      path: '/class-content/:id',
+      path: '/lessons/:id/',
       name: 'class-content',
       component: ClassContentAndMaterials
     },
     {
-      path: '/class-activity/:id',
+      path: '/lessons/:id/activities',
       name: 'class-activity',
       component: ClassActivity
     },

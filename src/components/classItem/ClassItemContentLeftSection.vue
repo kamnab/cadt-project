@@ -1,17 +1,23 @@
 
 <script setup>
+
 import { RouterLink, useRoute } from 'vue-router';
 import classListService from '@/services/classListService';
+import { computed, onMounted, ref } from 'vue';
 
 const route = useRoute()
 var id = route.params.id;
 var selectedClass = classListService.getClassById(id);
 
+defineProps({
+  activeSection: Number
+})
+
 </script>
 
 <template>
 	<!--begin::Stats Widget 4-->
-		<div class="card mb-5 mb-xxl-8">
+		<div class="card mb-5 mb-xxl-8" :style="activeSection == 0 ? { backgroundColor: '#F9F2E7' } : {}">
 			<!--begin::Body-->
 			<div class="card-body">
 				<!--begin::Section-->
@@ -35,7 +41,8 @@ var selectedClass = classListService.getClassById(id);
 					<!--end::Symbol-->
 					<!--begin::Title-->
 					<div>
-						<RouterLink :to="{ name: 'class-content', params: { id: selectedClass.id } }" class="fs-4 text-gray-800 text-hover-primary fw-bolder">Content and Materials</RouterLink>
+						<RouterLink
+						:to="{ name: 'class-content', params: { id: selectedClass.id } }" class="fs-4 text-gray-800 text-hover-primary fw-bolder">Content and Materials</RouterLink>
 						<div class="fs-7 text-muted fw-bold mt-1">2 Posts</div>
 					</div>
 					<!--end::Title-->
@@ -58,7 +65,7 @@ var selectedClass = classListService.getClassById(id);
 		<!--end::Stats Widget 4-->
 
 	<!--begin::Stats Widget 5-->
-	<div class="card mb-5 mb-xxl-8">
+	<div class="card mb-5 mb-xxl-8" :style="activeSection == 1 ? { backgroundColor: '#F9F2E7' } : {}">
 			<!--begin::Body-->
 			<div class="card-body">
 				<!--begin::Section-->
@@ -82,7 +89,8 @@ var selectedClass = classListService.getClassById(id);
 					<!--end::Symbol-->
 					<!--begin::Title-->
 					<div>
-						<RouterLink :to="{ name: 'class-activity', params: { id: selectedClass.id } }" class="fs-4 text-gray-800 text-hover-primary fw-bolder">Activity</RouterLink>
+						<RouterLink
+						:to="{ name: 'class-activity', params: { id: selectedClass.id } }" class="fs-4 text-gray-800 text-hover-primary fw-bolder">Activity</RouterLink>
 						<div class="fs-7 text-muted fw-bold mt-1">3 Post</div>
 					</div>
 					<!--end::Title-->
