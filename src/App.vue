@@ -9,7 +9,8 @@ import HeaderNav from "./HeaderNav.vue";
 
   <!--begin::Main-->
 
-  <router-view/>
+  <router-view>
+  </router-view>
   
   <!--end::Main-->
 

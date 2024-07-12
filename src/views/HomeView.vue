@@ -1,6 +1,6 @@
 <script setup>
-import ClassList from '@/components/home/ClassList.vue';
-import MyTask from '@/components/home/MyTask.vue';
+import ClassList from '@/components/classItem/ClassList.vue';
+import MyTask from '@/components/classItem/MyTask.vue';
 </script>
 
 <template>

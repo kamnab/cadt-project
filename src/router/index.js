@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import ClassActivity from '@/views/ClassActivity.vue'
-import ClassContentAndMaterials from '@/views/ClassContentAndMaterials.vue'
+import ClassActivity from '@/views/classItem/ClassActivity.vue'
+import ClassContentAndMaterials from '@/views/classItem/ClassContentAndMaterials.vue'
 import NotFound from '@/components/NotFound.vue'
 
 const router = createRouter({
@@ -21,12 +21,12 @@ const router = createRouter({
       component: () => import('../views/AboutView.vue')
     },
     {
-      path: '/class-content',
+      path: '/class-content/:id',
       name: 'class-content',
       component: ClassContentAndMaterials
     },
     {
-      path: '/class-activity',
+      path: '/class-activity/:id',
       name: 'class-activity',
       component: ClassActivity
     },

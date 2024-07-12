@@ -3,6 +3,7 @@
 import { defineProps } from 'vue';
 const props = defineProps({
   item: {
+    id: BigInt,
     name: String,
     timeFrom: String,
     timeTo: String,
@@ -34,7 +35,7 @@ const props = defineProps({
                 <!--begin::Section-->
                 <div class="flex-grow-1">
                   <!--begin::Title-->
-                  <router-link to="/class-content">
+                  <router-link :to="{ name: 'class-content', params:{ id: item.id } }">
                     <h3
                       class="text-dark text-hover-primary fs-2 fw-bolder">
                       {{ props.item.name }}
