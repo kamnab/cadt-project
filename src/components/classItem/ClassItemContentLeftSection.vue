@@ -8,9 +8,16 @@ const route = useRoute()
 var id = route.params.id;
 var selectedClass = classListService.getClassById(id);
 
-defineProps({
+const props = defineProps({
 	activeSection: Number
 })
+
+import { useClassItemStore } from '@/stores/classItemStore'
+const store = useClassItemStore()
+
+onMounted(async () => {
+	store.setSection(props.activeSection)
+});
 
 const handleClick = () => {
 	var myModalEl = document.getElementById('kt_header_search_modal');
@@ -23,8 +30,6 @@ const handleClick = () => {
 </script>
 
 <template>
-
-
 	<!--begin::Stats Widget 4-->
 	<div class="card mb-5 mb-xxl-8" :style="activeSection == 0 ? { backgroundColor: '#F9F2E7' } : {}">
 		<!--begin::Body-->

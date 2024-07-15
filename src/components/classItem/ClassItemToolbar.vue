@@ -1,18 +1,19 @@
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
 import classListService from '@/services/classListService';
 import ClassItemContentLeftSection from '@/components/classItem/ClassItemContentLeftSection.vue';
-
 const route = useRoute()
 var id = route.params.id;
 
 var selectedClass = classListService.getClassById(id);
 var latestLesson = classListService.getLatestLesson(id);
+import { useClassItemStore } from '@/stores/classItemStore'
+const store = useClassItemStore()
 
 </script>
 <template>
-
+  :: {{ store.activeSection }}
   <!--begin::toolbar-->
   <div class="toolbar" id="kt_toolbar">
     <div class="container d-flex flex-stack flex-wrap flex-sm-nowrap">
@@ -100,7 +101,7 @@ var latestLesson = classListService.getLatestLesson(id);
             <div>
               <h3 class="text-dark fw-bolder fs-1 mb-6">Section</h3>
 
-              <ClassItemContentLeftSection :active-section="0"></ClassItemContentLeftSection>
+              <ClassItemContentLeftSection :active-section="store.activeSection"></ClassItemContentLeftSection>
 
 
             </div>
