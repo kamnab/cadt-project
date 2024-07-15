@@ -8,7 +8,7 @@ export const useClassItemStore = defineStore('classItem', {
   actions: {
       async setSection(n) {
           this.activeSection = n;
-          console.log(n)
+          //console.log(n)
       }
   }
 })

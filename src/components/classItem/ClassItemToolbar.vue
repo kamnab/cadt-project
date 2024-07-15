@@ -13,7 +13,7 @@ const store = useClassItemStore()
 
 </script>
 <template>
-  :: {{ store.activeSection }}
+
   <!--begin::toolbar-->
   <div class="toolbar" id="kt_toolbar">
     <div class="container d-flex flex-stack flex-wrap flex-sm-nowrap">
