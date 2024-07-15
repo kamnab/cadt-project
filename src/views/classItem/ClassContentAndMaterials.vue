@@ -16,20 +16,20 @@ var latestLesson = classListService.getLatestLesson(id);
 
   <div class="d-flex flex-column flex-column-fluid">
 
-<!--begin::toolbar-->
-<ClassItemToolbar>
+    <!--begin::toolbar-->
+    <ClassItemToolbar>
 
-</ClassItemToolbar>
-						<!--end::toolbar-->
+    </ClassItemToolbar>
+    <!--end::toolbar-->
 
-<!--begin::Content-->
- <!--begin::Container-->
- <ClassItemContent v-if="latestLesson != null"></ClassItemContent>
-  <ClassItemContentNotFound v-else></ClassItemContentNotFound>
-  <!--end::Container-->
-<!--end::Content-->
-</div>
+    <!--begin::Content-->
+    <!--begin::Container-->
+    <ClassItemContent v-if="latestLesson != null"></ClassItemContent>
+    <ClassItemContentNotFound v-else></ClassItemContentNotFound>
+    <!--end::Container-->
+    <!--end::Content-->
+  </div>
 
 
-      
+
 </template>

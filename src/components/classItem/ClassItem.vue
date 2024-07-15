@@ -3,7 +3,7 @@
 import { defineProps } from 'vue';
 const props = defineProps({
   item: {
-    id: BigInt,
+    id: Number,
     name: String,
     timeFrom: String,
     timeTo: String,

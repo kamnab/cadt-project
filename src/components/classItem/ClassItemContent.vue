@@ -2,118 +2,144 @@
 import { RouterLink, useRoute } from 'vue-router';
 import classListService from '@/services/classListService';
 import ClassItemContentLeftSection from '@/components/classItem/ClassItemContentLeftSection.vue';
-import ClassItemToolbar from '@/components/classItem/ClassItemToolbar.vue'
+import { onMounted } from 'vue';
+
 const route = useRoute()
 var id = route.params.id;
 var selectedClass = classListService.getClassById(id);
 
+onMounted(() => {
+  // const myModalEl = document.getElementById('kt_header_search_modal')
+  // myModalEl.addEventListener('hidden.bs.modal', event => {
+  //   console.log('123');
+  // })
+})
 
 </script>
 
 <template>
-<!--begin::Content-->
-<div class="content fs-6 d-flex flex-column-fluid" id="kt_content" style="padding: 20px 0;">
-  <!--begin::Container-->
-  <div class="container">
-    
 
-  <!--begin::Row-->
-	<div class="row g-0 g-xl-5 g-xxl-8">
-		<div class="col-xl-4">
-      <ClassItemContentLeftSection :active-section="0"></ClassItemContentLeftSection>
-		</div>
+  <!--begin::Content-->
+  <div class="content fs-6 d-flex flex-column-fluid" id="kt_content" style="padding: 20px 0;">
+    <!--begin::Container-->
+    <div class="container">
 
-		<div class="col-xl-8">
-			<div class="card">
-            <div class="card-body py-10">
-                <h2 class="text-gray-900 fw-bold fs-1 mb-5">Lesson Articles</h2>
-
-                <!--begin::Accordion-->
-                <div class="accordion accordion-icon-toggle" id="kt_accordion_1">
-                    <!--begin::Item-->
-                    <div class="mb-5">
-                        <!--begin::Header-->
-                        <div class="accordion-header py-3 d-flex" data-bs-toggle="collapse" data-bs-target="#kt_accordion_1_item_1" aria-expanded="true">
-                            <span class="accordion-icon"><i class="ki-duotone ki-arrow-right fs-4"><span class="path1"></span><span class="path2"></span></i></span>
-                            <h3 class="fs-4 text-gray-800 fw-semibold mb-0 ms-4">1. Decomposition</h3>
-                        </div>
-                        <!--end::Header-->
-
-                        <!--begin::Body-->
-                        <div id="kt_accordion_1_item_1" class="fs-6 ps-10 collapse show" data-bs-parent="#kt_accordion_1" style="">
-                            <div class="mb-5">
-                                Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
-                                when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting,
-                                remaining essentially unchanged.
-                            </div>
-
-                            <div>
-                                It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages,
-                                and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
-                            </div>
-                        </div>
-                        <!--end::Body-->
-                    </div>
-                    <!--end::Item-->
-
-                    <!--begin::Item-->
-                    <div class="mb-5">
-                        <!--begin::Header-->
-                        <div class="accordion-header py-3 d-flex collapsed" data-bs-toggle="collapse" data-bs-target="#kt_accordion_1_item_2" aria-expanded="false">
-                            <span class="accordion-icon"><i class="ki-duotone ki-arrow-right fs-4"><span class="path1"></span><span class="path2"></span></i></span>
-                            <h3 class="fs-4 text-gray-800 fw-semibold mb-0 ms-4">2. Pattern Recognition</h3>
-                        </div>
-                        <!--end::Header-->
-
-                        <!--begin::Body-->
-                        <div id="kt_accordion_1_item_2" class="collapse fs-6 ps-10" data-bs-parent="#kt_accordion_1">
-                            <div class="mb-5">
-                                There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable.
-                            </div>
-
-                            <div class="mb-5">
-                                Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
-                                when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting,
-                                remaining essentially unchanged.
-                            </div>
-                            
-                            <div>
-                                It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages,
-                                and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
-                            </div>
-                        </div>
-                        <!--end::Body-->
-                    </div>
-                    <!--end::Item-->
-
-                    <!--begin::Item-->
-                    <div class="mb-5">
-                        <!--begin::Header-->
-                        <div class="accordion-header py-3 d-flex collapsed" data-bs-toggle="collapse" data-bs-target="#kt_accordion_1_item_3" aria-expanded="false">
-                            <span class="accordion-icon"><i class="ki-duotone ki-arrow-right fs-4"><span class="path1"></span><span class="path2"></span></i></span>
-                            <h3 class="fs-4 text-gray-800 fw-semibold mb-0 ms-4">3. Abstraction</h3>
-                        </div>
-                        <!--end::Header-->
-
-                        <!--begin::Body-->
-                        <div id="kt_accordion_1_item_3" class="collapse fs-6 ps-10" data-bs-parent="#kt_accordion_1">
-                            Some plugins may ask for a purchase code for registration/activation once installed,
-                            however, you can simply ignore these messages as bundled plugins do not require activation or registration.
-                        </div>
-                        <!--end::Body-->
-                    </div>
-                    <!--end::Item-->
-
-                </div>
-                <!--end::Accordion-->
-            </div>
+      <!--begin::Row-->
+      <div class="row g-0 g-xl-5 g-xxl-8">
+        <div class="col-xl-4 d-none d-xl-block">
+          <ClassItemContentLeftSection :active-section="0"></ClassItemContentLeftSection>
         </div>
-		</div>
-  	</div>
-  <!--end::Row-->
+
+        <div class="col-xl-8">
+          <div class="card">
+            <div class="card-body py-10">
+              <h2 class="text-gray-900 fw-bold fs-1 mb-5">Lesson Articles</h2>
+
+              <!--begin::Accordion-->
+              <div class="accordion accordion-icon-toggle" id="kt_accordion_1">
+                <!--begin::Item-->
+                <div class="mb-5">
+                  <!--begin::Header-->
+                  <div class="accordion-header py-3 d-flex" data-bs-toggle="collapse"
+                    data-bs-target="#kt_accordion_1_item_1" aria-expanded="true">
+                    <span class="accordion-icon"><i class="ki-duotone ki-arrow-right fs-4"><span
+                          class="path1"></span><span class="path2"></span></i></span>
+                    <h3 class="fs-4 text-gray-800 fw-semibold mb-0 ms-4">1. Decomposition</h3>
+                  </div>
+                  <!--end::Header-->
+
+                  <!--begin::Body-->
+                  <div id="kt_accordion_1_item_1" class="fs-6 ps-10 collapse show" data-bs-parent="#kt_accordion_1"
+                    style="">
+                    <div class="mb-5">
+                      Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been
+                      the industry's standard dummy text ever since the 1500s,
+                      when an unknown printer took a galley of type and scrambled it to make a type specimen book. It
+                      has survived not only five centuries, but also the leap into electronic typesetting,
+                      remaining essentially unchanged.
+                    </div>
+
+                    <div>
+                      It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum
+                      passages,
+                      and more recently with desktop publishing software like Aldus PageMaker including versions of
+                      Lorem Ipsum.
+                    </div>
+                  </div>
+                  <!--end::Body-->
+                </div>
+                <!--end::Item-->
+
+                <!--begin::Item-->
+                <div class="mb-5">
+                  <!--begin::Header-->
+                  <div class="accordion-header py-3 d-flex collapsed" data-bs-toggle="collapse"
+                    data-bs-target="#kt_accordion_1_item_2" aria-expanded="false">
+                    <span class="accordion-icon"><i class="ki-duotone ki-arrow-right fs-4"><span
+                          class="path1"></span><span class="path2"></span></i></span>
+                    <h3 class="fs-4 text-gray-800 fw-semibold mb-0 ms-4">2. Pattern Recognition</h3>
+                  </div>
+                  <!--end::Header-->
+
+                  <!--begin::Body-->
+                  <div id="kt_accordion_1_item_2" class="collapse fs-6 ps-10" data-bs-parent="#kt_accordion_1">
+                    <div class="mb-5">
+                      There are many variations of passages of Lorem Ipsum available, but the majority have suffered
+                      alteration in some form, by injected humour, or randomised words which don't look even slightly
+                      believable.
+                    </div>
+
+                    <div class="mb-5">
+                      Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been
+                      the industry's standard dummy text ever since the 1500s,
+                      when an unknown printer took a galley of type and scrambled it to make a type specimen book. It
+                      has survived not only five centuries, but also the leap into electronic typesetting,
+                      remaining essentially unchanged.
+                    </div>
+
+                    <div>
+                      It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum
+                      passages,
+                      and more recently with desktop publishing software like Aldus PageMaker including versions of
+                      Lorem Ipsum.
+                    </div>
+                  </div>
+                  <!--end::Body-->
+                </div>
+                <!--end::Item-->
+
+                <!--begin::Item-->
+                <div class="mb-5">
+                  <!--begin::Header-->
+                  <div class="accordion-header py-3 d-flex collapsed" data-bs-toggle="collapse"
+                    data-bs-target="#kt_accordion_1_item_3" aria-expanded="false">
+                    <span class="accordion-icon"><i class="ki-duotone ki-arrow-right fs-4"><span
+                          class="path1"></span><span class="path2"></span></i></span>
+                    <h3 class="fs-4 text-gray-800 fw-semibold mb-0 ms-4">3. Abstraction</h3>
+                  </div>
+                  <!--end::Header-->
+
+                  <!--begin::Body-->
+                  <div id="kt_accordion_1_item_3" class="collapse fs-6 ps-10" data-bs-parent="#kt_accordion_1">
+                    Some plugins may ask for a purchase code for registration/activation once installed,
+                    however, you can simply ignore these messages as bundled plugins do not require activation or
+                    registration.
+                  </div>
+                  <!--end::Body-->
+                </div>
+                <!--end::Item-->
+
+              </div>
+              <!--end::Accordion-->
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--end::Row-->
 
       <!--begin::Modal - Select Location-->
-      <div class="modal fade" id="kt_modal_select_location" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal fade" id="kt_modal_select_location" data-backdrop="static" tabindex="-1" role="dialog"
+        aria-hidden="true">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
@@ -217,7 +243,7 @@ var selectedClass = classListService.getClassById(id);
                       <span class="btn btn-icon btn-sm btn-active-color-primary">
                         <i class="fas fa-paperclip fs-6"></i>
                       </span>
-                      
+
                     </div>
                   </form>
                   <!--edit::Editor-->
@@ -239,11 +265,9 @@ var selectedClass = classListService.getClassById(id);
         </div>
       </div>
       <!--end::Modal - Select Location-->
+
+    </div>
+    <!--end::Container-->
   </div>
-  <!--end::Container-->
-</div>
 
-
-
-      
 </template>
