@@ -15,10 +15,6 @@ const props = defineProps({
 import { useClassItemStore } from '@/stores/classItemStore'
 const store = useClassItemStore()
 
-onMounted(async () => {
-	store.setSection(props.activeSection)
-});
-
 const handleClick = () => {
 	var myModalEl = document.getElementById('kt_header_search_modal');
 	var modal = bootstrap.Modal.getInstance(myModalEl)
@@ -26,6 +22,10 @@ const handleClick = () => {
 		modal.hide();
 	}
 }
+
+onMounted(async () => {
+	store.setSection(props.activeSection)
+});
 
 </script>
 

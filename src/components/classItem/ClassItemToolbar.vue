@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
 import classListService from '@/services/classListService';
 import ClassItemContentLeftSection from '@/components/classItem/ClassItemContentLeftSection.vue';
+
 const route = useRoute()
 var id = route.params.id;
 
