@@ -11,7 +11,7 @@ import HeaderNav from "./HeaderNav.vue";
 
   <router-view>
   </router-view>
-  
+
   <!--end::Main-->
 
   <!--begin::Footer-->
@@ -21,9 +21,7 @@ import HeaderNav from "./HeaderNav.vue";
       <!--begin::Copyright-->
       <div class="text-dark order-2 order-md-1">
         <span class="text-muted fw-bold me-2">2024©</span>
-        <a href="/" class="text-gray-800 text-hover-primary"
-          >Classroom Learning</a
-        >
+        <a href="/" class="text-gray-800 text-hover-primary">Classroom Learning</a>
       </div>
       <!--end::Copyright-->
       <!--begin::Menu-->
@@ -42,4 +40,3 @@ import HeaderNav from "./HeaderNav.vue";
   </div>
   <!--end::Footer-->
 </template>
-

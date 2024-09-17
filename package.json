@@ -9,14 +9,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@popperjs/core": "^2.11.8",
     "@vueup/vue-quill": "^1.2.0",
     "axios": "^1.7.2",
+    "oidc-client-ts": "^3.0.1",
     "pinia": "^2.1.7",
     "vue": "^3.4.29",
     "vue-router": "^4.3.3"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.5",
-    "vite": "^5.3.1"
+    "vite": "^5.3.1",
+    "vite-plugin-mkcert": "^1.17.6"
   }
 }

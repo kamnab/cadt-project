@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import ClassActivity from '@/views/classItem/ClassActivity.vue'
 import ClassContentAndMaterials from '@/views/classItem/ClassContentAndMaterials.vue'
+import LoginCallback from '@/components/auth/Callback.vue'
+
 import NotFound from '@/components/NotFound.vue'
 
 const router = createRouter({
@@ -29,6 +31,11 @@ const router = createRouter({
       path: '/lessons/:id/activities',
       name: 'class-activity',
       component: ClassActivity
+    },
+    {
+      path: '/callback',
+      name: 'login-callback',
+      component: LoginCallback,
     },
     { path: '/:pathMatch(.*)*', component: NotFound }, // 404 route
   ]

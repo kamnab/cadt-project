@@ -1,3 +1,7 @@
+<script setup>
+import Login from "@/components/auth/Login.vue";
+</script>
+
 <template>
   <div id="kt_header" class="header" data-kt-sticky="true" data-kt-sticky-name="header"
     data-kt-sticky-offset="{default: '200px', lg: '300px'}">
@@ -32,7 +36,7 @@
       </div>
       <!--end::Left-->
       <!--begin::Right-->
-
+      <Login></Login>
       <!--end::Right-->
     </div>
     <!--end::Container-->
