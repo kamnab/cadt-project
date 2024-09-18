@@ -15,13 +15,14 @@ const getProtectedResource = async () => {
   user.value = await loggedInUser();
   if (user.value) {
     try {
+      console.log(`Bearer ${user.value.access_token}`)
+
       const response = await axios.get('https://localhost:4000/tenants', {
         headers: {
           Authorization: `Bearer ${user.value.access_token}`,
         },
       });
 
-      console.log(`Bearer ${user.value.access_token}`)
       //console.log(response.data);
       tenants.value = Array.from(response.data)
         .map((tenant) => ({
