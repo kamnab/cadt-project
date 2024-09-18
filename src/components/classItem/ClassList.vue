@@ -22,7 +22,7 @@ const getProtectedResource = async () => {
       });
 
       console.log(`Bearer ${user.value.access_token}`)
-      console.log(response.data);
+      //console.log(response.data);
       tenants.value = Array.from(response.data)
         .map((tenant) => ({
           id: tenant._id,
@@ -30,7 +30,7 @@ const getProtectedResource = async () => {
           description: tenant.description
         }));
 
-      console.log(tenants.value);
+      //console.log(tenants.value);
 
     } catch (error) {
       console.error('API call failed:', error);

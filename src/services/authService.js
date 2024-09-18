@@ -2,23 +2,24 @@ import { UserManager, WebStorageStateStore, Log } from "oidc-client-ts";
 
 const userManager = new UserManager({
     // authorization server URL
-    authority: "https://localhost:44313",
+    authority: import.meta.env.VITE_API_AUTHORITY,
     // Registered client ID in authorization server           
-    client_id: "cadt-project1-frontend",
+    client_id: import.meta.env.VITE_API_CLIENT_ID,
     // Registered client secret in authorization server                
-    client_secret: "CADT-PROJECT1-FRONTEND-2024",
+    client_secret: import.meta.env.VITE_API_CLIENT_SECRET,
     // Vue app's callback URI after login
-    redirect_uri: "https://localhost:5173/callback",
+    redirect_uri: import.meta.env.VITE_APP_REDIRECT_URI,
     // Using Authorization Code Flow
     response_type: "code",
     // The [fapi] scope for accessing to api resource server (cadt-project2-backend express.js project)
     scope: "openid profile fapi",
     // Redirect after logout           
-    post_logout_redirect_uri: "https://localhost:5173",
+    post_logout_redirect_uri: import.meta.env.VITE_API_POST_LOGOUT_REDIRECT_URI,
     // Automatically renew the token
     automaticSilentRenew: true,
     // For token renewal              
-    silent_redirect_uri: "https://localhost:5173/callback",
+    silent_redirect_uri: import.meta.env.VITE_API_SILENT_REDIRECT_URI,
+    // For cross tabs login/logout
     userStore: new WebStorageStateStore({ store: window.localStorage })
 });
 
