@@ -42,6 +42,7 @@ const initAuthListeners = () => {
     // Listen for silent renew errors
     userManager.events.addSilentRenewError(err => {
         console.error('Silent renew error:', err);
+        logout();  // Auto-logout the user
     });
 
     // Listen for when a user is successfully loaded after silent renew

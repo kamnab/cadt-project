@@ -59,10 +59,10 @@
 
 
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted, onBeforeMount } from 'vue';
 import { loginCallback } from '@/services/authService'
 
-onMounted(async () => {
+onBeforeMount(async () => {
     try {
         const user = await loginCallback();
         console.log('User authenticated:', user);
@@ -70,6 +70,7 @@ onMounted(async () => {
         // Redirect back to the home page or other route after successful login
         window.location.href = '/';
     } catch (err) {
+        alert(err)
         console.error('Login callback error:', err);
     }
 });
