@@ -17,7 +17,7 @@ const getProtectedResource = async () => {
     try {
       console.log(`Bearer ${user.value.access_token}`)
 
-      const response = await axios.get(`${import.meta.env.VITE_API_CADT_PROJECT2_BACKEND_ENDPOINT}`, {
+      const response = await axios.get(`${import.meta.env.VITE_API_BACKEND_ENDPOINT_TENANTS}`, {
         headers: {
           Authorization: `Bearer ${user.value.access_token}`,
         },
