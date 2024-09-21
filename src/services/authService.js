@@ -57,13 +57,12 @@ const login = () => userManager.signinRedirect();
 const loginCallback = () => userManager.signinCallback();
 const loggedInUser = () => userManager.getUser();
 const logout = async () => {
-    var isLoggingOut = true;
     try {
         await userManager.removeUser();  // Clear user data from localStorage/sessionStorage
         await userManager.signoutRedirect();  // Redirect to identity provider's logout page
     } catch (error) {
         console.error("Error during logout", error);
-        isLoggingOut = false;
+        window.location.href = '/';
     }
 };
 

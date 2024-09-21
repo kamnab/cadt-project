@@ -46,14 +46,6 @@ onMounted(() => {
 </script>
 
 <template>
-  <!--begin::Row-->
-  <div class="row g-6 mb-6">
-    <div class="col-12">
-      <h1 class="fw-bold pt-6 m-0">Project 1: Frontend</h1>
-    </div>
-    <ClassItem v-for="(item, index) in classList" :item="item" :key="index"></ClassItem>
-  </div>
-  <!--end::Row-->
 
   <!--begin::Row-->
   <div class="row g-6 mb-6">
@@ -63,4 +55,14 @@ onMounted(() => {
     <ClassItem v-for="(item, index) in tenants" :item="item" :key="index"></ClassItem>
   </div>
   <!--end::Row-->
+
+  <!--begin::Row-->
+  <div class="row g-6 mb-6">
+    <div class="col-12">
+      <h1 class="fw-bold pt-6 m-0">Project 1: Frontend</h1>
+    </div>
+    <ClassItem v-for="(item, index) in classList" :item="item" :key="index"></ClassItem>
+  </div>
+  <!--end::Row-->
+
 </template>
