@@ -35,14 +35,15 @@ const initAuthListeners = () => {
     });
 
     // Listen for access token expired
-    userManager.events.addAccessTokenExpired(() => {
+    userManager.events.addAccessTokenExpired(async () => {
         console.warn('Access token has expired.');
+        await logout();
     });
 
     // Listen for silent renew errors
-    userManager.events.addSilentRenewError(err => {
+    userManager.events.addSilentRenewError(async (err) => {
         console.error('Silent renew error:', err);
-        logout();  // Auto-logout the user
+        await logout();  // Auto-logout the user
     });
 
     // Listen for when a user is successfully loaded after silent renew
