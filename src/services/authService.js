@@ -56,6 +56,8 @@ const initAuthListeners = () => {
 const login = () => userManager.signinRedirect();
 const loginCallback = () => userManager.signinCallback();
 const loggedInUser = () => userManager.getUser();
+const accessToken = () => userManager.getUser().access_token;
+
 const logout = async () => {
     try {
         await userManager.removeUser();  // Clear user data from localStorage/sessionStorage
@@ -66,4 +68,4 @@ const logout = async () => {
     }
 };
 
-export { initAuthListeners, login, loginCallback, loggedInUser, logout };
+export { initAuthListeners, login, loginCallback, loggedInUser, logout, accessToken };
