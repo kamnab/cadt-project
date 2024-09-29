@@ -115,7 +115,7 @@ const editTenant = async () => {
 const updateTenant = async () => {
     user.value = await loggedInUser();
 
-    const response = await axios.put(`${import.meta.env.VITE_API_BACKEND_ENDPOINT_TENANTS}`,
+    const response = await axios.put(`${import.meta.env.VITE_API_BACKEND_ENDPOINT_TENANTS}/${route.params.id}`,
         tenant.value, {
         headers: {
             Authorization: `Bearer ${user.value.access_token}`,
