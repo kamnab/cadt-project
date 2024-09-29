@@ -1,11 +1,13 @@
 <script setup>
-import { onMounted, createApp, h, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import ClassList from '@/components/classItem/ClassList.vue';
 import MyTask from '@/components/classItem/MyTask.vue';
 
 import DeleteTenant from '@/components/tenants/Delete.vue';
 
 // State variables
+
+const classListKey = ref(0);
 const isModalOpen = ref(false);
 const tenant = ref({
   id: String,
@@ -18,7 +20,10 @@ const deleteTenantRef = ref(null);
 // Method to submit the form from the parent component
 const triggerDeleteTenant = () => {
   // Trigger the submitForm method in the child component
-  deleteTenantRef.value.deleteTenant();
+  const success = deleteTenantRef.value.deleteTenant();
+  if (success) {
+    document.querySelector('#kt_modal_tenant button[data-bs-dismiss="modal"]').click();
+  }
 };
 
 // Function to handle modal show event
@@ -27,6 +32,10 @@ const handleModalShow = (event) => {
   tenant.value.name = event.relatedTarget.dataset.tenantName;
 
   isModalOpen.value = true;
+};
+
+const reloadList = () => {
+  classListKey.value += 1;
 };
 
 onMounted(() => {
@@ -50,7 +59,7 @@ onMounted(() => {
         <!--begin::Row-->
         <div class="row g-0 g-xl-5 g-xxl-8">
           <div class="col-xl-8">
-            <ClassList></ClassList>
+            <ClassList :key="classListKey"></ClassList>
           </div>
           <div class="col-xl-4">
             <MyTask></MyTask>
@@ -85,7 +94,8 @@ onMounted(() => {
                 <!--end::Close-->
               </div>
               <div class="modal-body">
-                <DeleteTenant ref="deleteTenantRef" v-if="isModalOpen" :tenant="tenant">
+                <DeleteTenant ref="deleteTenantRef" v-if="isModalOpen" :tenant="tenant" @delete-success="reloadList"
+                  @close="isModalOpen = false">
                 </DeleteTenant>
               </div>
               <div class="modal-footer">

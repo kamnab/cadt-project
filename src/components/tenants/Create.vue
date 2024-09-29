@@ -84,7 +84,9 @@
 import axios from 'axios';
 import { ref } from 'vue';
 import { loggedInUser } from '@/services/authService';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const user = ref(null);
 const tenant = ref({
     name: '',
@@ -102,6 +104,8 @@ const createTenant = async () => {
 
     if (response.status == 200) {
         console.log(response.data);
+
+        router.push('/'); // 
     }
 }
 

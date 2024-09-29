@@ -85,10 +85,11 @@ import axios from 'axios';
 import { ref, onMounted, onBeforeMount } from 'vue';
 import { loggedInUser } from '@/services/authService';
 
-import { useRoute } from "vue-router"; // Import useRoute to access route params
-const route = useRoute(); // Get the current route object
+import { useRoute, useRouter } from "vue-router";
+const route = useRoute();
+const router = useRouter();
 
-const id = ref(null); // Store the ID from query params
+const id = ref(null);
 const user = ref(null);
 const tenant = ref({
     name: '',
@@ -123,6 +124,8 @@ const updateTenant = async () => {
 
     if (response.status == 200) {
         console.log(response.data);
+
+        router.push('/'); // 
     }
 }
 // Fetch query param (id) on component mount

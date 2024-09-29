@@ -1,7 +1,9 @@
 <script setup>
-import { accessToken } from '@/services/authService';
+import { defineEmits } from 'vue';
+import { loggedInUser } from '@/services/authService';
 import axios from 'axios';
 
+const emit = defineEmits();
 const props = defineProps({
     tenant: {
         id: String,
@@ -10,6 +12,7 @@ const props = defineProps({
 });
 
 const deleteTenant = async () => {
+    var accessToken = (await loggedInUser()).access_token;
     const response = await axios.delete(`${import.meta.env.VITE_API_BACKEND_ENDPOINT_TENANTS}/${props.tenant.id}`, {
         headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -17,10 +20,15 @@ const deleteTenant = async () => {
     });
 
     if (response.status == 200) {
-        const { name, description } = response.data;
-        tenant.value = { name, description }
+        const { name, description, isDeleted } = response.data;
         console.log(response.data);
+
+        emit('delete-success'); // Emit event to notify parent
+        emit('close'); // Close the modal
+
+        return true;
     }
+    return false;
 }
 
 // Expose the deleteTenant method to be accessible by HomeView.vue

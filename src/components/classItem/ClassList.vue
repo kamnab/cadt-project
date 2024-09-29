@@ -49,7 +49,7 @@ onMounted(() => {
     <div class="col-12">
       <div class="d-flex align-items-center justify-content-between flex-nowrap text-nowrap overflow-auto py-1">
         <h1 class="fw-bold pt-6 m-0">Project 2: Backend </h1>
-        <router-link :to="{ name: 'tenant-create' }" class="btn btn-primary btn-sm">
+        <router-link :to="{ name: 'tenant-create' }" class="btn btn-primary btn-sm" v-if="user">
           Add New
         </router-link>
       </div>
@@ -63,7 +63,7 @@ onMounted(() => {
     <div class="col-12">
       <h1 class="fw-bold pt-6 m-0">Project 1: Frontend</h1>
     </div>
-    <ClassItemV2 v-for="(item, index) in classList" :item="item" :key="index"></ClassItemV2>
+    <ClassItem v-for="(item, index) in classList" :item="item" :key="index"></ClassItem>
   </div>
   <!--end::Row-->
 
