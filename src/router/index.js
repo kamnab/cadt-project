@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import ClassActivity from '@/views/classItem/ClassActivity.vue'
 import ClassContentAndMaterials from '@/views/classItem/ClassContentAndMaterials.vue'
+import TenantContentAndMaterials from '@/views/tenantItem/TenantContentAndMaterials.vue'
+import TenantActivity from '@/views/tenantItem/TenantActivity.vue'
 import LoginCallback from '@/components/auth/Callback.vue'
 import NewTenant from '@/views/tenants/CreateView.vue'
 import EditTenant from '@/views/tenants/EditView.vue'
@@ -48,6 +50,11 @@ const router = createRouter({
       path: '/tenants/:id/edit',
       name: 'tenant-edit',
       component: EditTenant,
+    },
+    {
+      path: '/tenants/:id/',
+      name: 'tenant-content',
+      component: TenantActivity
     },
     { path: '/:pathMatch(.*)*', component: NotFound }, // 404 route
   ]

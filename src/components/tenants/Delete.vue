@@ -1,5 +1,4 @@
 <script setup>
-import { defineEmits } from 'vue';
 import { loggedInUser } from '@/services/authService';
 import axios from 'axios';
 

@@ -55,7 +55,7 @@ function handleMouseLeave() {
               <!--begin::Section-->
               <div class="flex-grow-1">
                 <!--begin::Title-->
-                <router-link :to="{ name: 'class-content', params: { id: item.id } }">
+                <router-link :to="{ name: 'tenant-content', params: { id: item.id } }">
                   <h3 class="text-dark text-hover-primary fs-2 fw-bolder">
                     {{ props.item.name }}
                   </h3>

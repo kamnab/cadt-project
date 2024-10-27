@@ -12,7 +12,7 @@ const userManager = new UserManager({
     // Using Authorization Code Flow
     response_type: "code",
     // The [fapi] scope for accessing to api resource server (cadt-project2-backend express.js project)
-    scope: "openid profile fapi",
+    scope: "openid profile offline_access fapi",
     // Redirect after logout           
     post_logout_redirect_uri: import.meta.env.VITE_API_POST_LOGOUT_REDIRECT_URI,
     // Automatically renew the token
@@ -56,7 +56,6 @@ const initAuthListeners = () => {
 const login = () => userManager.signinRedirect();
 const loginCallback = () => userManager.signinCallback();
 const loggedInUser = () => userManager.getUser();
-const accessToken = () => userManager.getUser().access_token;
 
 const logout = async () => {
     try {
@@ -68,4 +67,4 @@ const logout = async () => {
     }
 };
 
-export { initAuthListeners, login, loginCallback, loggedInUser, logout, accessToken };
+export { initAuthListeners, login, loginCallback, loggedInUser, logout };

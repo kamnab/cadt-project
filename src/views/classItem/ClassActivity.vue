@@ -19,8 +19,6 @@ var selectedClass = classListService.getClassById(id);
 <template>
 
 	<div class="d-flex flex-column flex-column-fluid">
-
-
 		<!--begin::toolbar-->
 		<ClassItemToolbar>
 
@@ -31,7 +29,6 @@ var selectedClass = classListService.getClassById(id);
 		<div class="content fs-6 d-flex flex-column-fluid" id="kt_content" style="padding: 20px 0;">
 			<!--begin::Container-->
 			<div class="container">
-
 
 				<!--begin::Row-->
 				<div class="row g-0 g-xl-5 g-xxl-8">
