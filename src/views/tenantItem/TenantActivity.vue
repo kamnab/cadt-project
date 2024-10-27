@@ -8,8 +8,8 @@ import { getTenantItems } from '@/services/tenantItemService';
 
 const route = useRoute()
 
+const host = import.meta.env.VITE_API_TENANT_CONENT_ENDPOINT;
 const tenantId = route.params.id;
-const host = 'https://localhost:52271';
 const iframeEdit = ref(null)
 const iframeEditSrc = `${host}/embed/article/edit`;
 const tenantItems = ref([])
