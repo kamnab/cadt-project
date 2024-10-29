@@ -8,6 +8,7 @@ const props = defineProps({
     timeFrom: String,
     timeTo: String,
     description: String,
+    isOwner: Boolean
   },
 });
 
@@ -32,7 +33,7 @@ function handleMouseLeave() {
         <div id="kt_stats_widget_9_carousel" class="carousel carousel-custom slide" data-bs-ride="carousel"
           data-bs-interval="8000">
           <!--begin::Top-->
-          <div class="dropdown" style="position: absolute; right: -15px; top: -30px;">
+          <div v-if="item.isOwner" class="dropdown" style="position: absolute; right: -15px; top: -30px;">
             <button class="btn dropdown-toggle p-0 fs-1" :class="isHovered ? 'text-gray-800' : 'text-gray-300'"
               type="button" data-bs-toggle="dropdown" aria-expanded="false">
             </button>

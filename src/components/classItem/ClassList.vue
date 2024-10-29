@@ -28,7 +28,8 @@ const getProtectedResource = async () => {
         .map((tenant) => ({
           id: tenant._id,
           name: tenant.name,
-          description: tenant.description
+          description: tenant.description,
+          isOwner: tenant.createdByUserId == user.value.profile.sub
         }));
 
       //console.log(tenants.value);
