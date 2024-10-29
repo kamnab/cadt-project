@@ -41,8 +41,10 @@ const postMessageToIframe = (iframe, user) => {
 		const targetOrigin = '*'; // Specify your target origin
 		const message = {
 			token: user.access_token,
+			refreshToken: user.refresh_token,
 			email: user.profile.name,
-			tenantId: tenantId, // Set your tenantId here
+			userId: user.profile.sub,
+			tenantId: tenantId,
 		};
 		//console.log('Posting message to iframe:', message);
 		iframe.contentWindow.postMessage(message, targetOrigin);
@@ -208,7 +210,7 @@ async function handleIframes() {
 								<!--end::Close-->
 							</div>
 							<div class="modal-body pt-2 pb-0">
-
+								<!-- <iframe :src="host" style="width: 100%;" frameborder="0" loading="lazy"></iframe> -->
 								<iframe id="__edit" ref="iframeEdit" :src="iframeEditSrc" style="width: 100%;"
 									frameborder="0" loading="lazy"></iframe>
 
