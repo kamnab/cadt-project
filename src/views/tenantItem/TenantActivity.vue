@@ -41,7 +41,6 @@ const postMessageToIframe = (iframe, user) => {
 		const targetOrigin = '*'; // Specify your target origin
 		const message = {
 			token: user.access_token,
-			refreshToken: user.refresh_token,
 			email: user.profile.name,
 			userId: user.profile.sub,
 			tenantId: tenantId,
@@ -87,13 +86,7 @@ async function handleMessage(event) {
 async function handleIframeEditOnLoad() {
 	const newIframe = iframeEdit.value;
 	if (newIframe && newIframe.contentWindow) {
-		const user = await loggedInUser();
-		newIframe.contentWindow.postMessage({
-			token: user.access_token,
-			email: user.profile.name,
-			tenantId: tenantId
-		}, '*');
-		console.log('send');
+		postMessageToIframe(newIframe, await loggedInUser());
 	} else {
 		console.error('Iframe does not have contentWindow:', newIframe);
 	}
