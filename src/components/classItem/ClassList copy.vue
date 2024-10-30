@@ -50,7 +50,7 @@ onMounted(() => {
   <div class="row g-6 mb-6">
     <div class="col-12">
       <div class="d-flex align-items-center justify-content-between flex-nowrap text-nowrap overflow-auto py-1">
-        <h1 class="fw-bold pt-6 m-0">My Group</h1>
+        <h1 class="fw-bold pt-6 m-0">Project 2: Backend </h1>
         <div>
           <router-link :to="{ name: 'tenant-create' }" class="btn btn-primary btn-sm mx-2" v-if="user">
             Add New
@@ -65,6 +65,15 @@ onMounted(() => {
       </div>
     </div>
     <ClassItemV2 v-for="(item, index) in tenants" :item="item" :key="index"></ClassItemV2>
+  </div>
+  <!--end::Row-->
+
+  <!--begin::Row-->
+  <div class="row g-6 mb-6">
+    <div class="col-12">
+      <h1 class="fw-bold pt-6 m-0">Project 1: Frontend</h1>
+    </div>
+    <ClassItem v-for="(item, index) in classList" :item="item" :key="index"></ClassItem>
   </div>
   <!--end::Row-->
 
