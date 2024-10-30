@@ -18,8 +18,7 @@
         <!--begin::Menu-->
         <div
           class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold w-200px dropdown-menu"
-          data-kt-menu="true"
-        >
+          data-kt-menu="true">
           <div class="menu-item px-3">
             <div class="menu-content fs-6 text-dark fw-bolder px-3 py-4">
               Manage
@@ -32,12 +31,8 @@
           <div class="menu-item px-3">
             <a href="#" class="menu-link px-3">Add Role</a>
           </div>
-          <div
-            class="menu-item px-3"
-            data-kt-menu-trigger="hover"
-            data-kt-menu-placement="right-start"
-            data-kt-menu-flip="left-start, top"
-          >
+          <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-start"
+            data-kt-menu-flip="left-start, top">
             <a href="#" class="menu-link px-3">
               <span class="menu-title">Add Group</span>
               <span class="menu-arrow"></span>
@@ -60,9 +55,7 @@
           <div class="separator mt-3 opacity-75"></div>
           <div class="menu-item px-3">
             <div class="menu-content px-3 py-3">
-              <a class="btn btn-primary fw-bold btn-sm px-4" href="#"
-                >Create New</a
-              >
+              <a class="btn btn-primary fw-bold btn-sm px-4" href="#">Create New</a>
             </div>
           </div>
         </div>
@@ -121,8 +114,8 @@
           <!--end::Badge-->
           <!--begin::Desc-->
           <div class="timeline-content fw-bolder text-gray-800 ps-3">
-            Make deposit
-            <a href="#" class="text-primary">USD 700</a>. to ESL
+            Under construction
+            <a href="#" class="text-primary">Category</a>
           </div>
           <!--end::Desc-->
         </div>
