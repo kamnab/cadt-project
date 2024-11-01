@@ -20,7 +20,7 @@ const props = defineProps({
     iframeList: Array  // Array of iframes to be passed as a prop
 });
 
-const chunkSize = 20;  // Number of iframes to load per batch
+const chunkSize = 5;  // Number of iframes to load per batch
 const visibleIframes = ref([]);  // Store the currently visible iframes
 const loading = ref(false);  // Control loading spinner visibility
 let loadedChunks = 0;  // Track how many chunks have been loaded
