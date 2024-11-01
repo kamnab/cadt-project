@@ -2,6 +2,11 @@
     <iframe :id="`_${props.itemId}`" ref="iframeElement" class="lazy-iframe" style="width: 100%;" frameborder="0"
         loading="lazy">
     </iframe>
+
+    <div v-if="props.isPin" class="position-absolute top-0 end-0 pe-2">
+        <i class="bi bi-pin-angle"></i>
+    </div>
+
 </template>
 
 <script setup>
@@ -9,7 +14,8 @@ import { ref, onMounted, onBeforeUnmount } from 'vue';
 const host = import.meta.env.VITE_API_TENANT_CONENT_ENDPOINT;
 
 const props = defineProps({
-    itemId: String
+    itemId: String,
+    isPin: Boolean
 });
 
 const iframeElement = ref(null);

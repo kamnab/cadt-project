@@ -2,11 +2,12 @@
     <div>
         <div class="position-relative" v-for="(item, index) in visibleIframes" :key="index">
             <!-- Render visible iframes lazily -->
-            <LazyIframe :itemId="item.itemId" />
+            <LazyIframe :itemId="item.itemId" :isPin="item.isPin" />
 
-            <!-- Loading spinner (optional) -->
-            <div v-if="loading" class="loading-spinner">Loading...</div>
         </div>
+
+        <!-- Loading spinner (optional) -->
+        <div v-if="loading" class="loading-spinner">Loading...</div>
     </div>
 </template>
 

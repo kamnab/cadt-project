@@ -182,6 +182,7 @@ const performSearch = async () => {
 					</div>
 
 					<div class="col-xl-8">
+
 						<div>
 							<!-- Search box with a search button -->
 							<div v-if="tenantItemStore.toggleSearch" class="input-group mt-3 mb-6">
@@ -191,6 +192,7 @@ const performSearch = async () => {
 						</div>
 
 						<IframeBatchLoader :iframe-list="tenantItems"></IframeBatchLoader>
+
 					</div>
 				</div>
 				<!--end::Row-->
