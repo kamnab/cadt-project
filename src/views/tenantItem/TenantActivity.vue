@@ -4,7 +4,10 @@ import TenantItemContentLeftSection from '@/components/tenantItem/TenantItemCont
 import { onMounted, onBeforeUnmount, ref, onBeforeMount } from 'vue';
 import { loggedInUser } from '@/services/authService';
 import { RouterLink, useRoute } from 'vue-router';
-import { getTenantItems } from '@/services/tenantItemService';
+import { getTenantItems, getTenantItemIdsByTerm } from '@/services/tenantItemService';
+
+import { useTenantItemStore } from '@/stores/tenantItemStore'
+const tenantItemStore = useTenantItemStore()
 
 const route = useRoute()
 
@@ -33,7 +36,6 @@ onBeforeUnmount(() => {
 	// Clean up the event listener when the component is unmounted
 	window.removeEventListener('message', handleMessage);
 });
-
 
 // Function to post messages to the iframe
 const postMessageToIframe = (iframe, user) => {
@@ -99,49 +101,35 @@ async function loadTenantItems() {
 	tenantItems.value = items.map(item => ({
 		id: item._id,
 		itemId: item.itemId, // replace with the actual field name
-	}));
+		isPin: item.isPin,
+		sortPin: item.sortPin
+	}))
+		/*
+			a.isPin === b.isPin ? 0: 
+			_ If both isPin values are the same, they stay in the same order.
+			
+			a.isPin ? -1 : 1: 
+			_ If a.isPin is true, it comes before b.isPin. 
+				If a.isPin is false, it comes after b.isPin.
+		*/
+		// Sort with true first (even though it's called ascending)
+		.sort((a, b) => a.isPin === b.isPin ? 0 : a.isPin ? -1 : 1);
+
+	console.log(tenantItems.value)
 }
 
-async function handleIframes() {
-	try {
-		const user = await loggedInUser();
-		var iframes = document.getElementsByTagName('iframe');
+const searchQuery = ref('');
 
-		for (let i = 0; i < iframes.length; i++) {
-			const iframe = iframes[i];
+// Function to perform search action
+const performSearch = async () => {
+	const itemIds = tenantItems.value.map((x) => x.itemId);
+	const items = await getTenantItemIdsByTerm(itemIds, searchQuery.value);
 
-			/* 
-			// Add an event listener for the iframe load event
-			1. Iframe Load Event: Listens for the load event to ensure that the iframe is fully loaded before attempting to send a message.
-			*/
-			iframe.addEventListener('load', () => {
-				if (iframe.contentWindow) {
-					iframe.contentWindow.postMessage({
-						token: user.access_token,
-						email: user.profile.name,
-						tenantId: tenantId
-					}, '*');
-				} else {
-					console.error('Iframe does not have contentWindow:', iframe);
-				}
-			});
-
-			/* 
-			// Optionally handle case where iframe is already loaded
-			2. Already Loaded Iframe: Added a check for readyState === 'complete' to send the message to iframes that might already be fully loaded when the component is mounted.
-			*/
-			if (iframe.contentWindow && iframe.contentDocument.readyState === 'complete') {
-				iframe.contentWindow.postMessage({
-					token: user.access_token,
-					email: user.profile.name,
-					tenantId: tenantId
-				}, '*');
-			}
-		}
-	} catch (error) {
-		console.error('Error fetching logged-in user or posting message to iframe:', error);
-	}
-}
+	console.log('items for:', itemIds);
+	console.log('items for:', items);
+	console.log('Searching for:', searchQuery.value);
+	// You can implement the actual search logic here
+};
 
 </script>
 
@@ -168,9 +156,23 @@ async function handleIframes() {
 					</div>
 
 					<div class="col-xl-8">
-						<iframe v-for="(item, index) in tenantItems" :id="`_${item.itemId}`"
-							:src="`${host}/article/${item.itemId}/embed`" :key="index" style="width: 100%;"
-							frameborder="0" loading="lazy"></iframe>
+						<div>
+							<!-- Search box with a search button -->
+							<div v-if="tenantItemStore.toggleSearch" class="input-group mt-3 mb-6">
+								<input type="text" v-model="searchQuery" class="form-control" placeholder="Search..." />
+								<button @click="performSearch" class="btn btn-primary">Search</button>
+							</div>
+						</div>
+
+						<div class="position-relative" v-for="(item, index) in tenantItems">
+							<iframe :id="`_${item.itemId}`" :src="`${host}/article/${item.itemId}/embed`" :key="index"
+								style="width: 100%;" frameborder="0" loading="lazy"></iframe>
+
+							<div v-if="item.isPin" class="position-absolute top-0 end-0 pe-2">
+								<i class="bi bi-pin-angle"></i>
+							</div>
+						</div>
+
 					</div>
 				</div>
 				<!--end::Row-->

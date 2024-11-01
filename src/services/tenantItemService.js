@@ -21,5 +21,29 @@ const getTenantItems = async (tenantId) => {
     return null
 };
 
-export { getTenantItems }
+const getTenantItemIdsByTerm = async (tenantIds, term) => {
+    var user = await loggedInUser();
+    if (user) {
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_API_TENANT_CONENT_ENDPOINT}/embed/article/filter`, {
+                headers: {
+                    Authorization: `Bearer ${user.access_token}`,
+                },
+                params: {
+                    tenantIds, // Passing tenantIds as query parameter
+                    term,         // Passing term as query parameter
+                },
+            });
+
+            return response.data;
+
+        } catch (error) {
+            console.error('API call failed:', error);
+        }
+    }
+
+    return null
+};
+
+export { getTenantItems, getTenantItemIdsByTerm }
 

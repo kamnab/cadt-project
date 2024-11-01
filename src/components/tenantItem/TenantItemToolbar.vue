@@ -7,14 +7,20 @@ const route = useRoute()
 var id = route.params.id;
 
 import { useClassItemStore } from '@/stores/classItemStore'
+import { useTenantItemStore } from '@/stores/tenantItemStore'
 const store = useClassItemStore()
+const tenantItemStore = useTenantItemStore()
 const selectedClass = ref({})
 
 onBeforeMount(async () => {
-
   selectedClass.value = await getTenantById(id);
 
 })
+
+// Toggle function to show/hide the search box
+const toggleSearch = () => {
+  tenantItemStore.setToggleSearch(!tenantItemStore.toggleSearch)
+};
 
 </script>
 <template>
@@ -43,6 +49,10 @@ onBeforeMount(async () => {
       <!--end::Info-->
       <!--begin::Nav-->
       <div class="d-flex align-items-center flex-nowrap text-nowrap overflow-auto py-1">
+        <!-- Icon button to toggle the search box, using Bootstrap button styles -->
+        <button @click="toggleSearch" class="btn btn-outline-secondary active me-3">
+          <i class="fas fa-search"></i>
+        </button>
         <a href="#" class="btn btn-active-accent active fw-bolder" data-bs-toggle="modal"
           data-bs-target="#modal_tenant">Add New</a>
         <!-- <RouterLink to="/class-activity" class="btn btn-active-accent active fw-bolder"> Activity Feed</RouterLink> -->
