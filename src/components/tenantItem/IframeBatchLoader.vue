@@ -7,7 +7,6 @@
             <!-- Loading spinner (optional) -->
             <div v-if="loading" class="loading-spinner">Loading...</div>
         </div>
-
     </div>
 </template>
 
@@ -24,13 +23,17 @@ const chunkSize = 5;  // Number of iframes to load per batch
 const visibleIframes = ref([]);  // Store the currently visible iframes
 const loading = ref(false);  // Control loading spinner visibility
 let loadedChunks = 0;  // Track how many chunks have been loaded
+let allLoaded = ref(false);  // Track if all iframes have been loaded
 
 const loadNextChunk = () => {
+    if (loading.value || allLoaded.value) return;  // Prevent loading if already loading or all items are loaded
+
     const nextChunkStart = loadedChunks * chunkSize;
     const nextChunkEnd = nextChunkStart + chunkSize;
 
     if (nextChunkStart >= props.iframeList.length) {
-        return;  // No more iframes to load
+        allLoaded.value = true;  // No more iframes to load
+        return;
     }
 
     loading.value = true;  // Show loading spinner
@@ -40,6 +43,11 @@ const loadNextChunk = () => {
         visibleIframes.value.push(...props.iframeList.slice(nextChunkStart, nextChunkEnd));
         loadedChunks += 1;
         loading.value = false;  // Hide loading spinner after loading
+
+        // Check if all iframes are loaded
+        if (visibleIframes.value.length >= props.iframeList.length) {
+            allLoaded.value = true;
+        }
     }, 300);  // Simulate async load with a timeout
 };
 
@@ -59,13 +67,14 @@ const handleScroll = () => {
 watch(() => props.iframeList, () => {
     loadedChunks = 0;  // Reset loadedChunks if the list changes
     visibleIframes.value = [];  // Clear visibleIframes
+    allLoaded.value = false;  // Reset allLoaded flag
     loadNextChunk();  // Load first chunk of new iframes
 }, { immediate: true });
 
 onMounted(() => {
     // Initially load the first batch of iframes
     loadNextChunk();
-    console.log(props.iframeList);
+
     // Add scroll event listener to detect when to load more iframes
     window.addEventListener('scroll', handleScroll);
 });
