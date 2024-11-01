@@ -21,7 +21,7 @@ onBeforeMount(async () => {
 	await loadTenantItems();
 })
 
-onMounted(async () => {
+onMounted(() => {
 	// Execute iframe handling on component mount
 	//await handleIframes();
 
@@ -30,6 +30,8 @@ onMounted(async () => {
 
 	const modalElement = document.querySelector('#modal_tenant');
 	modalElement.addEventListener('show.bs.modal', handleIframeEditOnLoad);
+
+	handleIframeEditOnLoad();
 });
 
 onBeforeUnmount(() => {
@@ -122,31 +124,36 @@ const searchQuery = ref('');
 
 // Function to perform search action
 const performSearch = async () => {
-	const itemIds = tenantItems.value.map((x) => x.itemId);
-	const items = await getTenantItemIdsByTerm(itemIds, searchQuery.value);
+	if (searchQuery.value === '') {
+		loadTenantItems();
+	} else {
+		const itemIds = tenantItems.value.map((x) => x.itemId);
+		const items = await getTenantItemIdsByTerm(itemIds, searchQuery.value);
 
-	console.log('items for:', itemIds);
-	console.log('items for:', items);
-	console.log('Searching for:', searchQuery.value);
-	// You can implement the actual search logic here
+		console.log('items for:', itemIds);
+		console.log('items for:', items);
+		console.log('Searching for:', searchQuery.value);
+		// You can implement the actual search logic here
 
-	// Map to get only the desired fields (e.g., 'name' and 'id')
-	tenantItems.value = items.map(item => ({
-		id: item._id,
-		itemId: item.itemId, // replace with the actual field name
-		isPin: item.isPin,
-		sortPin: item.sortPin
-	}))
-		/*
-			a.isPin === b.isPin ? 0: 
-			_ If both isPin values are the same, they stay in the same order.
-			
-			a.isPin ? -1 : 1: 
-			_ If a.isPin is true, it comes before b.isPin. 
-				If a.isPin is false, it comes after b.isPin.
-		*/
-		// Sort with true first (even though it's called ascending)
-		.sort((a, b) => a.isPin === b.isPin ? 0 : a.isPin ? -1 : 1);
+		// Map to get only the desired fields (e.g., 'name' and 'id')
+		tenantItems.value = items.map(item => ({
+			id: item._id,
+			itemId: item.itemId, // replace with the actual field name
+			isPin: item.isPin,
+			sortPin: item.sortPin
+		}))
+			/*
+				a.isPin === b.isPin ? 0: 
+				_ If both isPin values are the same, they stay in the same order.
+				
+				a.isPin ? -1 : 1: 
+				_ If a.isPin is true, it comes before b.isPin. 
+					If a.isPin is false, it comes after b.isPin.
+			*/
+			// Sort with true first (even though it's called ascending)
+			.sort((a, b) => a.isPin === b.isPin ? 0 : a.isPin ? -1 : 1);
+	}
+
 };
 
 </script>

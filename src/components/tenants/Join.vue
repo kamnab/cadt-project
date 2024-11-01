@@ -47,7 +47,7 @@ const joinTenant = async () => {
 
     if (response.status == 200) {
         console.log(response.data);
-
+        window.location.reload();
         router.push('/'); // 
     }
 }
