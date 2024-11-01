@@ -21,7 +21,7 @@ const getTenantItems = async (tenantId) => {
     return null
 };
 
-const getTenantItemIdsByTerm = async (tenantIds, term) => {
+const getTenantItemIdsByTerm = async (postIds, term) => {
     var user = await loggedInUser();
     if (user) {
         try {
@@ -30,8 +30,8 @@ const getTenantItemIdsByTerm = async (tenantIds, term) => {
                     Authorization: `Bearer ${user.access_token}`,
                 },
                 params: {
-                    postIds: tenantIds, // Passing tenantIds as query parameter
-                    term,         // Passing term as query parameter
+                    postIds: postIds, // Passing tenantIds as query parameter
+                    term: term,         // Passing term as query parameter
                 },
             });
 

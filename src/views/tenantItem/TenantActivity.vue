@@ -5,6 +5,7 @@ import { onMounted, onBeforeUnmount, ref, onBeforeMount } from 'vue';
 import { loggedInUser } from '@/services/authService';
 import { RouterLink, useRoute } from 'vue-router';
 import { getTenantItems, getTenantItemIdsByTerm } from '@/services/tenantItemService';
+import IframeBatchLoader from '@/components/tenantItem/IframeBatchLoader.vue'
 
 import { useTenantItemStore } from '@/stores/tenantItemStore'
 const tenantItemStore = useTenantItemStore()
@@ -31,7 +32,7 @@ onMounted(() => {
 	const modalElement = document.querySelector('#modal_tenant');
 	modalElement.addEventListener('show.bs.modal', handleIframeEditOnLoad);
 
-	handleIframeEditOnLoad();
+	//handleIframeEditOnLoad();
 });
 
 onBeforeUnmount(() => {
@@ -101,6 +102,8 @@ async function loadTenantItems() {
 
 	// Map to get only the desired fields (e.g., 'name' and 'id')
 	tenantItems.value = items.map(item => ({
+		iframeSrc: `${host}/article/${item.itemId}/embed`,
+		iframeId: `_${item.itemId}`,
 		id: item._id,
 		itemId: item.itemId, // replace with the actual field name
 		isPin: item.isPin,
@@ -127,8 +130,8 @@ const performSearch = async () => {
 	if (searchQuery.value === '') {
 		loadTenantItems();
 	} else {
-		const itemIds = tenantItems.value.map((x) => x.itemId);
-		const items = await getTenantItemIdsByTerm(itemIds, searchQuery.value);
+		const postIds = tenantItems.value.map((x) => x.itemId);
+		const items = await getTenantItemIdsByTerm(postIds, searchQuery.value);
 
 		console.log('items for:', itemIds);
 		console.log('items for:', items);
@@ -181,6 +184,7 @@ const performSearch = async () => {
 					</div>
 
 					<div class="col-xl-8">
+						<IframeBatchLoader :iframeList="tenantItems"></IframeBatchLoader>
 						<div>
 							<!-- Search box with a search button -->
 							<div v-if="tenantItemStore.toggleSearch" class="input-group mt-3 mb-6">
