@@ -20,6 +20,9 @@ const tenantItems = ref([])
 
 onBeforeMount(async () => {
 	await loadTenantItems();
+
+	// Set iframe src early
+	iframeEdit.value.src = iframeEditSrc;
 })
 
 onMounted(() => {
@@ -32,7 +35,10 @@ onMounted(() => {
 	const modalElement = document.querySelector('#modal_tenant');
 	modalElement.addEventListener('show.bs.modal', handleIframeEditOnLoad);
 
-	//handleIframeEditOnLoad();
+	// Ensure iframe is ready by posting message as soon as the DOM is ready
+	window.addEventListener('DOMContentLoaded', async () => {
+		handleIframeEditOnLoad();
+	});
 });
 
 onBeforeUnmount(() => {
