@@ -102,8 +102,6 @@ async function loadTenantItems() {
 
 	// Map to get only the desired fields (e.g., 'name' and 'id')
 	tenantItems.value = items.map(item => ({
-		iframeSrc: `${host}/article/${item.itemId}/embed`,
-		iframeId: `_${item.itemId}`,
 		id: item._id,
 		itemId: item.itemId, // replace with the actual field name
 		isPin: item.isPin,
@@ -184,7 +182,6 @@ const performSearch = async () => {
 					</div>
 
 					<div class="col-xl-8">
-						<IframeBatchLoader :iframeList="tenantItems"></IframeBatchLoader>
 						<div>
 							<!-- Search box with a search button -->
 							<div v-if="tenantItemStore.toggleSearch" class="input-group mt-3 mb-6">
@@ -193,15 +190,7 @@ const performSearch = async () => {
 							</div>
 						</div>
 
-						<div class="position-relative" v-for="(item, index) in tenantItems">
-							<iframe :id="`_${item.itemId}`" :src="`${host}/article/${item.itemId}/embed`" :key="index"
-								style="width: 100%;" frameborder="0" loading="lazy"></iframe>
-
-							<div v-if="item.isPin" class="position-absolute top-0 end-0 pe-2">
-								<i class="bi bi-pin-angle"></i>
-							</div>
-						</div>
-
+						<IframeBatchLoader :iframeList="tenantItems"></IframeBatchLoader>
 					</div>
 				</div>
 				<!--end::Row-->

@@ -1,11 +1,18 @@
 <template>
     <div>
-        <!-- Render visible iframes -->
-        <LazyIframe v-for="(iframe, index) in visibleIframes" :key="index" :src="iframe.src"
-            :iframeAttrs="iframe.attrs" />
 
-        <!-- Loading spinner (optional) -->
-        <div v-if="loading" class="loading-spinner">Loading...</div>
+        <div class="position-relative" v-for="(item, index) in iframeList" :key="index">
+            <!-- <iframe :id="`_${item.itemId}`" :src="`${host}/article/${item.itemId}/embed`" :key="index"
+                style="width: 100%;" frameborder="0" loading="lazy"></iframe> -->
+            <!-- Render visible iframes -->
+            <LazyIframe :postId="item.itemId" />
+
+            <!-- Loading spinner (optional) -->
+            <div v-if="loading" class="loading-spinner">Loading...</div>
+            <!-- <div v-if="iframe.isPin" class="position-absolute top-0 end-0 pe-2">
+                <i class="bi bi-pin-angle"></i>
+            </div> -->
+        </div>
     </div>
 </template>
 
@@ -15,7 +22,7 @@ import LazyIframe from './LazyIframe.vue';
 
 // Define props to accept iframeList from the parent component
 const props = defineProps({
-    iframeList: Array  // Array of iframes to be passed as a prop
+    iframeList: []  // Array of iframes to be passed as a prop
 });
 
 const chunkSize = 20;  // Number of iframes to load per batch

@@ -1,13 +1,15 @@
 <template>
-    <iframe v-bind="iframeAttrs" ref="iframeElement" class="lazy-iframe" style="width: 100%;" frameborder="0"
-        loading="lazy"></iframe>
+    <iframe :id="`_${props.itemId}`" :src="`${host}/article/${props.itemId}/embed`" ref="iframeElement"
+        class="lazy-iframe" style="width: 100%;" frameborder="0" loading="lazy"></iframe>
+
 </template>
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue';
+const host = import.meta.env.VITE_API_TENANT_CONENT_ENDPOINT;
 
 const props = defineProps({
-    iframeList: []
+    itemId: String
 });
 
 const iframeElement = ref(null);
