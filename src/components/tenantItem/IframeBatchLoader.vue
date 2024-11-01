@@ -1,17 +1,11 @@
 <template>
     <div>
-
-        <div class="position-relative" v-for="(item, index) in iframeList" :key="index">
-            <!-- <iframe :id="`_${item.itemId}`" :src="`${host}/article/${item.itemId}/embed`" :key="index"
-                style="width: 100%;" frameborder="0" loading="lazy"></iframe> -->
-            <!-- Render visible iframes -->
-            <LazyIframe :postId="item.itemId" />
+        <div class="position-relative" v-for="(item, index) in visibleIframes" :key="index">
+            <!-- Render visible iframes lazily -->
+            <LazyIframe :itemId="item.itemId" />
 
             <!-- Loading spinner (optional) -->
             <div v-if="loading" class="loading-spinner">Loading...</div>
-            <!-- <div v-if="iframe.isPin" class="position-absolute top-0 end-0 pe-2">
-                <i class="bi bi-pin-angle"></i>
-            </div> -->
         </div>
     </div>
 </template>
@@ -22,7 +16,7 @@ import LazyIframe from './LazyIframe.vue';
 
 // Define props to accept iframeList from the parent component
 const props = defineProps({
-    iframeList: []  // Array of iframes to be passed as a prop
+    iframeList: Array  // Array of iframes to be passed as a prop
 });
 
 const chunkSize = 20;  // Number of iframes to load per batch
@@ -70,7 +64,7 @@ watch(() => props.iframeList, () => {
 onMounted(() => {
     // Initially load the first batch of iframes
     loadNextChunk();
-
+    console.log(props.iframeList);
     // Add scroll event listener to detect when to load more iframes
     window.addEventListener('scroll', handleScroll);
 });

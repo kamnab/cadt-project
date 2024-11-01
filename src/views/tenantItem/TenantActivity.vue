@@ -190,7 +190,7 @@ const performSearch = async () => {
 							</div>
 						</div>
 
-						<IframeBatchLoader :iframeList="tenantItems"></IframeBatchLoader>
+						<IframeBatchLoader :iframe-list="tenantItems"></IframeBatchLoader>
 					</div>
 				</div>
 				<!--end::Row-->

@@ -1,7 +1,7 @@
 <template>
-    <iframe :id="`_${props.itemId}`" :src="`${host}/article/${props.itemId}/embed`" ref="iframeElement"
-        class="lazy-iframe" style="width: 100%;" frameborder="0" loading="lazy"></iframe>
-
+    <iframe :id="`_${props.itemId}`" ref="iframeElement" class="lazy-iframe" style="width: 100%;" frameborder="0"
+        loading="lazy">
+    </iframe>
 </template>
 
 <script setup>
@@ -15,9 +15,10 @@ const props = defineProps({
 const iframeElement = ref(null);
 let observer;
 
+// Function to set the iframe src when it is in the viewport
 const loadIframe = () => {
     if (iframeElement.value) {
-        iframeElement.value.src = props.src;
+        iframeElement.value.src = `${host}/article/${props.itemId}/embed`;
     }
 };
 
