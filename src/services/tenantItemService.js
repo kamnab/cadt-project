@@ -30,7 +30,7 @@ const getTenantItemIdsByTerm = async (tenantIds, term) => {
                     Authorization: `Bearer ${user.access_token}`,
                 },
                 params: {
-                    tenantIds, // Passing tenantIds as query parameter
+                    postIds: tenantIds, // Passing tenantIds as query parameter
                     term,         // Passing term as query parameter
                 },
             });

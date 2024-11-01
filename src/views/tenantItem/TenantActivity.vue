@@ -129,6 +129,24 @@ const performSearch = async () => {
 	console.log('items for:', items);
 	console.log('Searching for:', searchQuery.value);
 	// You can implement the actual search logic here
+
+	// Map to get only the desired fields (e.g., 'name' and 'id')
+	tenantItems.value = items.map(item => ({
+		id: item._id,
+		itemId: item.itemId, // replace with the actual field name
+		isPin: item.isPin,
+		sortPin: item.sortPin
+	}))
+		/*
+			a.isPin === b.isPin ? 0: 
+			_ If both isPin values are the same, they stay in the same order.
+			
+			a.isPin ? -1 : 1: 
+			_ If a.isPin is true, it comes before b.isPin. 
+				If a.isPin is false, it comes after b.isPin.
+		*/
+		// Sort with true first (even though it's called ascending)
+		.sort((a, b) => a.isPin === b.isPin ? 0 : a.isPin ? -1 : 1);
 };
 
 </script>
