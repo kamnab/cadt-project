@@ -47,7 +47,7 @@ const props = defineProps({
     }
 });
 
-const chunkSize = ref(2); // Number of iframes to load at once
+const chunkSize = ref(10); // Number of iframes to load at once
 const visibleIframes = ref([]);
 const loading = ref([]);
 const error = ref([]);
