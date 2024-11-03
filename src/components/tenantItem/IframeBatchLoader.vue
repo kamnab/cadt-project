@@ -1,95 +1,185 @@
 <template>
     <div>
-        <div class="position-relative" v-for="(item, index) in visibleIframes" :key="index">
-            <!-- Render visible iframes lazily -->
-            <LazyIframe :itemId="item.itemId" :isPin="item.isPin" />
+        <div v-if="initialLoading" class="loading-overlay">
+            Loading...
+        </div>
 
-            <!-- Loading spinner (optional) -->
-            <div v-if="loading" class="loading-spinner">Loading...</div>
+        <div v-else-if="props.iframeList.length === 0" class="no-content" role="alert">
+            No content available.
+        </div>
+
+        <div v-else>
+            <div v-for="(item, index) in visibleIframes" :key="index" class="iframe-container" :data-index="index">
+                <LazyIframe v-if="!error[index] && !loading[index]" :itemId="item.itemId" :isPin="item.isPin"
+                    aria-label="Loaded iframe" tabindex="0" @iframe-loaded="handleIframeLoad(index)"
+                    @iframe-error="handleIframeError(index)" />
+
+                <div v-else-if="error[index]" class="error-message" role="alert">
+                    <div>Error loading iframe.</div>
+                    <div>Attempts left: {{ maxRetries - loadAttempts[index] }}</div>
+                    <button v-if="loadAttempts[index] < maxRetries" @click="retryLoadingIframe(index)"
+                        aria-label="Retry loading the iframe">
+                        Retry
+                    </button>
+                    <span v-else>Max retries reached</span>
+                </div>
+
+                <div v-if="loading[index]" class="loading-spinner" role="status" aria-live="polite">
+                    Loading iframe at index {{ index }}...
+                </div>
+            </div>
+
+            <div v-if="allLoaded && !initialLoading" class="loading-complete" role="alert">
+                All loaded!
+            </div>
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import LazyIframe from './LazyIframe.vue';
 
-// Define props to accept iframeList from the parent component
 const props = defineProps({
-    iframeList: Array  // Array of iframes to be passed as a prop
+    iframeList: {
+        type: Array,
+        required: true
+    }
 });
 
-const chunkSize = 1;  // Number of iframes to load per batch
-const visibleIframes = ref([]);  // Store the currently visible iframes
-const loading = ref(false);  // Control loading spinner visibility
-let loadedChunks = 0;  // Track how many chunks have been loaded
-let allLoaded = ref(false);  // Track if all iframes have been loaded
+const chunkSize = ref(2); // Number of iframes to load at once
+const visibleIframes = ref([]);
+const loading = ref([]);
+const error = ref([]);
+const loadAttempts = ref([]);
+const allLoaded = ref(false);
+const initialLoading = ref(true);
+const maxRetries = 3;
+const iframeTimeoutDuration = 5000;
+
+let loadedChunks = 0;
+
+// Load a chunk of iframes
+const loadIframeChunk = (startIndex) => {
+    const endIndex = Math.min(props.iframeList.length, startIndex + chunkSize.value);
+
+    for (let i = startIndex; i < endIndex; i++) {
+        // Check if this iframe has already been loaded or has an error
+        if (loading.value[i] === undefined && error.value[i] === undefined) {
+            loading.value[i] = true; // Mark as loading
+            loadAttempts.value[i] = 0; // Reset attempts
+            visibleIframes.value.push(props.iframeList[i]); // Prepare to display
+            loadIframeWithTimeout(i); // Start loading
+        }
+    }
+};
+
+// Handle successful iframe load
+const handleIframeLoad = (index) => {
+    loading.value[index] = false; // Mark as loaded
+    error.value[index] = false; // No error
+    console.log(`Iframe at index ${index} loaded successfully`); // Debug log
+    loadNextChunk(); // Load the next chunk if available
+};
+
+// Handle iframe error
+const handleIframeError = (index) => {
+    loading.value[index] = false; // Mark as not loading
+    error.value[index] = true; // Mark as error
+    console.log(`Error loading iframe at index ${index}`); // Debug log
+
+    if (loadAttempts.value[index] < maxRetries) {
+        loadAttempts.value[index]++;
+        const waitTime = Math.pow(2, loadAttempts.value[index]) * 100; // Exponential backoff
+        setTimeout(() => {
+            loadIframeWithTimeout(index); // Retry loading
+        }, waitTime);
+    } else {
+        // If max retries reached, no further attempts
+        console.log(`Max retries reached for iframe at index ${index}`);
+    }
+};
+
+// Load iframes with timeout
+const loadIframeWithTimeout = (index) => {
+    const timeoutId = setTimeout(() => {
+        handleIframeError(index); // Call error handler on timeout
+    }, iframeTimeoutDuration);
+
+    // Simulate loading time (you may replace this with actual loading logic)
+    setTimeout(() => {
+        clearTimeout(timeoutId);
+        handleIframeLoad(index); // Simulate successful load
+    }, 100);
+};
 
 const loadNextChunk = () => {
-    if (loading.value || allLoaded.value) return;  // Prevent loading if already loading or all items are loaded
-
-    const nextChunkStart = loadedChunks * chunkSize;
-    const nextChunkEnd = nextChunkStart + chunkSize;
-
-    if (nextChunkStart >= props.iframeList.length) {
-        allLoaded.value = true;  // No more iframes to load
+    if (loadedChunks * chunkSize.value >= props.iframeList.length) {
+        allLoaded.value = true; // All iframes have been loaded
+        initialLoading.value = false; // Stop initial loading message
+        console.log('All iframes have been loaded.'); // Debug log
         return;
     }
 
-    loading.value = true;  // Show loading spinner
-
-    // Load the next chunk of iframes
-    setTimeout(() => {
-        visibleIframes.value.push(...props.iframeList.slice(nextChunkStart, nextChunkEnd));
-        loadedChunks += 1;
-        loading.value = false;  // Hide loading spinner after loading
-
-        // Check if all iframes are loaded
-        if (visibleIframes.value.length >= props.iframeList.length) {
-            allLoaded.value = true;
-        }
-    }, 500);  // Simulate async load with a timeout
+    const nextChunkStart = loadedChunks * chunkSize.value;
+    loadIframeChunk(nextChunkStart); // Load the next chunk
+    loadedChunks++; // Increment the loaded chunk counter
 };
-
-const handleScroll = () => {
-    // Check if user has scrolled near the bottom of the page
-    const scrollTop = window.scrollY;
-    const viewportHeight = window.innerHeight;
-    const documentHeight = document.documentElement.scrollHeight;
-
-    // If user is near the bottom of the page, load the next batch of iframes
-    if (scrollTop + viewportHeight >= documentHeight - 100) {
-        loadNextChunk();
-    }
-};
-
-// Watch for changes in the iframeList prop (in case the parent updates it)
-watch(() => props.iframeList, () => {
-    loadedChunks = 0;  // Reset loadedChunks if the list changes
-    visibleIframes.value = [];  // Clear visibleIframes
-    allLoaded.value = false;  // Reset allLoaded flag
-    loadNextChunk();  // Load first chunk of new iframes
-}, { immediate: true });
 
 onMounted(() => {
-    // Initially load the first batch of iframes
-    loadNextChunk();
+    chunkSize.value = Math.ceil(window.innerHeight / 300); // Adjust chunk size based on viewport
 
-    // Add scroll event listener to detect when to load more iframes
-    window.addEventListener('scroll', handleScroll);
+    if (props.iframeList.length > 0) {
+        loadNextChunk(); // Start loading the first chunk
+    }
 });
 
-onBeforeUnmount(() => {
-    // Remove scroll event listener when component is destroyed
-    window.removeEventListener('scroll', handleScroll);
-});
+watch(() => props.iframeList, (newList) => {
+    // Reset state when iframeList changes
+    visibleIframes.value = [];
+    loading.value = [];
+    error.value = [];
+    loadAttempts.value = [];
+    allLoaded.value = false;
+    initialLoading.value = true;
+    loadedChunks = 0; // Reset chunk counter
+
+    if (newList.length > 0) {
+        loadNextChunk(); // Start loading new iframes
+    }
+}, { immediate: true });
 </script>
 
 <style scoped>
-/* Optional loading spinner styles */
-.loading-spinner {
+.no-content {
     text-align: center;
+    font-size: 1.2rem;
     margin: 20px 0;
-    font-size: 16px;
+}
+
+.loading-overlay {
+    text-align: center;
+    font-size: 1.2rem;
+    margin: 20px 0;
+}
+
+.loading-complete {
+    text-align: center;
+    font-size: 1.2rem;
+    margin: 20px 0;
+}
+
+.loading-spinner {
+    font-size: 1rem;
+    color: #888;
+}
+
+.error-message {
+    color: red;
+    margin-top: 10px;
+}
+
+.iframe-container {
+    margin-bottom: 20px;
 }
 </style>

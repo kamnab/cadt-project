@@ -12,6 +12,7 @@
     "@popperjs/core": "^2.11.8",
     "@vueup/vue-quill": "^1.2.0",
     "axios": "^1.7.2",
+    "lodash": "^4.17.21",
     "oidc-client-ts": "^3.0.1",
     "pinia": "^2.1.7",
     "vue": "^3.4.29",
