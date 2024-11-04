@@ -135,7 +135,7 @@ watch(() => props.iframeList, (newIframeList) => {
 .error-message {
     position: absolute;
     top: 20px;
-    left: 47.15%;
+    left: 47%;
     transform: translate(-50%, -50%);
     font-weight: bold;
     color: #333;
@@ -204,7 +204,7 @@ iframe.loading {
 <style scoped>
 .global-loading-spinner {
     position: fixed;
-    top: 20px;
+    top: 30px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 1000;
