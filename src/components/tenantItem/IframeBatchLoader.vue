@@ -3,7 +3,6 @@
         <!-- Global loading message with rotating circle -->
         <div v-if="globalLoading" class="global-loading-spinner text-muted">
             <div class="spinner-circle"></div>
-            <!-- Loading -->
         </div>
 
         <!-- Iframes -->
@@ -11,25 +10,18 @@
             <div class="iframe-container">
                 <!-- Iframe element with loading/error handlers -->
                 <iframe :id="`_${iframe.itemId}`" :src="`${host}/article/${iframe.itemId}/embed`"
-                    style="width: 100%;height: 50vh;" v-show="iframe.status !== 'error'"
+                    style="width: 100%;min-height: 30vh; overflow-y: hidden;" v-show="iframe.status !== 'error'"
                     :class="{ 'loading': iframe.status === 'loading', 'error': iframe.status === 'error' }"
                     @load="onIframeLoad(index)" @error="onIframeError(index)" loading="lazy" ref="iframe">
                 </iframe>
 
                 <!-- Loading indicator for individual iframe -->
-                <div v-if="iframe.status === 'loading'" class="loading-spinner">
-                    <!-- Loading... -->
-                </div>
-
-                <!-- Loaded status message -->
-                <!-- <div v-if="iframe.status === 'loaded'" class="status-message">
-                    Loaded successfully.
-                </div> -->
+                <div v-if="iframe.status === 'loading'" class="loading-spinner"></div>
 
                 <!-- Error indicator and retry button -->
                 <div v-if="iframe.status === 'error'" class="error-message">
-                    Failed to load content.
-                    <button :disabled="iframe.status === 'loading'" @click="retryIframe(index)">Retry</button>
+                    Slow to load content.
+                    <button :disabled="iframe.status === 'loading'" @click="retryIframe(index)">Reload</button>
                 </div>
             </div>
         </div>
@@ -48,11 +40,12 @@ const props = defineProps({
     },
 });
 
-// Clone the iframeList prop to track each iframe's load status
+// Clone the iframeList prop to track each iframe's load status and retry count
 const iframes = ref(
     props.iframeList.map((iframe) => ({
         ...iframe,
         status: 'loading', // Initially mark all as 'loading'
+        retryCount: 0, // Track retry attempts
     }))
 );
 
@@ -70,6 +63,7 @@ function loadNextBatch() {
     const nextBatch = iframes.value.slice(currentIndex, currentIndex + batchSize);
     nextBatch.forEach((iframe, index) => {
         iframes.value[currentIndex + index].status = 'loading'; // Set status to loading
+        setIframeTimeout(currentIndex + index); // Set timeout for each iframe
     });
     currentIndex += batchSize;
 
@@ -79,45 +73,42 @@ function loadNextBatch() {
     }
 }
 
+// Timeout function for retrying if iframe doesn't load within 10 seconds
+function setIframeTimeout(index, timeoutDuration = 30000) {
+    iframes.value[index].timeoutId = setTimeout(() => {
+        if (iframes.value[index].status === 'loading') {
+            if (iframes.value[index].retryCount < 1) {
+                console.log(`Iframe ${index} still loading. Retrying... Attempt: ${iframes.value[index].retryCount + 1}`);
+                retryIframe(index); // Retry loading the iframe
+            } else {
+                console.log(`Iframe ${index} failed after ${iframes.value[index].retryCount} retries. Moving to error state.`);
+                iframes.value[index].status = 'error'; // Move to error after # retries
+            }
+        }
+    }, timeoutDuration);
+}
+
 // Iframe load event handler
 function onIframeLoad(index) {
-    // iframes.value[index].style.height = '50vh';
-
-    // const iframe = document.querySelectorAll('iframe')[index];
-
-    // Check if it's cross-origin and handle accordingly
-    try {
-        // const iframeDocument = iframe.contentDocument;
-        // if (iframeDocument.readyState === 'complete') {
-        //     iframes.value[index].status = 'loaded'; // Mark as fully loaded
-        //     console.log(`Iframe ${index} fully loaded with content.`);
-        // }
-    } catch (error) {
-        // Cross-origin iframe handling
-        //console.log('Cross-origin iframe loaded, cannot access content.');
-        //iframes.value[index].status = 'loaded'; // Assume it's fully loaded for cross-origin iframes
-    }
+    clearTimeout(iframes.value[index].timeoutId); // Clear the timeout when iframe loads successfully
+    iframes.value[index].status = 'loaded'; // Mark as fully loaded
+    console.log(`Iframe ${index} fully loaded with content.`);
 }
 
 // Iframe error event handler
 function onIframeError(index) {
+    clearTimeout(iframes.value[index].timeoutId); // Clear the timeout
     console.log(`Error loading iframe ${index}`);
     iframes.value[index].status = 'error'; // Mark as error
 }
 
-// Throttled retry mechanism with delay
-let retryTimeout = null;
-
+// Retry function to reload the iframe
 function retryIframe(index) {
-    if (retryTimeout) {
-        clearTimeout(retryTimeout);
-    }
-
-    retryTimeout = setTimeout(() => {
-        iframes.value[index].status = 'loading'; // Set iframe to loading
-        const iframe = document.querySelectorAll('iframe')[index];
-        iframe.src = `${host}/article/${iframes.value[index].itemId}/embed`; // Reload iframe
-    }, 1000); // Add a 1-second delay to avoid multiple retries in quick succession
+    iframes.value[index].retryCount += 1; // Increment retry count
+    iframes.value[index].status = 'loading'; // Set iframe to loading
+    const iframe = document.querySelectorAll('iframe')[index];
+    iframe.src = `${host}/article/${iframes.value[index].itemId}/embed`; // Reload iframe
+    setIframeTimeout(index); // Set a new timeout for the retry
 }
 
 // Start loading the first batch on mount
@@ -132,6 +123,7 @@ watch(
         iframes.value = newIframeList.map((iframe) => ({
             ...iframe,
             status: 'loading',
+            retryCount: 0, // Reset retry count when new iframes are loaded
         }));
         currentIndex = 0;
         loadNextBatch();
@@ -158,13 +150,19 @@ window.addEventListener('message', (event) => {
     border: 1px solid #e7e7e7;
     border-radius: 10px;
     margin-bottom: 20px;
+    min-height: 30vh;
+    /* Ensure enough height for centering */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Vertically and horizontally center content */
 }
 
 .loading-spinner,
 .status-message,
 .error-message {
     position: absolute;
-    top: 50%;
+    /* top: 50%; */
     left: 50%;
     transform: translate(-50%, -50%);
     font-weight: bold;
@@ -244,6 +242,6 @@ iframe.loading {
 }
 
 iframe.error {
-    /* display: none; */
+    display: none;
 }
 </style>
