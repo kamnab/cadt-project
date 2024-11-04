@@ -3,28 +3,28 @@
         <!-- Global loading message with rotating circle -->
         <div v-if="globalLoading" class="global-loading-spinner text-muted">
             <div class="spinner-circle"></div>
-            Loading
+            <!-- Loading -->
         </div>
 
         <!-- Iframes -->
-        <div v-for="(iframe, index) in iframeList" :key="index" class="iframe-wrapper">
+        <div v-for="(iframe, index) in iframes" :key="index" class="iframe-wrapper">
             <div class="iframe-container">
                 <!-- Iframe element with loading/error handlers -->
-                <iframe :id="`_${iframe.itemId}`" :src="`${host}/article/${iframe.itemId}/embed`" style="width: 100%;"
-                    v-show="iframe.status !== 'error'"
+                <iframe :id="`_${iframe.itemId}`" :src="`${host}/article/${iframe.itemId}/embed`"
+                    style="width: 100%;height: 50vh;" v-show="iframe.status !== 'error'"
                     :class="{ 'loading': iframe.status === 'loading', 'error': iframe.status === 'error' }"
                     @load="onIframeLoad(index)" @error="onIframeError(index)" loading="lazy" ref="iframe">
                 </iframe>
 
                 <!-- Loading indicator for individual iframe -->
                 <div v-if="iframe.status === 'loading'" class="loading-spinner">
-                    Loading...
+                    <!-- Loading... -->
                 </div>
 
                 <!-- Loaded status message -->
-                <div v-if="iframe.status === 'loaded'" class="status-message">
+                <!-- <div v-if="iframe.status === 'loaded'" class="status-message">
                     Loaded successfully.
-                </div>
+                </div> -->
 
                 <!-- Error indicator and retry button -->
                 <div v-if="iframe.status === 'error'" class="error-message">
@@ -81,15 +81,17 @@ function loadNextBatch() {
 
 // Iframe load event handler
 function onIframeLoad(index) {
-    const iframe = document.querySelectorAll('iframe')[index];
+    // iframes.value[index].style.height = '50vh';
+
+    // const iframe = document.querySelectorAll('iframe')[index];
 
     // Check if it's cross-origin and handle accordingly
     try {
-        const iframeDocument = iframe.contentDocument;
-        if (iframeDocument.readyState === 'complete') {
-            iframes.value[index].status = 'loaded'; // Mark as fully loaded
-            console.log(`Iframe ${index} fully loaded with content.`);
-        }
+        // const iframeDocument = iframe.contentDocument;
+        // if (iframeDocument.readyState === 'complete') {
+        //     iframes.value[index].status = 'loaded'; // Mark as fully loaded
+        //     console.log(`Iframe ${index} fully loaded with content.`);
+        // }
     } catch (error) {
         // Cross-origin iframe handling
         //console.log('Cross-origin iframe loaded, cannot access content.');
@@ -167,6 +169,7 @@ window.addEventListener('message', (event) => {
     transform: translate(-50%, -50%);
     font-weight: bold;
     color: #333;
+    opacity: 0.3;
 }
 
 .loading-spinner {
@@ -241,6 +244,6 @@ iframe.loading {
 }
 
 iframe.error {
-    display: none;
+    /* display: none; */
 }
 </style>
