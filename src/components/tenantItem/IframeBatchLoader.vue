@@ -1,185 +1,245 @@
 <template>
     <div>
-        <div v-if="initialLoading" class="loading-overlay">
-            Loading...
+        <!-- Global loading message with rotating circle -->
+        <div v-if="globalLoading" class="global-loading-spinner text-muted">
+            <div class="spinner-circle"></div>
+            Loading
         </div>
 
-        <div v-else-if="props.iframeList.length === 0" class="no-content" role="alert">
-            No content available.
-        </div>
+        <!-- Iframes -->
+        <div v-for="(iframe, index) in iframeList" :key="index" class="iframe-wrapper">
+            <div class="iframe-container">
+                <!-- Iframe element with loading/error handlers -->
+                <iframe :id="`_${iframe.itemId}`" :src="`${host}/article/${iframe.itemId}/embed`" style="width: 100%;"
+                    v-show="iframe.status !== 'error'"
+                    :class="{ 'loading': iframe.status === 'loading', 'error': iframe.status === 'error' }"
+                    @load="onIframeLoad(index)" @error="onIframeError(index)" loading="lazy" ref="iframe">
+                </iframe>
 
-        <div v-else>
-            <div v-for="(item, index) in visibleIframes" :key="index" class="iframe-container" :data-index="index">
-                <LazyIframe v-if="!error[index] && !loading[index]" :itemId="item.itemId" :isPin="item.isPin"
-                    aria-label="Loaded iframe" tabindex="0" @iframe-loaded="handleIframeLoad(index)"
-                    @iframe-error="handleIframeError(index)" />
-
-                <div v-else-if="error[index]" class="error-message" role="alert">
-                    <div>Error loading iframe.</div>
-                    <div>Attempts left: {{ maxRetries - loadAttempts[index] }}</div>
-                    <button v-if="loadAttempts[index] < maxRetries" @click="retryLoadingIframe(index)"
-                        aria-label="Retry loading the iframe">
-                        Retry
-                    </button>
-                    <span v-else>Max retries reached</span>
+                <!-- Loading indicator for individual iframe -->
+                <div v-if="iframe.status === 'loading'" class="loading-spinner">
+                    Loading...
                 </div>
 
-                <div v-if="loading[index]" class="loading-spinner" role="status" aria-live="polite">
-                    Loading iframe at index {{ index }}...
+                <!-- Loaded status message -->
+                <div v-if="iframe.status === 'loaded'" class="status-message">
+                    Loaded successfully.
                 </div>
-            </div>
 
-            <div v-if="allLoaded && !initialLoading" class="loading-complete" role="alert">
-                All loaded!
+                <!-- Error indicator and retry button -->
+                <div v-if="iframe.status === 'error'" class="error-message">
+                    Failed to load content.
+                    <button :disabled="iframe.status === 'loading'" @click="retryIframe(index)">Retry</button>
+                </div>
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
-import LazyIframe from './LazyIframe.vue';
+import { ref, onMounted, watch, computed } from 'vue';
+
+const host = import.meta.env.VITE_API_TENANT_CONENT_ENDPOINT;
 
 const props = defineProps({
     iframeList: {
         type: Array,
-        required: true
-    }
+        required: true,
+    },
 });
 
-const chunkSize = ref(10); // Number of iframes to load at once
-const visibleIframes = ref([]);
-const loading = ref([]);
-const error = ref([]);
-const loadAttempts = ref([]);
-const allLoaded = ref(false);
-const initialLoading = ref(true);
-const maxRetries = 3;
-const iframeTimeoutDuration = 5000;
+// Clone the iframeList prop to track each iframe's load status
+const iframes = ref(
+    props.iframeList.map((iframe) => ({
+        ...iframe,
+        status: 'loading', // Initially mark all as 'loading'
+    }))
+);
 
-let loadedChunks = 0;
+// Global loading state: true if any iframe is still loading
+const globalLoading = computed(() => {
+    return iframes.value.some(iframe => iframe.status === 'loading');
+});
 
-// Load a chunk of iframes
-const loadIframeChunk = (startIndex) => {
-    const endIndex = Math.min(props.iframeList.length, startIndex + chunkSize.value);
+// Settings
+const batchSize = 2; // Number of iframes to load per batch
+let currentIndex = 0; // Keep track of the current batch index
 
-    for (let i = startIndex; i < endIndex; i++) {
-        // Check if this iframe has already been loaded or has an error
-        if (loading.value[i] === undefined && error.value[i] === undefined) {
-            loading.value[i] = true; // Mark as loading
-            loadAttempts.value[i] = 0; // Reset attempts
-            visibleIframes.value.push(props.iframeList[i]); // Prepare to display
-            loadIframeWithTimeout(i); // Start loading
+// Load the next batch of iframes
+function loadNextBatch() {
+    const nextBatch = iframes.value.slice(currentIndex, currentIndex + batchSize);
+    nextBatch.forEach((iframe, index) => {
+        iframes.value[currentIndex + index].status = 'loading'; // Set status to loading
+    });
+    currentIndex += batchSize;
+
+    // If there are more iframes to load, continue after a delay
+    if (currentIndex < iframes.value.length) {
+        setTimeout(loadNextBatch, 1000); // Adjust the delay if needed
+    }
+}
+
+// Iframe load event handler
+function onIframeLoad(index) {
+    const iframe = document.querySelectorAll('iframe')[index];
+
+    // Check if it's cross-origin and handle accordingly
+    try {
+        const iframeDocument = iframe.contentDocument;
+        if (iframeDocument.readyState === 'complete') {
+            iframes.value[index].status = 'loaded'; // Mark as fully loaded
+            console.log(`Iframe ${index} fully loaded with content.`);
+        }
+    } catch (error) {
+        // Cross-origin iframe handling
+        console.log('Cross-origin iframe loaded, cannot access content.');
+        iframes.value[index].status = 'loaded'; // Assume it's fully loaded for cross-origin iframes
+    }
+}
+
+// Iframe error event handler
+function onIframeError(index) {
+    console.log(`Error loading iframe ${index}`);
+    iframes.value[index].status = 'error'; // Mark as error
+}
+
+// Throttled retry mechanism with delay
+let retryTimeout = null;
+
+function retryIframe(index) {
+    if (retryTimeout) {
+        clearTimeout(retryTimeout);
+    }
+
+    retryTimeout = setTimeout(() => {
+        iframes.value[index].status = 'loading'; // Set iframe to loading
+        const iframe = document.querySelectorAll('iframe')[index];
+        iframe.src = `${host}/article/${iframes.value[index].itemId}/embed`; // Reload iframe
+    }, 1000); // Add a 1-second delay to avoid multiple retries in quick succession
+}
+
+// Start loading the first batch on mount
+onMounted(() => {
+    loadNextBatch();
+});
+
+// Watch for changes in the iframeList prop
+watch(
+    () => props.iframeList,
+    (newIframeList) => {
+        iframes.value = newIframeList.map((iframe) => ({
+            ...iframe,
+            status: 'loading',
+        }));
+        currentIndex = 0;
+        loadNextBatch();
+    },
+    { deep: true }
+);
+
+// Listen for postMessages from the iframe (if it's same-origin)
+window.addEventListener('message', (event) => {
+    if (event.data.status === 'loaded') {
+        const iframeIndex = iframes.value.findIndex((iframe) => iframe.itemId === `${event.data.id}`);
+        if (iframeIndex !== -1) {
+            iframes.value[iframeIndex].status = 'loaded';
         }
     }
-};
-
-// Handle successful iframe load
-const handleIframeLoad = (index) => {
-    loading.value[index] = false; // Mark as loaded
-    error.value[index] = false; // No error
-    console.log(`Iframe at index ${index} loaded successfully`); // Debug log
-    loadNextChunk(); // Load the next chunk if available
-};
-
-// Handle iframe error
-const handleIframeError = (index) => {
-    loading.value[index] = false; // Mark as not loading
-    error.value[index] = true; // Mark as error
-    console.log(`Error loading iframe at index ${index}`); // Debug log
-
-    if (loadAttempts.value[index] < maxRetries) {
-        loadAttempts.value[index]++;
-        const waitTime = Math.pow(2, loadAttempts.value[index]) * 100; // Exponential backoff
-        setTimeout(() => {
-            loadIframeWithTimeout(index); // Retry loading
-        }, waitTime);
-    } else {
-        // If max retries reached, no further attempts
-        console.log(`Max retries reached for iframe at index ${index}`);
-    }
-};
-
-// Load iframes with timeout
-const loadIframeWithTimeout = (index) => {
-    const timeoutId = setTimeout(() => {
-        handleIframeError(index); // Call error handler on timeout
-    }, iframeTimeoutDuration);
-
-    // Simulate loading time (you may replace this with actual loading logic)
-    setTimeout(() => {
-        clearTimeout(timeoutId);
-        handleIframeLoad(index); // Simulate successful load
-    }, 100);
-};
-
-const loadNextChunk = () => {
-    if (loadedChunks * chunkSize.value >= props.iframeList.length) {
-        allLoaded.value = true; // All iframes have been loaded
-        initialLoading.value = false; // Stop initial loading message
-        console.log('All iframes have been loaded.'); // Debug log
-        return;
-    }
-
-    const nextChunkStart = loadedChunks * chunkSize.value;
-    loadIframeChunk(nextChunkStart); // Load the next chunk
-    loadedChunks++; // Increment the loaded chunk counter
-};
-
-onMounted(() => {
-    chunkSize.value = Math.ceil(window.innerHeight / 300); // Adjust chunk size based on viewport
-
-    if (props.iframeList.length > 0) {
-        loadNextChunk(); // Start loading the first chunk
-    }
 });
-
-watch(() => props.iframeList, (newList) => {
-    // Reset state when iframeList changes
-    visibleIframes.value = [];
-    loading.value = [];
-    error.value = [];
-    loadAttempts.value = [];
-    allLoaded.value = false;
-    initialLoading.value = true;
-    loadedChunks = 0; // Reset chunk counter
-
-    if (newList.length > 0) {
-        loadNextChunk(); // Start loading new iframes
-    }
-}, { immediate: true });
 </script>
 
 <style scoped>
-.no-content {
-    text-align: center;
-    font-size: 1.2rem;
-    margin: 20px 0;
+.iframe-container {
+    position: relative;
+    width: 100%;
+    border: 1px solid #e7e7e7;
+    border-radius: 10px;
+    margin-bottom: 20px;
 }
 
-.loading-overlay {
-    text-align: center;
-    font-size: 1.2rem;
-    margin: 20px 0;
-}
-
-.loading-complete {
-    text-align: center;
-    font-size: 1.2rem;
-    margin: 20px 0;
+.loading-spinner,
+.status-message,
+.error-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+    color: #333;
 }
 
 .loading-spinner {
-    font-size: 1rem;
-    color: #888;
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #3498db;
+    border-radius: 50%;
+    animation: spin 2s linear infinite;
+}
+
+.global-loading-spinner {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.2em;
+    color: #3498db;
+}
+
+.spinner-circle {
+    width: 20px;
+    height: 20px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    opacity: .5;
+}
+
+.status-message {
+    color: green;
 }
 
 .error-message {
     color: red;
-    margin-top: 10px;
 }
 
-.iframe-container {
-    margin-bottom: 20px;
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+button {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #d32f2f;
+}
+
+button:disabled {
+    background-color: grey;
+    cursor: not-allowed;
+}
+
+iframe.loading {
+    opacity: 0.5;
+}
+
+iframe.error {
+    display: none;
 }
 </style>
