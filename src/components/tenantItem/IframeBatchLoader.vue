@@ -1,26 +1,21 @@
 <template>
     <div>
-        <!-- Global loading message with rotating circle -->
-        <div v-if="globalLoading" class="global-loading-spinner text-muted">
-            <div class="spinner-circle"></div>
+        <!-- Global loading spinner (shown if any iframe is still loading) -->
+        <div v-if="globalLoading" class="global-loading-spinner">
+            <!-- <span>Loading</span> -->
+            <span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
         </div>
 
         <!-- Iframes -->
         <div v-for="(iframe, index) in iframes" :key="index" class="iframe-wrapper">
             <div class="iframe-container">
-                <!-- Iframe element with loading/error handlers -->
-                <iframe :id="`_${iframe.itemId}`" :src="`${host}/article/${iframe.itemId}/embed`"
-                    style="width: 100%;min-height: 30vh; overflow-y: hidden;" v-show="iframe.status !== 'error'"
-                    :class="{ 'loading': iframe.status === 'loading', 'error': iframe.status === 'error' }"
-                    @load="onIframeLoad(index)" @error="onIframeError(index)" loading="lazy" ref="iframe">
+                <iframe :id="`_${iframe.itemId}`" :src="iframe.src" style="width: 100%; min-height: 30vh;"
+                    @error="onIframeError(index)" loading="lazy">
                 </iframe>
 
-                <!-- Loading indicator for individual iframe -->
                 <div v-if="iframe.status === 'loading'" class="loading-spinner"></div>
-
-                <!-- Error indicator and retry button -->
                 <div v-if="iframe.status === 'error'" class="error-message">
-                    Slow to load content.
+                    Loading content<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
                     <button :disabled="iframe.status === 'loading'" @click="retryIframe(index)">Reload</button>
                 </div>
             </div>
@@ -40,107 +35,89 @@ const props = defineProps({
     },
 });
 
-// Clone the iframeList prop to track each iframe's load status and retry count
-const iframes = ref(
-    props.iframeList.map((iframe) => ({
-        ...iframe,
-        status: 'loading', // Initially mark all as 'loading'
-        retryCount: 0, // Track retry attempts
-    }))
-);
+// Initialize iframes with default statuses
+const iframes = ref(props.iframeList.map(iframe => ({
+    ...iframe,
+    status: 'loading',
+    hasRetried: false,
+    timeoutId: null,
+})));
 
 // Global loading state: true if any iframe is still loading
-const globalLoading = computed(() => {
-    return iframes.value.some(iframe => iframe.status === 'loading');
-});
+const globalLoading = computed(() => iframes.value.some(iframe => iframe.status === 'loading'));
 
-// Settings
-const batchSize = 2; // Number of iframes to load per batch
-let currentIndex = 0; // Keep track of the current batch index
+// Timeout duration (10 seconds)
+const TIMEOUT_DURATION = 30000;
 
-// Load the next batch of iframes
-function loadNextBatch() {
-    const nextBatch = iframes.value.slice(currentIndex, currentIndex + batchSize);
-    nextBatch.forEach((iframe, index) => {
-        iframes.value[currentIndex + index].status = 'loading'; // Set status to loading
-        setIframeTimeout(currentIndex + index); // Set timeout for each iframe
-    });
-    currentIndex += batchSize;
+// Start timeout for each iframe
+function startIframeTimeout(index) {
+    iframes.value[index].timeoutId = setTimeout(() => {
+        if (iframes.value[index].status === 'loading') {
+            console.log(`Iframe ${index} timed out.`);
+            iframes.value[index].status = 'error'; // Mark as error if still loading
+        }
+    }, TIMEOUT_DURATION);
+}
 
-    // If there are more iframes to load, continue after a delay
-    if (currentIndex < iframes.value.length) {
-        setTimeout(loadNextBatch, 1000); // Adjust the delay if needed
+// Clear timeout for successful loads
+function clearIframeTimeout(index) {
+    if (iframes.value[index].timeoutId) {
+        clearTimeout(iframes.value[index].timeoutId);
+        iframes.value[index].timeoutId = null; // Reset timeoutId after clearing
     }
 }
 
-// Timeout function for retrying if iframe doesn't load within 10 seconds
-function setIframeTimeout(index, timeoutDuration = 30000) {
-    iframes.value[index].timeoutId = setTimeout(() => {
-        if (iframes.value[index].status === 'loading') {
-            if (iframes.value[index].retryCount < 1) {
-                console.log(`Iframe ${index} still loading. Retrying... Attempt: ${iframes.value[index].retryCount + 1}`);
-                retryIframe(index); // Retry loading the iframe
-            } else {
-                console.log(`Iframe ${index} failed after ${iframes.value[index].retryCount} retries. Moving to error state.`);
-                iframes.value[index].status = 'error'; // Move to error after # retries
-            }
-        }
-    }, timeoutDuration);
-}
-
-// Iframe load event handler
-function onIframeLoad(index) {
-    clearTimeout(iframes.value[index].timeoutId); // Clear the timeout when iframe loads successfully
-    iframes.value[index].status = 'loaded'; // Mark as fully loaded
-    console.log(`Iframe ${index} fully loaded with content.`);
-}
-
-// Iframe error event handler
-function onIframeError(index) {
-    clearTimeout(iframes.value[index].timeoutId); // Clear the timeout
-    console.log(`Error loading iframe ${index}`);
-    iframes.value[index].status = 'error'; // Mark as error
-}
-
-// Retry function to reload the iframe
-function retryIframe(index) {
-    iframes.value[index].retryCount += 1; // Increment retry count
-    iframes.value[index].status = 'loading'; // Set iframe to loading
-    const iframe = document.querySelectorAll('iframe')[index];
-    iframe.src = `${host}/article/${iframes.value[index].itemId}/embed`; // Reload iframe
-    setIframeTimeout(index); // Set a new timeout for the retry
-}
-
-// Start loading the first batch on mount
-onMounted(() => {
-    loadNextBatch();
-});
-
-// Watch for changes in the iframeList prop
-watch(
-    () => props.iframeList,
-    (newIframeList) => {
-        iframes.value = newIframeList.map((iframe) => ({
-            ...iframe,
-            status: 'loading',
-            retryCount: 0, // Reset retry count when new iframes are loaded
-        }));
-        currentIndex = 0;
-        loadNextBatch();
-    },
-    { deep: true }
-);
-
-// Listen for postMessages from the iframe (if it's same-origin)
-window.addEventListener('message', (event) => {
+// Handle messages from iframes
+function handlePostMessage(event) {
     if (event.data.status === 'loaded') {
         const iframeIndex = iframes.value.findIndex((iframe) => iframe.itemId === `${event.data.id}`);
         if (iframeIndex !== -1) {
-            iframes.value[iframeIndex].status = 'loaded';
-            console.log(`[---] Cross-origin Iframe [${iframeIndex}] fully [${iframes.value[iframeIndex].status}] with content.`);
+            iframes.value[iframeIndex].status = 'loaded';  // Mark as loaded
+            clearIframeTimeout(iframeIndex);  // Clear the timeout on successful load
+            console.log(`[---] Cross-origin Iframe [${iframeIndex}] fully [${iframes.value[iframeIndex].status}].`);
         }
     }
+}
+
+// Handle iframe error
+function onIframeError(index) {
+    console.log(`Error loading iframe ${index}`);
+    iframes.value[index].status = 'error'; // Mark as error
+    clearIframeTimeout(index);  // Clear timeout on error
+}
+
+// Retry loading the iframe
+function retryIframe(index) {
+    if (!iframes.value[index].hasRetried) {
+        iframes.value[index].hasRetried = true; // Mark as retried
+        iframes.value[index].status = 'loading'; // Set to loading
+        startIframeTimeout(index); // Start new timeout
+        // Reload the iframe
+        iframes.value[index].src = `${host}/article/${iframes.value[index].itemId}/embed`;
+    }
+}
+
+// Initialize loading
+onMounted(() => {
+    iframes.value.forEach((iframe, index) => {
+        startIframeTimeout(index); // Start timeout for each iframe
+    });
+
+    // Listen for postMessages from the iframe
+    window.addEventListener('message', handlePostMessage);
 });
+
+// Watch for changes in iframeList prop
+watch(() => props.iframeList, (newIframeList) => {
+    iframes.value = newIframeList.map(iframe => ({
+        ...iframe,
+        status: 'loading',
+        hasRetried: false,
+        timeoutId: null,
+        src: `${host}/article/${iframe.itemId}/embed`, // Set the source URL
+    }));
+});
+
 </script>
 
 <style scoped>
@@ -151,19 +128,14 @@ window.addEventListener('message', (event) => {
     border-radius: 10px;
     margin-bottom: 20px;
     min-height: 30vh;
-    /* Ensure enough height for centering */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    /* Vertically and horizontally center content */
 }
 
 .loading-spinner,
 .status-message,
 .error-message {
     position: absolute;
-    /* top: 50%; */
-    left: 50%;
+    top: 20px;
+    left: 47.15%;
     transform: translate(-50%, -50%);
     font-weight: bold;
     color: #333;
@@ -177,19 +149,6 @@ window.addEventListener('message', (event) => {
     border-top: 5px solid #3498db;
     border-radius: 50%;
     animation: spin 2s linear infinite;
-}
-
-.global-loading-spinner {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 1.2em;
-    color: #3498db;
 }
 
 .spinner-circle {
@@ -240,8 +199,51 @@ button:disabled {
 iframe.loading {
     opacity: 0.5;
 }
+</style>
 
-iframe.error {
-    display: none;
+<style scoped>
+.global-loading-spinner {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.2em;
+    color: #3498db;
+}
+
+.dot {
+    animation: blink 1.2s infinite;
+    font-size: 1.2em;
+    /* color: #3498db; */
+}
+
+@keyframes blink {
+    0% {
+        opacity: 0.2;
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.2;
+    }
+}
+
+.dot:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+    animation-delay: 0.4s;
 }
 </style>
