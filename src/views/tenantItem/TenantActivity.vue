@@ -124,7 +124,7 @@ async function loadTenantItems() {
 		// Sort with true first (even though it's called ascending)
 		.sort((a, b) => a.isPin === b.isPin ? 0 : a.isPin ? -1 : 1);
 
-	console.log(tenantItems.value)
+	//console.log(tenantItems.value)
 }
 
 const searchQuery = ref('');

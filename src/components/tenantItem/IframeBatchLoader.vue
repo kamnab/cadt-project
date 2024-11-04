@@ -92,8 +92,8 @@ function onIframeLoad(index) {
         }
     } catch (error) {
         // Cross-origin iframe handling
-        console.log('Cross-origin iframe loaded, cannot access content.');
-        iframes.value[index].status = 'loaded'; // Assume it's fully loaded for cross-origin iframes
+        //console.log('Cross-origin iframe loaded, cannot access content.');
+        //iframes.value[index].status = 'loaded'; // Assume it's fully loaded for cross-origin iframes
     }
 }
 
@@ -143,6 +143,7 @@ window.addEventListener('message', (event) => {
         const iframeIndex = iframes.value.findIndex((iframe) => iframe.itemId === `${event.data.id}`);
         if (iframeIndex !== -1) {
             iframes.value[iframeIndex].status = 'loaded';
+            console.log(`[---] Cross-origin Iframe [${iframeIndex}] fully [${iframes.value[iframeIndex].status}] with content.`);
         }
     }
 });

@@ -25,7 +25,7 @@ function handleMouseLeave() {
 
 <template>
 
-  <div class="col-xl-4" @mouseover="isHovered = true" @mouseleave="handleMouseLeave">
+  <div class="col-xl-3 col-md-4" @mouseover="isHovered = true" @mouseleave="handleMouseLeave">
     <!--begin::Stats Widget 9-->
     <div class="card mb-0">
       <!--begin::Body-->
