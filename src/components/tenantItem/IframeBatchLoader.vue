@@ -120,7 +120,7 @@ watch(() => props.iframeList, (newIframeList) => {
 
 </script>
 
-<!-- <style scoped>
+<style scoped>
 .iframe-container {
     position: relative;
     width: 100%;
@@ -199,7 +199,7 @@ button:disabled {
 iframe.loading {
     opacity: 0.5;
 }
-</style> -->
+</style>
 
 <style scoped>
 .global-loading-spinner {
