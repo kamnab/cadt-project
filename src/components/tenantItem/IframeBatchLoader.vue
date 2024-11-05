@@ -47,7 +47,7 @@ const iframes = ref(props.iframeList.map(iframe => ({
 const globalLoading = computed(() => iframes.value.some(iframe => iframe.status === 'loading'));
 
 // Timeout duration (10 seconds)
-const TIMEOUT_DURATION = 30000;
+const TIMEOUT_DURATION = 5000;
 
 // Start timeout for each iframe
 function startIframeTimeout(index) {
@@ -92,8 +92,10 @@ function retryIframe(index) {
         iframes.value[index].hasRetried = true; // Mark as retried
         iframes.value[index].status = 'loading'; // Set to loading
         startIframeTimeout(index); // Start new timeout
-        // Reload the iframe
-        iframes.value[index].src = `${host}/article/${iframes.value[index].itemId}/embed`;
+
+        // Append a random query parameter to force iframe reload
+        const timestamp = new Date().getTime();
+        iframes.value[index].src = `${host}/article/${iframes.value[index].itemId}/embed?retry=${timestamp}`;
     }
 }
 
@@ -117,8 +119,8 @@ watch(() => props.iframeList, (newIframeList) => {
         src: `${host}/article/${iframe.itemId}/embed`, // Set the source URL
     }));
 });
-
 </script>
+
 
 <style scoped>
 .iframe-container {
