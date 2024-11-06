@@ -2,7 +2,6 @@
     <div>
         <!-- Global loading spinner (shown if any iframe is still loading) -->
         <div v-if="globalLoading" class="global-loading-spinner">
-            <!-- <span>Loading</span> -->
             <span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
         </div>
 
@@ -13,11 +12,17 @@
                     @error="onIframeError(index)" loading="lazy">
                 </iframe>
 
+                <!-- Show loading spinner while iframe is loading -->
                 <div v-if="iframe.status === 'loading'" class="loading-spinner"></div>
-                <div v-if="iframe.status === 'error'" class="error-message">
+
+                <!-- Show error message and retry button when loading fails after retries -->
+                <div v-if="iframe.status === 'error' && iframe.hasOfferedRetry" class="error-message">
+                    <!-- Add debug logs -->
+                    <p>Status: {{ iframe.status }} | Retry Offered: {{ iframe.hasOfferedRetry }}</p>
                     Loading content<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
                     <button :disabled="iframe.status === 'loading'" @click="retryIframe(index)">Reload</button>
                 </div>
+
             </div>
         </div>
     </div>
@@ -25,7 +30,7 @@
 
 <script setup>
 import { ref, onMounted, watch, computed } from 'vue';
-
+import { debounce } from 'lodash';
 const host = import.meta.env.VITE_API_TENANT_CONENT_ENDPOINT;
 
 const props = defineProps({
@@ -35,29 +40,41 @@ const props = defineProps({
     },
 });
 
-// Initialize iframes with default statuses
 const iframes = ref(props.iframeList.map(iframe => ({
     ...iframe,
     status: 'loading',
-    hasRetried: false,
+    retryCount: 0, // Track retries
+    hasOfferedRetry: false, // Control if retry button is shown
     timeoutId: null,
 })));
+
+// Maximum retries allowed
+const MAX_RETRIES = 1;
+
+// Timeout duration (1 seconds)
+const TIMEOUT_DURATION = 10000;
 
 // Global loading state: true if any iframe is still loading
 const globalLoading = computed(() => iframes.value.some(iframe => iframe.status === 'loading'));
 
-// Timeout duration (10 seconds)
-const TIMEOUT_DURATION = 5000;
-
 // Start timeout for each iframe
 function startIframeTimeout(index) {
+    console.log(`[startIframeTimeout]-1 Iframe ${index}, status: ${iframes.value[index].status}, retry: ${iframes.value[index].retryCount}`);
     iframes.value[index].timeoutId = setTimeout(() => {
         if (iframes.value[index].status === 'loading') {
-            console.log(`Iframe ${index} timed out.`);
-            iframes.value[index].status = 'error'; // Mark as error if still loading
+            console.log(`[startIframeTimeout]-2 Iframe ${index} timed out with ${iframes.value[index].retryCount} retries.`);
+            if (iframes.value[index].retryCount < MAX_RETRIES) {
+                console.log(`[startIframeTimeout]-3A Iframe ${index}, automatic retry.`);
+                retryIframe(index); // Automatic retry
+            } else {
+                iframes.value[index].status = 'error'; // Mark as error after max retries
+                iframes.value[index].hasOfferedRetry = true; // Offer retry button
+                console.log(`[startIframeTimeout]-3B Iframe ${index} offered Retry button.`);
+            }
         }
     }, TIMEOUT_DURATION);
 }
+
 
 // Clear timeout for successful loads
 function clearIframeTimeout(index) {
@@ -67,7 +84,31 @@ function clearIframeTimeout(index) {
     }
 }
 
-// Handle messages from iframes
+// Handle iframe errors
+function onIframeError(index) {
+    console.log(`Error loading iframe ${index}`);
+    iframes.value[index].status = 'error'; // Mark as error
+    clearIframeTimeout(index);  // Clear timeout on error
+}
+
+// Retry loading the iframe
+function retryIframe(index) {
+    iframes.value[index].retryCount++; // Increment retry count
+    iframes.value[index].status = 'loading'; // Set back to loading
+    iframes.value[index].hasOfferedRetry = false; // Hide retry button during retry
+    iframes.value[index].src = `${host}/article/${iframes.value[index].itemId}/embed?retry=${iframes.value[index].retryCount}`;
+
+    // Clear previous timeout if any
+    clearIframeTimeout(index);
+
+    // Start a new timeout for the retry
+    startIframeTimeout(index);
+
+    console.log(`Retrying iframe ${index}...`);
+}
+
+
+// Handle postMessage events from iframes
 function handlePostMessage(event) {
     if (event.data.status === 'loaded') {
         const iframeIndex = iframes.value.findIndex((iframe) => iframe.itemId === `${event.data.id}`);
@@ -79,25 +120,8 @@ function handlePostMessage(event) {
     }
 }
 
-// Handle iframe error
-function onIframeError(index) {
-    console.log(`Error loading iframe ${index}`);
-    iframes.value[index].status = 'error'; // Mark as error
-    clearIframeTimeout(index);  // Clear timeout on error
-}
-
-// Retry loading the iframe
-function retryIframe(index) {
-    if (!iframes.value[index].hasRetried) {
-        iframes.value[index].hasRetried = true; // Mark as retried
-        iframes.value[index].status = 'loading'; // Set to loading
-        startIframeTimeout(index); // Start new timeout
-
-        // Append a random query parameter to force iframe reload
-        const timestamp = new Date().getTime();
-        iframes.value[index].src = `${host}/article/${iframes.value[index].itemId}/embed?retry=${timestamp}`;
-    }
-}
+// Debounce the handler
+const debouncedHandlePostMessage = debounce(handlePostMessage, 300); // Adjust the delay as needed
 
 // Initialize loading
 onMounted(() => {
@@ -105,22 +129,50 @@ onMounted(() => {
         startIframeTimeout(index); // Start timeout for each iframe
     });
 
-    // Listen for postMessages from the iframe
-    window.addEventListener('message', handlePostMessage);
+    // Listen for postMessages from the iframes
+    window.addEventListener('message', debouncedHandlePostMessage);
 });
 
-// Watch for changes in iframeList prop
-watch(() => props.iframeList, (newIframeList) => {
-    iframes.value = newIframeList.map(iframe => ({
-        ...iframe,
-        status: 'loading',
-        hasRetried: false,
-        timeoutId: null,
-        src: `${host}/article/${iframe.itemId}/embed`, // Set the source URL
-    }));
-});
+// Debounce the handler for prop updates
+const debouncedUpdateIframeList = debounce((newIframeList) => {
+    const updatedIframes = newIframeList.map(newIframe => {
+        // Find if the iframe already exists in the current list
+        const existingIframe = iframes.value.find(iframe => iframe.itemId === newIframe.itemId);
+
+        if (existingIframe) {
+            // If iframe exists, preserve its status and retry count
+            return {
+                ...existingIframe,
+                src: `${host}/article/${newIframe.itemId}/embed`, // Update src if needed
+            };
+        } else {
+            // If iframe is new, initialize with default loading state
+            return {
+                ...newIframe,
+                status: 'loading',
+                retryCount: 0,
+                hasOfferedRetry: false,
+                timeoutId: null,
+                src: `${host}/article/${newIframe.itemId}/embed`, // Set the source URL
+            };
+        }
+    });
+
+    // Replace iframes list with updated data
+    iframes.value = updatedIframes;
+
+    // Start timeout for any newly added iframes
+    updatedIframes.forEach((iframe, index) => {
+        if (iframe.status === 'loading' && !iframe.timeoutId) {
+            startIframeTimeout(index); // Only start timeout if it's still loading
+        }
+    });
+}, 300); // Adjust the delay as needed
+
+// Watch for changes in iframeList prop with debounced handler
+watch(() => props.iframeList, debouncedUpdateIframeList);
+
 </script>
-
 
 <style scoped>
 .iframe-container {
@@ -151,16 +203,8 @@ watch(() => props.iframeList, (newIframeList) => {
     border-top: 5px solid #3498db;
     border-radius: 50%;
     animation: spin 2s linear infinite;
-}
-
-.spinner-circle {
-    width: 20px;
-    height: 20px;
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #3498db;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    opacity: .5;
+    pointer-events: none;
+    /* This ensures it doesn't block interactions */
 }
 
 .status-message {
@@ -215,6 +259,8 @@ iframe.loading {
     gap: 10px;
     font-size: 1.2em;
     color: #3498db;
+    pointer-events: none;
+    /* This ensures it doesn't block interactions */
 }
 
 .dot {
