@@ -36,16 +36,26 @@ onMounted(() => {
 	const modalElement = document.querySelector('#modal_tenant');
 	modalElement.addEventListener('show.bs.modal', handleIframeEditOnLoad);
 
-	// Ensure iframe is ready by posting message as soon as the DOM is ready
-	window.addEventListener('DOMContentLoaded', async () => {
-		handleIframeEditOnLoad();
-	});
+	/*
+		Instead of relying on DOMContentLoaded, 
+		it might be better to attach the onload event directly to the iframe in the modal, 
+		to ensure that you interact with it only after it's completely loaded.
+	*/
+	const newIframe = iframeEdit.value;
+	if (newIframe) {
+		newIframe.onload = async () => {
+			await handleIframeEditOnLoad();
+		};
+	}
 });
 
-// onBeforeUnmount(() => {
-// 	// Clean up the event listener when the component is unmounted
-// 	window.removeEventListener('message', handleMessage);
-// });
+onBeforeUnmount(() => {
+	window.removeEventListener('message', handleMessage);
+	window.removeEventListener('DOMContentLoaded', handleIframeEditOnLoad);
+
+	const modalElement = document.querySelector('#modal_tenant');
+	modalElement.removeEventListener('show.bs.modal', handleIframeEditOnLoad);
+});
 
 // Function to post messages to the iframe
 const postMessageToIframe = (iframe, user) => {
@@ -92,7 +102,7 @@ async function handleMessage(event) {
 			var foundIframe = tenantItems.value.find((i) => i.itemId == iframeId);
 			if (foundIframe) {
 				foundIframe.status = 'loaded';
-				console.log(`[1-] ${foundIframe.id}` + event.data.status);
+				//console.log(`[1-] ${foundIframe.id}` + event.data.status);
 			}
 			postMessageToIframe(iframe, await loggedInUser());
 		}
@@ -141,23 +151,53 @@ async function loadTenantItems() {
 
 // Function to perform search action
 const performSearch = async () => {
+	const items = await getTenantItems(tenantId);
+
 	if (searchQuery.value === '') {
-		loadTenantItems();
-	} else {
-		const postIds = tenantItems.value.map((x) => x.itemId);
-		const items = await getTenantItemIdsByTerm(postIds, searchQuery.value);
-
-		console.log('items for:', itemIds);
-		console.log('items for:', items);
-		console.log('Searching for:', searchQuery.value);
-		// You can implement the actual search logic here
-
 		// Map to get only the desired fields (e.g., 'name' and 'id')
 		tenantItems.value = items.map(item => ({
 			id: item._id,
 			itemId: item.itemId, // replace with the actual field name
 			isPin: item.isPin,
-			sortPin: item.sortPin
+			sortPin: item.sortPin,
+			// ------------------------
+			status: 'loading',
+			retryCount: 0, // Track retries
+			hasOfferedRetry: false, // Control if retry button is shown
+			timeoutId: null,
+		}))
+			/*
+				a.isPin === b.isPin ? 0: 
+				_ If both isPin values are the same, they stay in the same order.
+				
+				a.isPin ? -1 : 1: 
+				_ If a.isPin is true, it comes before b.isPin. 
+					If a.isPin is false, it comes after b.isPin.
+			*/
+			// Sort with true first (even though it's called ascending)
+			.sort((a, b) => a.isPin === b.isPin ? 0 : a.isPin ? -1 : 1);
+
+		//console.log(tenantItems.value)
+	} else {
+		const postIds = items.map((x) => x.itemId);
+		const filteredItems = await getTenantItemIdsByTerm(postIds, tenantId, searchQuery.value);
+
+		// console.log('postIds for:', postIds);
+		// console.log('items for:', filteredItems);
+		// console.log('Searching for:', searchQuery.value);
+		// You can implement the actual search logic here
+
+		// Map to get only the desired fields (e.g., 'name' and 'id')
+		tenantItems.value = items.filter(x => filteredItems.includes(x.itemId)).map(item => ({
+			id: item._id,
+			itemId: item.itemId, // replace with the actual field name
+			isPin: item.isPin,
+			sortPin: item.sortPin,
+			// ------------------------
+			status: 'loading',
+			retryCount: 0, // Track retries
+			hasOfferedRetry: false, // Control if retry button is shown
+			timeoutId: null,
 		}))
 			/*
 				a.isPin === b.isPin ? 0: 
@@ -200,11 +240,14 @@ const performSearch = async () => {
 					<div class="col-xl-8">
 
 						<div>
-							<!-- Search box with a search button -->
-							<div v-if="tenantItemStore.toggleSearch" class="input-group mt-3 mb-6">
-								<input type="text" v-model="searchQuery" class="form-control" placeholder="Search..." />
-								<button @click="performSearch" class="btn btn-primary">Search</button>
-							</div>
+							<!-- Smooth Transition for Search Input -->
+							<transition name="fade">
+								<div v-if="tenantItemStore.toggleSearch" class="input-group mt-3 mb-6">
+									<input type="text" v-model="searchQuery" @keyup.enter="performSearch"
+										class="form-control fs-2x py-1 lh-1 py-2" placeholder="ស្វែងរក..." />
+									<button @click="performSearch" class="btn btn-primary fs-2x">ស្វែងរក</button>
+								</div>
+							</transition>
 						</div>
 
 						<IframeBatchLoader :iframe-list="tenantItems"></IframeBatchLoader>
@@ -260,3 +303,16 @@ const performSearch = async () => {
 
 
 </template>
+
+<style scoped>
+/* Smooth fade transition */
+.fade-enter-active,
+.fade-leave-active {
+	transition: opacity 0.3s;
+}
+
+.fade-enter,
+.fade-leave-to {
+	opacity: 0;
+}
+</style>

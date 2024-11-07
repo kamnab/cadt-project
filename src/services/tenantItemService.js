@@ -21,7 +21,7 @@ const getTenantItems = async (tenantId) => {
     return null
 };
 
-const getTenantItemIdsByTerm = async (postIds, term) => {
+const getTenantItemIdsByTerm = async (postIds, tenantId, term) => {
     var user = await loggedInUser();
     if (user) {
         try {
@@ -30,8 +30,15 @@ const getTenantItemIdsByTerm = async (postIds, term) => {
                     Authorization: `Bearer ${user.access_token}`,
                 },
                 params: {
-                    postIds: postIds, // Passing tenantIds as query parameter
+                    ...postIds.reduce((acc, id, index) => {
+                        acc[`postIds[${index}]`] = id;
+                        return acc;
+                    }, {}),
+                    tenantId: tenantId,
                     term: term,         // Passing term as query parameter
+                },
+                paramsSerializer: (params) => {
+                    return new URLSearchParams(params).toString();
                 },
             });
 
