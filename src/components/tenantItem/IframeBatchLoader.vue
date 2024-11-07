@@ -49,7 +49,7 @@ const props = defineProps({
 const MAX_RETRIES = 1;
 
 // Timeout duration (50 seconds)
-const TIMEOUT_DURATION = 50000;
+const TIMEOUT_DURATION = 50;
 
 // Global loading state: true if any iframe is still loading
 const globalLoading = computed(() => props.iframeList.some(iframe => iframe.status === 'loading'));
@@ -230,7 +230,7 @@ watch(() => props.iframeList, debouncedUpdateIframeList);
 
 .error-message {
     width: 100%;
-    color: red;
+    /* color: red; */
 }
 
 @keyframes spin {
