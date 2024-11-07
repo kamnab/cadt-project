@@ -6,7 +6,7 @@
         </div>
 
         <!-- Iframes -->
-        <div v-for="(iframe, index) in iframes" :key="index" class="iframe-wrapper">
+        <div v-for="(iframe, index) in props.iframeList" :key="index" class="iframe-wrapper">
             <div class="iframe-container">
                 <iframe :id="`_${iframe.itemId}`" :src="iframe.src" style="width: 100%; min-height: 30vh;"
                     @error="onIframeError(index)" loading="lazy">
@@ -16,11 +16,16 @@
                 <div v-if="iframe.status === 'loading'" class="loading-spinner"></div>
 
                 <!-- Show error message and retry button when loading fails after retries -->
-                <div v-if="iframe.status === 'error' && iframe.hasOfferedRetry" class="error-message">
+                <div v-if="iframe.status === 'error' && iframe.hasOfferedRetry"
+                    class="error-message d-flex justify-content-end">
                     <!-- Add debug logs -->
-                    <p>Status: {{ iframe.status }} | Retry Offered: {{ iframe.hasOfferedRetry }}</p>
-                    Loading content<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
-                    <button :disabled="iframe.status === 'loading'" @click="retryIframe(index)">Reload</button>
+                    <!-- <p>Status: {{ iframe.status }} | Retry Offered: {{ iframe.hasOfferedRetry }}</p> -->
+                    <div>
+                        Loading<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
+                        <button style="background-color: white; color: black;" :disabled="iframe.status === 'loading'"
+                            @click="retryIframe(index)">Reload</button>
+                    </div>
+
                 </div>
 
             </div>
@@ -29,7 +34,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, computed } from 'vue';
+import { onMounted, watch, computed } from 'vue';
 import { debounce } from 'lodash';
 const host = import.meta.env.VITE_API_TENANT_CONENT_ENDPOINT;
 
@@ -40,66 +45,64 @@ const props = defineProps({
     },
 });
 
-const iframes = ref(props.iframeList.map(iframe => ({
-    ...iframe,
-    status: 'loading',
-    retryCount: 0, // Track retries
-    hasOfferedRetry: false, // Control if retry button is shown
-    timeoutId: null,
-})));
-
 // Maximum retries allowed
 const MAX_RETRIES = 1;
 
 // Timeout duration (1 seconds)
-const TIMEOUT_DURATION = 10000;
+const TIMEOUT_DURATION = 1000;
 
 // Global loading state: true if any iframe is still loading
-const globalLoading = computed(() => iframes.value.some(iframe => iframe.status === 'loading'));
+const globalLoading = computed(() => props.iframeList.some(iframe => iframe.status === 'loading'));
 
 // Start timeout for each iframe
 function startIframeTimeout(index) {
-    console.log(`[startIframeTimeout]-1 Iframe ${index}, status: ${iframes.value[index].status}, retry: ${iframes.value[index].retryCount}`);
-    iframes.value[index].timeoutId = setTimeout(() => {
-        if (iframes.value[index].status === 'loading') {
-            console.log(`[startIframeTimeout]-2 Iframe ${index} timed out with ${iframes.value[index].retryCount} retries.`);
-            if (iframes.value[index].retryCount < MAX_RETRIES) {
-                console.log(`[startIframeTimeout]-3A Iframe ${index}, automatic retry.`);
-                retryIframe(index); // Automatic retry
-            } else {
-                iframes.value[index].status = 'error'; // Mark as error after max retries
-                iframes.value[index].hasOfferedRetry = true; // Offer retry button
-                console.log(`[startIframeTimeout]-3B Iframe ${index} offered Retry button.`);
-            }
-        }
-    }, TIMEOUT_DURATION);
-}
+    // Ensure the iframe is not already loaded
+    if (props.iframeList[index].status !== 'loaded') {
+        // Clear any existing timeout before starting a new one
+        clearIframeTimeout(index);
 
+        console.log(`[startIframeTimeout]-1 Iframe ${index}, status: ${props.iframeList[index].status}, retry: ${props.iframeList[index].retryCount}`);
+        props.iframeList[index].timeoutId = setTimeout(() => {
+            if (props.iframeList[index].status === 'loading') {
+                console.log(`[startIframeTimeout]-2 Iframe ${index} timed out with ${props.iframeList[index].retryCount} retries.`);
+                if (props.iframeList[index].retryCount < MAX_RETRIES) {
+                    console.log(`[startIframeTimeout]-3A Iframe ${index}, automatic retry.`);
+                    retryIframe(index); // Automatic retry
+                } else {
+                    props.iframeList[index].status = 'error'; // Mark as error after max retries
+                    props.iframeList[index].hasOfferedRetry = true; // Offer retry button
+                    console.log(`[startIframeTimeout]-3B Iframe ${index} offered Retry button.`);
+                }
+            }
+        }, TIMEOUT_DURATION);
+    } else {
+        console.log(`[startIframeTimeout] Iframe ${index} is already loaded. Timeout not started.`);
+    }
+}
 
 // Clear timeout for successful loads
 function clearIframeTimeout(index) {
-    if (iframes.value[index].timeoutId) {
-        clearTimeout(iframes.value[index].timeoutId);
-        iframes.value[index].timeoutId = null; // Reset timeoutId after clearing
+    if (props.iframeList[index].timeoutId) {
+        console.log(`Clearing timeout for iframe ${index}, timeoutId: ${props.iframeList[index].timeoutId}, status: ${props.iframeList[index].status}`);
+        clearTimeout(props.iframeList[index].timeoutId);
+        props.iframeList[index].timeoutId = null;
+        console.log(`Timeout cleared for iframe ${index}, timeoutId reset to null`);
     }
 }
 
 // Handle iframe errors
 function onIframeError(index) {
     console.log(`Error loading iframe ${index}`);
-    iframes.value[index].status = 'error'; // Mark as error
+    props.iframeList[index].status = 'error'; // Mark as error
     clearIframeTimeout(index);  // Clear timeout on error
 }
 
 // Retry loading the iframe
 function retryIframe(index) {
-    iframes.value[index].retryCount++; // Increment retry count
-    iframes.value[index].status = 'loading'; // Set back to loading
-    iframes.value[index].hasOfferedRetry = false; // Hide retry button during retry
-    iframes.value[index].src = `${host}/article/${iframes.value[index].itemId}/embed?retry=${iframes.value[index].retryCount}`;
-
-    // Clear previous timeout if any
-    clearIframeTimeout(index);
+    props.iframeList[index].retryCount++; // Increment retry count
+    props.iframeList[index].status = 'loading'; // Set back to loading
+    props.iframeList[index].hasOfferedRetry = false; // Hide retry button during retry
+    props.iframeList[index].src = `${host}/article/${props.iframeList[index].itemId}/embed?retry=${props.iframeList[index].retryCount}`;
 
     // Start a new timeout for the retry
     startIframeTimeout(index);
@@ -107,15 +110,34 @@ function retryIframe(index) {
     console.log(`Retrying iframe ${index}...`);
 }
 
-
-// Handle postMessage events from iframes
 function handlePostMessage(event) {
-    if (event.data.status === 'loaded') {
-        const iframeIndex = iframes.value.findIndex((iframe) => iframe.itemId === `${event.data.id}`);
+    const iframeId = event.data.id;
+    if (iframeId) {
+        const iframe = document.getElementById('_' + event.data.id);
+        if (!iframe) {
+            console.error(`Iframe with ID ${iframeId} not found.`);
+            return;
+        }
+
+        if (!event.data.height) {
+            console.warn(`Height data missing for iframe ID ${iframeId}.`);
+            return;
+        }
+
+        iframe.style.height = event.data.height + 'px';
+
+        const iframeIndex = props.iframeList.findIndex((iframe) => iframe.itemId === iframeId);
         if (iframeIndex !== -1) {
-            iframes.value[iframeIndex].status = 'loaded';  // Mark as loaded
             clearIframeTimeout(iframeIndex);  // Clear the timeout on successful load
-            console.log(`[---] Cross-origin Iframe [${iframeIndex}] fully [${iframes.value[iframeIndex].status}].`);
+            props.iframeList[iframeIndex].status = 'loaded';  // Mark as loaded
+            console.log(`[---] Cross-origin Iframe [${iframeIndex}] fully [${props.iframeList[iframeIndex].status}].`);
+
+            if (event.data.status === 'loaded') {
+                props.iframeList[iframeIndex].status = event.data.status;
+                console.log(`[---] Iframe status updated to [${event.data.status}].`);
+            }
+        } else {
+            console.log('[Not found]: ' + iframeId);
         }
     }
 }
@@ -125,19 +147,16 @@ const debouncedHandlePostMessage = debounce(handlePostMessage, 300); // Adjust t
 
 // Initialize loading
 onMounted(() => {
-    iframes.value.forEach((iframe, index) => {
+    props.iframeList.forEach((iframe, index) => {
         startIframeTimeout(index); // Start timeout for each iframe
     });
-
-    // Listen for postMessages from the iframes
-    window.addEventListener('message', debouncedHandlePostMessage);
 });
 
 // Debounce the handler for prop updates
 const debouncedUpdateIframeList = debounce((newIframeList) => {
     const updatedIframes = newIframeList.map(newIframe => {
         // Find if the iframe already exists in the current list
-        const existingIframe = iframes.value.find(iframe => iframe.itemId === newIframe.itemId);
+        const existingIframe = props.iframeList.find(iframe => iframe.itemId === newIframe.itemId);
 
         if (existingIframe) {
             // If iframe exists, preserve its status and retry count
@@ -149,22 +168,20 @@ const debouncedUpdateIframeList = debounce((newIframeList) => {
             // If iframe is new, initialize with default loading state
             return {
                 ...newIframe,
-                status: 'loading',
-                retryCount: 0,
-                hasOfferedRetry: false,
-                timeoutId: null,
                 src: `${host}/article/${newIframe.itemId}/embed`, // Set the source URL
             };
         }
     });
 
     // Replace iframes list with updated data
-    iframes.value = updatedIframes;
+    //props.iframeList = updatedIframes;
 
     // Start timeout for any newly added iframes
     updatedIframes.forEach((iframe, index) => {
         if (iframe.status === 'loading' && !iframe.timeoutId) {
             startIframeTimeout(index); // Only start timeout if it's still loading
+        } else if (iframe.status === 'loaded') {
+            clearIframeTimeout(index);
         }
     });
 }, 300); // Adjust the delay as needed
@@ -212,6 +229,7 @@ watch(() => props.iframeList, debouncedUpdateIframeList);
 }
 
 .error-message {
+    width: 100%;
     color: red;
 }
 

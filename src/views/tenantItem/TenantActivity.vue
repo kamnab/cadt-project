@@ -17,6 +17,7 @@ const tenantId = route.params.id;
 const iframeEdit = ref(null)
 const iframeEditSrc = `${host}/embed/article/edit`;
 const tenantItems = ref([])
+const searchQuery = ref('');
 
 onBeforeMount(async () => {
 	await loadTenantItems();
@@ -41,10 +42,10 @@ onMounted(() => {
 	});
 });
 
-onBeforeUnmount(() => {
-	// Clean up the event listener when the component is unmounted
-	window.removeEventListener('message', handleMessage);
-});
+// onBeforeUnmount(() => {
+// 	// Clean up the event listener when the component is unmounted
+// 	window.removeEventListener('message', handleMessage);
+// });
 
 // Function to post messages to the iframe
 const postMessageToIframe = (iframe, user) => {
@@ -67,28 +68,33 @@ async function handleMessage(event) {
 	const url = event.data.url;
 	if (url) {
 		window.open(url, '_blank');  // Open the URL in a new tab
-	} else {
-		const iframe = document.getElementById('_' + event.data.id);
+	}
 
-		if (iframe && event.data.height) {
-			iframe.style.height = (event.data.height + 0) + 'px';
+	if (event.data.closeModal) {
+		const modalElement = document.querySelector('#modal_tenant');
 
-			postMessageToIframe(iframe, await loggedInUser());
+		// Ensure the modal exists before attempting to dismiss it
+		if (modalElement) {
+			const modalInstance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+			modalInstance.hide();
+			iframeEdit.value.src = '';
+			iframeEdit.value.src = iframeEditSrc;
+
+			loadTenantItems();
 		}
+	}
 
-		if (event.data.closeModal) {
-
-			const modalElement = document.querySelector('#modal_tenant');
-
-			// Ensure the modal exists before attempting to dismiss it
-			if (modalElement) {
-				const modalInstance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
-				modalInstance.hide();
-				iframeEdit.value.src = '';
-				iframeEdit.value.src = iframeEditSrc;
-
-				loadTenantItems();
+	const iframeId = event.data.id;
+	if (iframeId) {
+		const iframe = document.getElementById('_' + iframeId);
+		if (iframe && event.data.height) {
+			iframe.style.height = event.data.height + 'px';
+			var foundIframe = tenantItems.value.find((i) => i.itemId == iframeId);
+			if (foundIframe) {
+				foundIframe.status = 'loaded';
+				console.log(`[1-] ${foundIframe.id}` + event.data.status);
 			}
+			postMessageToIframe(iframe, await loggedInUser());
 		}
 		//console.log(event.data)
 	}
@@ -111,7 +117,12 @@ async function loadTenantItems() {
 		id: item._id,
 		itemId: item.itemId, // replace with the actual field name
 		isPin: item.isPin,
-		sortPin: item.sortPin
+		sortPin: item.sortPin,
+		// ------------------------
+		status: 'loading',
+		retryCount: 0, // Track retries
+		hasOfferedRetry: false, // Control if retry button is shown
+		timeoutId: null,
 	}))
 		/*
 			a.isPin === b.isPin ? 0: 
@@ -127,7 +138,6 @@ async function loadTenantItems() {
 	//console.log(tenantItems.value)
 }
 
-const searchQuery = ref('');
 
 // Function to perform search action
 const performSearch = async () => {
