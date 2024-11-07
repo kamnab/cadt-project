@@ -52,7 +52,7 @@ const MAX_RETRIES = 1;
 const TIMEOUT_DURATION = 100;
 
 // Global loading state: true if any iframe is still loading
-const globalLoading = computed(() => props.iframeList.some(iframe => iframe.status === 'loading'));
+const globalLoading = computed(() => props.iframeList.some(iframe => iframe.status === 'loading' || iframe.status === 'error'));
 
 // Start timeout for each iframe
 function startIframeTimeout(index) {
