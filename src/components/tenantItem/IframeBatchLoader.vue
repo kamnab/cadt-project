@@ -48,8 +48,8 @@ const props = defineProps({
 // Maximum retries allowed
 const MAX_RETRIES = 1;
 
-// Timeout duration (1 seconds)
-const TIMEOUT_DURATION = 1000;
+// Timeout duration (50 seconds)
+const TIMEOUT_DURATION = 50000;
 
 // Global loading state: true if any iframe is still loading
 const globalLoading = computed(() => props.iframeList.some(iframe => iframe.status === 'loading'));
