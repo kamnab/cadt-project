@@ -29,7 +29,7 @@
         </div>
 
         <!--begin::Notifications-->
-        <div v-if="user" class="ms-1 ms-lg-6">
+        <div v-if="isAuthenticated" class="ms-1 ms-lg-6">
             <!--begin::Dropdown-->
             <button class="btn btn-icon btn-sm btn-accent" style="opacity: .8;" data-kt-menu-trigger="click"
                 data-kt-menu-placement="bottom-end" id="kt_activities_toggle">
@@ -135,7 +135,8 @@
                 <div class="separator mt-3"></div>
                 <div class="menu-item mx-2">
                     <div class="menu-content py-5 d-flex justify-content-center">
-                        <button @click="logoutRedirect" v-if="user" class="btn btn-light-danger btn-sm">Logout</button>
+                        <button @click="logoutRedirect" v-if="isAuthenticated"
+                            class="btn btn-light-danger btn-sm">Logout</button>
                     </div>
                 </div>
             </div>
