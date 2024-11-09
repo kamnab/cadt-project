@@ -69,7 +69,7 @@ onMounted(async () => {
 
 <template>
   <!-- Show loading spinner while waiting for data -->
-  <div class="global-loading-spinner" v-if="isLoading">
+  <div class="global-loading-spinner" v-if="user && isLoading">
     <span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
   </div>
 
