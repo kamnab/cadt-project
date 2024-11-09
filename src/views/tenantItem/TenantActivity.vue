@@ -21,12 +21,12 @@ const searchQuery = ref('');
 
 onBeforeMount(async () => {
 	await loadTenantItems();
-
-	// Set iframe src early
-	iframeEdit.value.src = iframeEditSrc;
 })
 
 onMounted(() => {
+	// Set iframe src early
+	iframeEdit.value.src = iframeEditSrc;
+
 	// Execute iframe handling on component mount
 	//await handleIframes();
 
@@ -148,7 +148,6 @@ async function loadTenantItems() {
 	//console.log(tenantItems.value)
 }
 
-
 // Function to perform search action
 const performSearch = async () => {
 	const items = await getTenantItems(tenantId);
@@ -225,7 +224,7 @@ const performSearch = async () => {
 		<!--end::toolbar-->
 
 		<!--begin::Content-->
-		<div class="content fs-6 d-flex flex-column-fluid" id="kt_content" style="padding: 20px 0;">
+		<div class="content d-flex flex-column-fluid" id="kt_content" style="padding: 20px 0;">
 			<!--begin::Container-->
 			<div class="container">
 
@@ -244,8 +243,8 @@ const performSearch = async () => {
 							<transition name="fade">
 								<div v-if="tenantItemStore.toggleSearch" class="input-group mt-3 mb-6">
 									<input type="text" v-model="searchQuery" @keyup.enter="performSearch"
-										class="form-control fs-2x py-1 lh-1 py-2" placeholder="ស្វែងរក..." />
-									<button @click="performSearch" class="btn btn-primary fs-2x">ស្វែងរក</button>
+										class="form-control fs-2 py-1 py-2" placeholder="..." />
+									<button @click="performSearch" class="btn btn-primary fs-2">ស្វែងរក</button>
 								</div>
 							</transition>
 						</div>
@@ -285,8 +284,8 @@ const performSearch = async () => {
 							</div>
 							<div class="modal-body pt-2 pb-0">
 								<!-- <iframe :src="host" style="width: 100%;" frameborder="0" loading="lazy"></iframe> -->
-								<iframe id="__edit" ref="iframeEdit" :src="iframeEditSrc" style="width: 100%;"
-									frameborder="0" loading="lazy"></iframe>
+								<iframe id="__edit" ref="iframeEdit" style="width: 100%;" frameborder="0"
+									loading="lazy"></iframe>
 
 							</div>
 

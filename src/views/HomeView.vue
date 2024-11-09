@@ -1,9 +1,11 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onBeforeMount, onMounted, ref } from 'vue';
 import ClassList from '@/components/classItem/ClassList.vue';
 import MyTask from '@/components/classItem/MyTask.vue';
 
 import DeleteTenant from '@/components/tenants/Delete.vue';
+import HomeToolbar from '@/components/HomeToolbar.vue';
+import { loggedInUser } from '@/services/authService';
 
 // State variables
 
@@ -38,6 +40,10 @@ const reloadList = () => {
   classListKey.value += 1;
 };
 
+// const user = ref(null);
+// onBeforeMount(async () => {
+//   user.value = await loggedInUser();
+// })
 onMounted(() => {
   const myModalEl = document.getElementById('kt_modal_tenant');
 
@@ -49,21 +55,23 @@ onMounted(() => {
 </script>
 
 <template>
+  <HomeToolbar></HomeToolbar>
+
   <div class="d-flex flex-column flex-column-fluid">
 
     <!--begin::Content-->
-    <div class="content fs-6 d-flex flex-column-fluid" id="kt_content" style="padding: 20px 0;">
+    <div class="content d-flex flex-column-fluid" id="kt_content" style="padding: 20px 0;">
       <!--begin::Container-->
       <div class="container">
 
         <!--begin::Row-->
-        <div class="row g-0 g-xl-5 g-xxl-8">
-          <div class="col-xl-8">
+        <div class="row g-0">
+          <div class="col-xl-12">
             <ClassList :key="classListKey"></ClassList>
           </div>
-          <div class="col-xl-4">
+          <!-- <div class="col-xl-4">
             <MyTask></MyTask>
-          </div>
+          </div> -->
         </div>
         <!--end::Row-->
 

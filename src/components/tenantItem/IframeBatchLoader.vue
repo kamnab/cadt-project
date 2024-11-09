@@ -48,7 +48,7 @@ const props = defineProps({
 // Maximum retries allowed
 const MAX_RETRIES = 1;
 
-// Timeout duration (50 seconds)
+// Timeout duration (0.1 seconds)
 const TIMEOUT_DURATION = 100;
 
 // Global loading state: true if any iframe is still loading
@@ -262,54 +262,5 @@ button:disabled {
 
 iframe.loading {
     opacity: 0.5;
-}
-</style>
-
-<style scoped>
-.global-loading-spinner {
-    position: fixed;
-    top: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 1.2em;
-    color: #3498db;
-    pointer-events: none;
-    /* This ensures it doesn't block interactions */
-}
-
-.dot {
-    animation: blink 1.2s infinite;
-    font-size: 1.2em;
-    /* color: #3498db; */
-}
-
-@keyframes blink {
-    0% {
-        opacity: 0.2;
-    }
-
-    20% {
-        opacity: 1;
-    }
-
-    100% {
-        opacity: 0.2;
-    }
-}
-
-.dot:nth-child(1) {
-    animation-delay: 0s;
-}
-
-.dot:nth-child(2) {
-    animation-delay: 0.2s;
-}
-
-.dot:nth-child(3) {
-    animation-delay: 0.4s;
 }
 </style>

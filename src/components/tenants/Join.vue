@@ -3,7 +3,7 @@
 
         <form @submit.prevent="joinTenant" id="frmJoinTenant" method="post">
             <div class="d-flex align-items-center justify-content-between flex-nowrap text-nowrap py-1">
-                <div class="flex-fill mb-8 me-5">
+                <div class="flex-fill mb-11 me-5">
                     <label for="tenant_code" class="form-label">Code</label>
                     <input class="form-control" type="text" v-model="tenant.code" id="tenant_code" />
                 </div>
