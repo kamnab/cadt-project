@@ -48,7 +48,7 @@ const toggleSearch = () => {
       </div>
       <!--end::Info-->
       <!--begin::Nav-->
-      <div class="d-flex align-items-center flex-nowrap text-nowrap overflow-auto py-1">
+      <div class="d-flex align-items-center flex-nowrap text-nowrap overflow-auto py-1 ms-auto">
         <!-- Icon button to toggle the search box, using Bootstrap button styles -->
         <button @click="toggleSearch" class="btn btn-sm btn-icon btn-active-accent me-3">
           <i class="fas fa-search"></i> </button>
