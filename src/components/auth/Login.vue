@@ -31,7 +31,7 @@
         <!--begin::Notifications-->
         <div v-if="user" class="ms-1 ms-lg-6">
             <!--begin::Dropdown-->
-            <button class="btn btn-icon btn-sm btn-accent" style="opacity: .8;" data-kt-menu-trigger="click"
+            <button class="btn btn-icon btn-sm btn-accent" data-kt-menu-trigger="click"
                 data-kt-menu-placement="bottom-end" id="kt_activities_toggle">
                 <span class="position-absolute fs-6"></span>
                 <!--begin::Svg Icon | path: icons/duotone/General/User.svg-->
