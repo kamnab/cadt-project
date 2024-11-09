@@ -26,7 +26,7 @@ const toggleSearch = () => {
 <template>
 
   <!--begin::toolbar-->
-  <div class="toolbar" id="kt_toolbar">
+  <div class="toolbar" id="kt_toolbar" style="padding-top: 20px">
     <div class="container d-flex flex-stack flex-wrap flex-sm-nowrap">
       <!--begin::Info-->
       <div class="d-flex flex-column align-items-start justify-content-center flex-wrap me-1">
