@@ -11,15 +11,66 @@
     content="A comprehensive platform designed to streamline educational processes, manage student-related activities and records, and enhance teaching practices by integrating pedagogical tools and administrative functions." />
   <meta name="keywords" content="" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="shortcut icon" href="/assets/favicon-ED4sYi5c.ico" />
+  <link rel="shortcut icon" href="/assets/logo-forum-RVfZzdJR.png" />
   <!--begin::Fonts-->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:ital,wght@0,400..700;1,400..700&display=swap"
+    rel="stylesheet" />
+
   <!--end::Fonts-->
   <!--begin::Global Stylesheets Bundle(used by all pages)-->
   <!--end::Global Stylesheets Bundle-->
 
-  <script type="module" crossorigin src="/assets/index-W1qmm01o.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-PJIMVnGL.css">
+  <style>
+    .global-loading-spinner {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.2em;
+      color: #3498db;
+      pointer-events: none;
+      /* This ensures it doesn't block interactions */
+    }
+
+    .dot {
+      animation: blink 1.2s infinite;
+      font-size: 1.2em;
+      /* color: #3498db; */
+    }
+
+    @keyframes blink {
+      0% {
+        opacity: 0.2;
+      }
+
+      20% {
+        opacity: 1;
+      }
+
+      100% {
+        opacity: 0.2;
+      }
+    }
+
+    .dot:nth-child(1) {
+      animation-delay: 0s;
+    }
+
+    .dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+  </style>
+  <script type="module" crossorigin src="/assets/index-C5cXD5WJ.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-CzHOry1k.css">
 </head>
 <!--end::Head-->
 <!--begin::Body-->
