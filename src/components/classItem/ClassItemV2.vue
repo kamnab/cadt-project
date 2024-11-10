@@ -100,7 +100,7 @@ const btnCodeClick = () => displayCode.value = !displayCode.value;
         <div class="d-flex align-items-center h-40px">
           <i class="bi bi-code-square me-2" style="font-size: .9rem; padding-top: 2px;"></i> <span class="fs-5"> {{
             props.item.code
-          }}</span>
+            }}</span>
           <button class="btn btn-icon ms-auto text-muted" style="position:absolute; right: -14px;"
             @click="btnCodeClick">x</button>
         </div>

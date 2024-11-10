@@ -29,10 +29,10 @@
         </div>
 
         <!--begin::Notifications-->
-        <div v-if="user" class="ms-1 ms-lg-6">
+        <div v-else class="ms-1 ms-lg-6">
             <!--begin::Dropdown-->
-            <button class="btn btn-icon btn-sm btn-accent" style="opacity: .8;" data-kt-menu-trigger="click"
-                data-kt-menu-placement="bottom-end" id="kt_activities_toggle">
+            <button class="btn btn-icon btn-sm btn-accent" style="opacity: .8;" type="button" data-bs-toggle="dropdown"
+                aria-expanded="false" id="kt_activities_toggle">
                 <span class="position-absolute fs-6"></span>
                 <!--begin::Svg Icon | path: icons/duotone/General/User.svg-->
                 <span class="svg-icon svg-icon-1 svg-icon-dark">
@@ -51,8 +51,9 @@
                 </span>
                 <!--end::Svg Icon-->
             </button>
+
             <!--begin::Menu-->
-            <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded fw-semibold menu-title-gray-800 menu-hover-bg menu-state-title-primary w-300px w-md-350px"
+            <div class="dropdown-menu menu menu-sub menu-sub-dropdown menu-column menu-rounded fw-semibold menu-title-gray-800 menu-hover-bg menu-state-title-primary w-300px w-md-350px"
                 data-kt-menu="true">
                 <div class="menu-item mx-3">
                     <div class="menu-content fs-6 text-dark fw-bold py-6">
@@ -146,8 +147,6 @@
 
         <!--begin::Aside Toggler-->
         <!--end::Aside Toggler-->
-
-
 
     </div>
 </template>
