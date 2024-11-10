@@ -1,8 +1,11 @@
 <script setup>
+import GlobalLoading from "./components/GlobalLoading.vue";
 import HeaderNav from "./HeaderNav.vue";
 </script>
 
 <template>
+  <GlobalLoading></GlobalLoading>
+
   <!--begin::Header-->
   <HeaderNav />
   <!--end::Header-->

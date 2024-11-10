@@ -9,6 +9,8 @@ import IframeBatchLoader from '@/components/tenantItem/IframeBatchLoader.vue'
 
 import { useTenantItemStore } from '@/stores/tenantItemStore'
 const tenantItemStore = useTenantItemStore()
+import { useAppGlobalStore } from '@/stores/appGlobalStore'
+const appGlobalStore = useAppGlobalStore()
 
 const route = useRoute()
 
@@ -150,6 +152,8 @@ async function loadTenantItems() {
 
 // Function to perform search action
 const performSearch = async () => {
+	appGlobalStore.setLoading(true);
+
 	const items = await getTenantItems(tenantId);
 
 	if (searchQuery.value === '') {
@@ -177,7 +181,7 @@ const performSearch = async () => {
 			.sort((a, b) => a.isPin === b.isPin ? 0 : a.isPin ? -1 : 1);
 
 		//console.log(tenantItems.value)
-	} else {
+	} else if (items.length > 0) {
 		const postIds = items.map((x) => x.itemId);
 		const filteredItems = await getTenantItemIdsByTerm(postIds, tenantId, searchQuery.value);
 
@@ -208,8 +212,8 @@ const performSearch = async () => {
 			*/
 			// Sort with true first (even though it's called ascending)
 			.sort((a, b) => a.isPin === b.isPin ? 0 : a.isPin ? -1 : 1);
-	}
 
+	}
 };
 
 </script>

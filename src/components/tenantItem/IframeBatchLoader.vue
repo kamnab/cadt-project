@@ -1,8 +1,10 @@
 <template>
     <div>
-        <!-- Global loading spinner (shown if any iframe is still loading) -->
-        <div v-if="globalLoading" class="global-loading-spinner">
-            <span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
+
+        <div class="card" v-if="props.iframeList.length == 0">
+            <div class="card-body" v-if="!appGlobalStore.globalLoading">
+                <h3 class="text-danger">ស្វែងរកមិនឃើញ!</h3>
+            </div>
         </div>
 
         <!-- Iframes -->
@@ -34,7 +36,11 @@
 </template>
 
 <script setup>
-import { onMounted, watch, computed } from 'vue';
+
+import { useAppGlobalStore } from '@/stores/appGlobalStore'
+const appGlobalStore = useAppGlobalStore()
+
+import { onMounted, watch, computed, ref } from 'vue';
 import { debounce } from 'lodash';
 const host = import.meta.env.VITE_API_TENANT_CONENT_ENDPOINT;
 
@@ -51,8 +57,12 @@ const MAX_RETRIES = 1;
 // Timeout duration (0.1 seconds)
 const TIMEOUT_DURATION = 100;
 
-// Global loading state: true if any iframe is still loading
-const globalLoading = computed(() => props.iframeList.some(iframe => iframe.status === 'loading' || iframe.status === 'error'));
+// Update global loading state based on iframe loading status
+const updateGlobalLoadingState = () => {
+    const anyIframeLoading = props.iframeList.some(iframe => iframe.status === 'loading' || iframe.status === 'error');
+
+    appGlobalStore.setLoading(!(anyIframeLoading || props.iframeList.length == 0));
+};
 
 // Start timeout for each iframe
 function startIframeTimeout(index) {
@@ -78,6 +88,8 @@ function startIframeTimeout(index) {
     } else {
         console.log(`[startIframeTimeout] Iframe ${index} is already loaded. Timeout not started.`);
     }
+
+    updateGlobalLoadingState();  // Update the global loading state after starting a timeout
 }
 
 // Clear timeout for successful loads
@@ -95,6 +107,8 @@ function onIframeError(index) {
     console.log(`Error loading iframe ${index}`);
     props.iframeList[index].status = 'error'; // Mark as error
     clearIframeTimeout(index);  // Clear timeout on error
+
+    updateGlobalLoadingState();  // Update global loading state on error
 }
 
 // Retry loading the iframe
@@ -110,46 +124,12 @@ function retryIframe(index) {
     console.log(`Retrying iframe ${index}...`);
 }
 
-function handlePostMessage(event) {
-    const iframeId = event.data.id;
-    if (iframeId) {
-        const iframe = document.getElementById('_' + event.data.id);
-        if (!iframe) {
-            console.error(`Iframe with ID ${iframeId} not found.`);
-            return;
-        }
-
-        if (!event.data.height) {
-            console.warn(`Height data missing for iframe ID ${iframeId}.`);
-            return;
-        }
-
-        iframe.style.height = event.data.height + 'px';
-
-        const iframeIndex = props.iframeList.findIndex((iframe) => iframe.itemId === iframeId);
-        if (iframeIndex !== -1) {
-            clearIframeTimeout(iframeIndex);  // Clear the timeout on successful load
-            props.iframeList[iframeIndex].status = 'loaded';  // Mark as loaded
-            console.log(`[---] Cross-origin Iframe [${iframeIndex}] fully [${props.iframeList[iframeIndex].status}].`);
-
-            if (event.data.status === 'loaded') {
-                props.iframeList[iframeIndex].status = event.data.status;
-                console.log(`[---] Iframe status updated to [${event.data.status}].`);
-            }
-        } else {
-            console.log('[Not found]: ' + iframeId);
-        }
-    }
-}
-
-// Debounce the handler
-const debouncedHandlePostMessage = debounce(handlePostMessage, 300); // Adjust the delay as needed
-
 // Initialize loading
 onMounted(() => {
     props.iframeList.forEach((iframe, index) => {
         startIframeTimeout(index); // Start timeout for each iframe
     });
+    updateGlobalLoadingState(); // Update global loading state after mount
 });
 
 // Debounce the handler for prop updates
@@ -184,11 +164,14 @@ const debouncedUpdateIframeList = debounce((newIframeList) => {
             clearIframeTimeout(index);
         }
     });
+
 }, 300); // Adjust the delay as needed
 
-// Watch for changes in iframeList prop with debounced handler
-watch(() => props.iframeList, debouncedUpdateIframeList);
-
+// Debounced handler for prop updates
+watch(() => props.iframeList, (newIframeList) => {
+    debouncedUpdateIframeList(newIframeList);
+    updateGlobalLoadingState(); // Update global loading state when prop changes
+});
 </script>
 
 <style scoped>
