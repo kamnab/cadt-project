@@ -61,8 +61,8 @@ const props = defineProps({
 // Maximum retries allowed
 const MAX_RETRIES = 1;
 
-// Timeout duration (0.1 seconds)
-const TIMEOUT_DURATION = 100;
+// Timeout duration (15 seconds)
+const TIMEOUT_DURATION = 15000;
 
 // Update global loading state based on iframe loading status
 const updateGlobalLoadingState = () => {
@@ -78,9 +78,16 @@ function startIframeTimeout(index) {
         // Clear any existing timeout before starting a new one
         clearIframeTimeout(index);
 
-        console.log(`[startIframeTimeout]-1 Iframe ${index}, status: ${props.iframeList[index].status}, retry: ${props.iframeList[index].retryCount}`);
+        // Start loading the iframe immediately
+        props.iframeList[index].status = 'loading';
+        props.iframeList[index].src = `${host}/article/${props.iframeList[index].itemId}/embed?retry=${props.iframeList[index].retryCount}`;
+
+        console.log(`[startIframeTimeout] Iframe ${index} loading started, retry: ${props.iframeList[index].retryCount}`);
+
+        // Start a timeout to detect loading failure after TIMEOUT_DURATION
         props.iframeList[index].timeoutId = setTimeout(() => {
             if (props.iframeList[index].status === 'loading') {
+                // Iframe is still in loading state after TIMEOUT_DURATION, mark as error
                 console.log(`[startIframeTimeout]-2 Iframe ${index} timed out with ${props.iframeList[index].retryCount} retries.`);
                 if (props.iframeList[index].retryCount < MAX_RETRIES) {
                     console.log(`[startIframeTimeout]-3A Iframe ${index}, automatic retry.`);
@@ -91,13 +98,14 @@ function startIframeTimeout(index) {
                     console.log(`[startIframeTimeout]-3B Iframe ${index} offered Retry button.`);
                 }
             }
-        }, TIMEOUT_DURATION);
+        }, TIMEOUT_DURATION); // Check for load failure after 5 seconds (5000ms)
     } else {
         console.log(`[startIframeTimeout] Iframe ${index} is already loaded. Timeout not started.`);
     }
 
     updateGlobalLoadingState();  // Update the global loading state after starting a timeout
 }
+
 
 // Clear timeout for successful loads
 function clearIframeTimeout(index) {
