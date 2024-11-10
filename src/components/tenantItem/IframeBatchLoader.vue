@@ -1,8 +1,15 @@
 <template>
     <div>
 
-        <div class="card" v-if="props.iframeList.length == 0">
-            <div class="card-body" v-if="!appGlobalStore.globalLoading">
+        <div class="card" v-if="appGlobalStore.globalLoading">
+            <div class="card-body">
+                <h4 class="">កំពុងទាញទិន្នន័យ<span class="dot">.</span><span class="dot">.</span><span
+                        class="dot">.</span></h4>
+            </div>
+        </div>
+
+        <div class="card" v-if="!appGlobalStore.globalLoading && props.iframeList.length == 0">
+            <div class="card-body">
                 <h4 class="text-danger">ស្វែងរកមិនឃើញ!</h4>
             </div>
         </div>
