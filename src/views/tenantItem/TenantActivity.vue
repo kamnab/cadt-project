@@ -215,7 +215,7 @@ const performSearch = async () => {
 			*/
 			// Sort with true first (even though it's called ascending)
 			.sort((a, b) => a.isPin === b.isPin ? 0 : a.isPin ? -1 : 1);
-
+		appGlobalStore.setLoading(false);
 	}
 };
 
@@ -252,9 +252,7 @@ const performSearch = async () => {
 									<input type="text" v-model="searchQuery" @keyup.enter="performSearch"
 										class="form-control py-1 py-2" placeholder="..." />
 									<button @click="performSearch" class="btn btn-primary">
-										{{ appGlobalStore.globalLoading ? `កំពុងស្វែងរក` : "ស្វែងរក" }}<span class="dot"
-											style="font-size: inherit;" v-if="appGlobalStore.globalLoading"
-											v-for="dot in 3">.</span>
+										ស្វែងរក
 									</button>
 								</div>
 							</transition>
