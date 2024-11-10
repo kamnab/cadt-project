@@ -22,13 +22,10 @@ const tenantItems = ref([])
 const searchQuery = ref('');
 
 onBeforeMount(async () => {
-
 	await loadTenantItems();
 })
 
 onMounted(() => {
-	appGlobalStore.setLoading(true);
-
 	// Set iframe src early
 	iframeEdit.value.src = iframeEditSrc;
 
@@ -253,6 +250,8 @@ const performSearch = async () => {
 										class="form-control py-1 py-2" placeholder="..." />
 									<button @click="performSearch" class="btn btn-primary">
 										ស្វែងរក
+										{{ appGlobalStore.globalLoading ? `កំពុងស្វែងរក` : "ស្វែងរក" }}<span
+											v-if="appGlobalStore.globalLoading" v-for="dot in 3">.</span>
 									</button>
 								</div>
 							</transition>
