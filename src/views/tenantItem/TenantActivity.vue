@@ -4,6 +4,7 @@ import TenantItemContentLeftSection from '@/components/tenantItem/TenantItemCont
 import { onMounted, onBeforeUnmount, ref, onBeforeMount } from 'vue';
 import { loggedInUser } from '@/services/authService';
 import { RouterLink, useRoute } from 'vue-router';
+import { getTenantById } from '@/services/tenantService'
 import { getTenantItems, getTenantItemIdsByTerm } from '@/services/tenantItemService';
 import IframeBatchLoader from '@/components/tenantItem/IframeBatchLoader.vue'
 
@@ -16,13 +17,14 @@ const route = useRoute()
 
 const host = import.meta.env.VITE_API_TENANT_CONENT_ENDPOINT;
 const tenantId = route.params.id;
+const selectedTenant = ref(null)
 const iframeEdit = ref(null)
 const iframeEditSrc = `${host}/embed/article/edit`;
 const tenantItems = ref([])
 const searchQuery = ref('');
 
 onBeforeMount(async () => {
-
+	selectedTenant.value = await getTenantById(tenantId);
 	await loadTenantItems();
 })
 
@@ -225,7 +227,7 @@ const performSearch = async () => {
 
 	<div class="d-flex flex-column flex-column-fluid">
 		<!--begin::toolbar-->
-		<TenantItemToolbar>
+		<TenantItemToolbar :selectedTenant="selectedTenant">
 
 		</TenantItemToolbar>
 		<!--end::toolbar-->

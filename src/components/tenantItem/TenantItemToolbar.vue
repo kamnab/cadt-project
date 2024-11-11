@@ -1,20 +1,14 @@
 <script setup>
-import { onBeforeMount, onMounted, ref } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
-import { getTenantById } from '@/services/tenantService'
-
-const route = useRoute()
-var id = route.params.id;
-
-import { useClassItemStore } from '@/stores/classItemStore'
 import { useTenantItemStore } from '@/stores/tenantItemStore'
-const store = useClassItemStore()
 const tenantItemStore = useTenantItemStore()
-const selectedClass = ref({})
 
-onBeforeMount(async () => {
-  selectedClass.value = await getTenantById(id);
-
+const props = defineProps({
+  selectedTenant: {
+    id: String,
+    name: String,
+    description: String
+  }
 })
 
 // Toggle function to show/hide the search box
@@ -34,10 +28,12 @@ const toggleSearch = () => {
         <!--begin::Breadcrumb-->
         <ul class="breadcrumb breadcrumb-line bg-transparent text-muted fw-bold my-1 fs-7">
           <li class="breadcrumb-item">
-            <RouterLink onclick="" to="/" class="text-gray-800 text-hover-primary">Home</RouterLink>
+            <RouterLink onclick="" to="/" class="text-gray-800 text-hover-primary">
+              <i class="bi bi-house-fill fs-2"></i>
+            </RouterLink>
           </li>
 
-          <li class="breadcrumb-item">{{ selectedClass.name }}</li>
+          <li class="breadcrumb-item" v-if="props.selectedTenant != null">{{ props.selectedTenant.name }}</li>
           <!-- <li class="breadcrumb-item text-dark">View All Lessons</li> -->
         </ul>
 

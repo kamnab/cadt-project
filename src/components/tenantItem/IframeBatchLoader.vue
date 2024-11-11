@@ -1,16 +1,16 @@
 <template>
     <div>
 
-        <div class="card" v-if="appGlobalStore.globalLoading">
+        <div class="card mb-8" v-if="appGlobalStore.globalLoading">
             <div class="card-body">
-                <h4 class="">កំពុងទាញទិន្នន័យ<span class="dot">.</span><span class="dot">.</span><span
-                        class="dot">.</span></h4>
+                <h5 class="text-muted">កំពុងទាញទិន្នន័យ<span class="dot">.</span><span class="dot">.</span><span
+                        class="dot">.</span></h5>
             </div>
         </div>
 
-        <div class="card" v-if="!appGlobalStore.globalLoading && props.iframeList.length == 0">
+        <div class="card mb-5" v-if="!appGlobalStore.globalLoading && props.iframeList.length == 0">
             <div class="card-body">
-                <h4 class="text-danger">ស្វែងរកមិនឃើញ!</h4>
+                <h5 class="">មិនមានទិន្នន័យ!</h5>
             </div>
         </div>
 
@@ -25,14 +25,18 @@
                 <div v-if="iframe.status === 'loading'" class="loading-spinner"></div>
 
                 <!-- Show error message and retry button when loading fails after retries -->
-                <div v-if="iframe.status === 'error' && iframe.hasOfferedRetry"
-                    class="error-message d-flex justify-content-end">
+                <div class="error-message d-flex justify-content-end">
                     <!-- Add debug logs -->
                     <!-- <p>Status: {{ iframe.status }} | Retry Offered: {{ iframe.hasOfferedRetry }}</p> -->
-                    <div>
-                        Loading<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
-                        <button style="background-color: white; color: black;" :disabled="iframe.status === 'loading'"
-                            @click="retryIframe(index)">Reload</button>
+                    <div class="d-flex align-items-center">
+                        <div v-if="iframe.status === 'error' && iframe.hasOfferedRetry">
+                            Loading<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
+                        </div>
+                        <button
+                            v-if="(iframe.status === 'error' && iframe.hasOfferedRetry) || iframe.status === 'loaded'"
+                            class="btn btn-icon btn-active-accent" style="background-color: white; color: black;"
+                            :disabled="iframe.status === 'loading'" @click="retryIframe(index)">
+                            <i class="bi bi-arrow-clockwise fs-2"></i></button>
                     </div>
 
                 </div>
@@ -200,8 +204,7 @@ watch(() => props.iframeList, (newIframeList) => {
 }
 
 .loading-spinner,
-.status-message,
-.error-message {
+.status-message {
     position: absolute;
     top: 20px;
     left: 47%;
@@ -227,6 +230,14 @@ watch(() => props.iframeList, (newIframeList) => {
 }
 
 .error-message {
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    /* transform: translate(-50%, -50%); */
+    font-weight: bold;
+    color: #333;
+    opacity: 0.3;
+
     width: 100%;
     /* color: red; */
 }

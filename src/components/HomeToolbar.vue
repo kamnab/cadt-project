@@ -33,7 +33,9 @@ onBeforeMount(async () => {
         <!--begin::Breadcrumb-->
         <ul class="breadcrumb breadcrumb-line bg-transparent text-muted fw-bold my-1 fs-7">
           <li class="breadcrumb-item">
-            <RouterLink onclick="" to="/" class="text-gray-800 text-hover-primary">Home</RouterLink>
+            <RouterLink onclick="" to="/" class="text-gray-800 text-hover-primary">
+              <i class="bi bi-house-fill fs-2"></i>
+            </RouterLink>
           </li>
 
           <!-- <li class="breadcrumb-item text-dark">View All Lessons</li> -->
