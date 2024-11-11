@@ -52,6 +52,10 @@ const focusSearchInput = () => {
   });
 };
 
+const handleToggleSearch = () => {
+  tenantItemStore.setToggleSearch(!tenantItemStore.toggleSearch)
+}
+
 onMounted(() => {
   // Bootstrap dropdown event to trigger the focus
   const dropdownButton = document.getElementById('dropdownMenuButton');
@@ -150,7 +154,7 @@ onMounted(() => {
       </div>
 
       <div class="d-flex align-items-center flex-nowrap text-nowrap overflow-auto py-1 ms-auto">
-        <button @click="toggleSearch" class="btn btn-sm btn-icon btn-active-accent me-3">
+        <button @click="handleToggleSearch" class="btn btn-sm btn-icon btn-active-accent me-3">
           <i class="fas fa-search"></i> </button>
 
         <a href="#" class="btn btn-sm btn-active-accent active fw-bolder" data-bs-toggle="modal"
