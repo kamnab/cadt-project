@@ -33,8 +33,10 @@ onBeforeMount(async () => {
         <!--begin::Breadcrumb-->
         <ul class="breadcrumb breadcrumb-line bg-transparent text-muted fw-bold my-1 fs-7">
           <li class="breadcrumb-item">
-            <RouterLink onclick="" to="/" class="text-gray-800 text-hover-primary">
-              <i class="bi bi-house-fill fs-2"></i>
+            <RouterLink to="/" class="text-hover-primary" style="position: relative;">
+              <i class="bi bi-house fs-2 text-gray-600"></i>
+              <i class="bi bi-house fs-2 text-gray-600"
+                style="position: absolute; left: 0; transform: scale(1.05);"></i>
             </RouterLink>
           </li>
 
