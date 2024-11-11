@@ -1,7 +1,7 @@
 <script setup>
 import TenantItemToolbar from '@/components/tenantItem/TenantItemToolbar.vue'
 import TenantItemContentLeftSection from '@/components/tenantItem/TenantItemContentLeftSection.vue';
-import { onMounted, onBeforeUnmount, ref, onBeforeMount } from 'vue';
+import { onMounted, onBeforeUnmount, ref, onBeforeMount, watch } from 'vue';
 import { loggedInUser } from '@/services/authService';
 import { RouterLink, useRoute } from 'vue-router';
 import { getTenantById } from '@/services/tenantService'
@@ -17,7 +17,7 @@ const route = useRoute()
 
 const host = import.meta.env.VITE_API_TENANT_CONENT_ENDPOINT;
 const tenantId = route.params.id;
-const selectedTenant = ref(null)
+const selectedTenant = ref({})
 const iframeEdit = ref(null)
 const iframeEditSrc = `${host}/embed/article/edit`;
 const tenantItems = ref([])
@@ -227,7 +227,7 @@ const performSearch = async () => {
 
 	<div class="d-flex flex-column flex-column-fluid">
 		<!--begin::toolbar-->
-		<TenantItemToolbar :selectedTenant="selectedTenant">
+		<TenantItemToolbar :selected-tenant="selectedTenant">
 
 		</TenantItemToolbar>
 		<!--end::toolbar-->

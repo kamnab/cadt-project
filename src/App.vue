@@ -12,7 +12,7 @@ import HeaderNav from "./HeaderNav.vue";
 
   <!--begin::Main-->
 
-  <router-view>
+  <router-view :key="$route.fullPath">
   </router-view>
 
   <!--end::Main-->
