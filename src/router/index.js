@@ -2,13 +2,27 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import ClassActivity from '@/views/classItem/ClassActivity.vue'
 import ClassContentAndMaterials from '@/views/classItem/ClassContentAndMaterials.vue'
-import TenantContentAndMaterials from '@/views/tenantItem/TenantContentAndMaterials.vue'
 import TenantActivity from '@/views/tenantItem/TenantActivity.vue'
 import LoginCallback from '@/components/auth/Callback.vue'
 import NewTenant from '@/views/tenants/CreateView.vue'
 import EditTenant from '@/views/tenants/EditView.vue'
 
 import NotFound from '@/components/NotFound.vue'
+import { loggedInUser } from '@/services/authService'
+
+const requiredAuthentication = async (to, from, next) => {
+  try {
+    const user = await loggedInUser(); // Await the result from loggedInUser()
+    if (user) {
+      next(); // Proceed to the route if authenticated
+    } else {
+      next({ name: 'home' }); // Redirect to home if not authenticated
+    }
+  } catch (error) {
+    console.error('Error during authentication check:', error);
+    next({ name: 'home' }); // Handle error by redirecting to home or a fallback route
+  }
+}
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -39,22 +53,25 @@ const router = createRouter({
     {
       path: '/callback',
       name: 'login-callback',
-      component: LoginCallback,
+      component: LoginCallback
     },
     {
       path: '/tenants/create',
       name: 'tenant-create',
       component: NewTenant,
+      beforeEnter: requiredAuthentication
     },
     {
       path: '/tenants/:id/edit',
       name: 'tenant-edit',
       component: EditTenant,
+      beforeEnter: requiredAuthentication
     },
     {
       path: '/tenants/:id/',
       name: 'tenant-content',
-      component: TenantActivity
+      component: TenantActivity,
+      beforeEnter: requiredAuthentication
     },
     { path: '/:pathMatch(.*)*', component: NotFound }, // 404 route
   ]
