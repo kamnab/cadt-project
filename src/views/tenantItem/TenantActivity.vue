@@ -25,6 +25,7 @@ const searchQuery = ref('');
 
 onBeforeMount(async () => {
 	selectedTenant.value = await getTenantById(tenantId);
+
 	await loadTenantItems();
 })
 

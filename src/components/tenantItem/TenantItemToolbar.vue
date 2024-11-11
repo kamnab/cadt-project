@@ -23,6 +23,7 @@ const filteredTenants = ref([]); // The filtered tenants list
 const clearButtonVisible = ref(false); // Control visibility of the clear button
 const searchInputRef = ref(null); // Declare the reference for the search input
 
+
 // Fetch tenants before mounting
 onBeforeMount(async () => {
   allTenants.value = await getTenants();
@@ -125,17 +126,21 @@ onMounted(() => {
               <i class="bi bi-house-fill fs-2"></i>
             </RouterLink>
           </li>
-          <li class="breadcrumb-item" v-if="!appGlobalStore.globalLoading">
+          <li class="breadcrumb-item">
             <div class="dropdown">
               <button class="btn btn-sm dropdown-toggle m-0 p-0 text-gray-600 text-hover-primary" type="button"
                 id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                {{ props.selectedTenant.name }}
+                <span v-if="props.selectedTenant?.name">{{ props.selectedTenant?.name }}</span>
+                <span v-else>
+                  Loading
+                  <span v-for="dot in 3" class="dot" style="font-size: inherit;">.</span>
+                </span>
               </button>
               <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                 <li class="dropdown-search-item">
                   <div class="input-group">
-                    <input type="text" class="form-control dropdown-search" id="dropdownSearch" placeholder="Search..."
-                      v-model="searchInput" @input="handleSearch" ref="searchInputRef" />
+                    <input type="text" class="form-control dropdown-search" id="dropdownSearch" autocomplete="off"
+                      placeholder="Search..." v-model="searchInput" @input="handleSearch" ref="searchInputRef" />
                     <button v-if="clearButtonVisible" @click="clearSearch" class="btn btn-outline-secondary clear-btn"
                       type="button">&times;</button>
                   </div>
