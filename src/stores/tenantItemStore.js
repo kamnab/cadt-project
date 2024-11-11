@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 
 export const useTenantItemStore = defineStore('tenantItem', {
     state: () => ({
-        toggleSearch: false
+        toggleSearch: false,
     }),
     actions: {
         setToggleSearch(toggle) {

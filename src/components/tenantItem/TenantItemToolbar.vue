@@ -1,13 +1,13 @@
 <script setup>
 import { RouterLink, useRouter } from 'vue-router';
-import { onBeforeMount, onMounted, ref, nextTick } from 'vue';
+import { onBeforeMount, onMounted, ref, nextTick, computed, watch, onBeforeUnmount } from 'vue';
 import { useTenantItemStore } from '@/stores/tenantItemStore';
 import { useAppGlobalStore } from '@/stores/appGlobalStore';
 import { getTenants } from '@/services/tenantService';
 
 const router = useRouter();
 const tenantItemStore = useTenantItemStore();
-const appGlobalStore = useAppGlobalStore();
+const appStore = useAppGlobalStore();
 
 const props = defineProps({
   selectedTenant: {
@@ -48,9 +48,9 @@ const clearSearch = (event) => {
 
 // Focus the search input when the dropdown is shown
 const focusSearchInput = () => {
-  nextTick(() => {
-    searchInputRef.value.focus();
-  });
+  // nextTick(() => {
+  //   searchInputRef.value.focus();
+  // });
 };
 
 const handleToggleSearch = () => {
@@ -62,6 +62,9 @@ onMounted(() => {
   const dropdownButton = document.getElementById('dropdownMenuButton');
   dropdownButton.addEventListener('shown.bs.dropdown', focusSearchInput);
 });
+
+onBeforeUnmount(() => appStore.setTenantName(props.selectedTenant.name))
+
 </script>
 
 <style scoped>
@@ -102,7 +105,7 @@ onMounted(() => {
 
 /* Scrollable list of items */
 .dropdown-items {
-  max-height: 200px;
+  max-height: 250px;
   /* Set height limit for the item list */
   overflow-y: auto;
   /* Enable scrolling if items exceed the height */
@@ -132,8 +135,8 @@ onMounted(() => {
                 id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                 <span v-if="props.selectedTenant?.name">{{ props.selectedTenant?.name }}</span>
                 <span v-else>
-                  Loading
-                  <span v-for="dot in 3" class="dot" style="font-size: inherit;">.</span>
+                  {{ appStore.tenantName }}<span v-if="appStore.tenantName === 'Loading'" v-for="dot in 3" class="dot"
+                    style="font-size: inherit;">.</span>
                 </span>
               </button>
               <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
