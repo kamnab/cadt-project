@@ -1,7 +1,7 @@
 <template>
     <div>
 
-        <div class="card mb-8" v-if="appGlobalStore.globalLoading">
+        <div class="card mb-8" v-if="appGlobalStore.globalLoading && !appGlobalStore.iframeEditModalOpen">
             <div class="card-body">
                 <h5 class="text-muted">កំពុងទាញទិន្នន័យ<span class="dot">.</span><span class="dot">.</span><span
                         class="dot">.</span></h5>

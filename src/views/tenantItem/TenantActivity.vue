@@ -26,6 +26,11 @@ const searchQuery = ref('');
 onBeforeMount(async () => {
 	selectedTenant.value = await getTenantById(tenantId);
 
+	// 
+	if (iframeEdit.value) {
+		iframeEdit.value.src = iframeEditSrc;
+	}
+
 	await loadTenantItems();
 })
 
@@ -42,7 +47,18 @@ onMounted(() => {
 	window.addEventListener('message', handleMessage);
 
 	const modalElement = document.querySelector('#modal_tenant');
-	modalElement.addEventListener('show.bs.modal', handleIframeEditOnLoad);
+	modalElement.addEventListener('show.bs.modal', async () => {
+		appGlobalStore.setIframeEditModalOpen(true);
+		appGlobalStore.setLoading(true);
+		await handleIframeEditOnLoad()
+	});
+	modalElement.addEventListener('shown.bs.modal', async () => {
+		const status = iframeEdit.value.getAttribute('status');
+		if (status && status === 'loaded') {
+			appGlobalStore.setLoading(false);
+			appGlobalStore.setIframeEditModalOpen(false);
+		}
+	});
 
 	/*
 		Instead of relying on DOMContentLoaded, 
@@ -114,11 +130,18 @@ async function handleMessage(event) {
 			}
 			postMessageToIframe(iframe, await loggedInUser());
 		}
+
+		if (iframeId === '_edit') {
+			iframeEdit.value.setAttribute('status', 'loaded'); // Add the status attribute
+			appGlobalStore.setLoading(false)
+		}
+
 		//console.log(event.data)
 	}
 }
 
 async function handleIframeEditOnLoad() {
+
 	const newIframe = iframeEdit.value;
 	if (newIframe && newIframe.contentWindow) {
 		postMessageToIframe(newIframe, await loggedInUser());

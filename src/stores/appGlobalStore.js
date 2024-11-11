@@ -4,7 +4,8 @@ export const useAppGlobalStore = defineStore('appGlobal', {
     state: () => ({
         toggleSearch: false,
         globalLoading: false,
-        tenantName: 'Loading'
+        tenantName: 'Loading',
+        iframeEditModalOpen: false,
     }),
     actions: {
         setToggleSearch(toggle) {
@@ -17,6 +18,10 @@ export const useAppGlobalStore = defineStore('appGlobal', {
         },
         setTenantName(val) {
             this.tenantName = val;
+            //console.log(n)
+        },
+        setIframeEditModalOpen(val) {
+            this.iframeEditModalOpen = val;
             //console.log(n)
         }
     }
