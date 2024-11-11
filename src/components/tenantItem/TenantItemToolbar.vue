@@ -133,12 +133,12 @@ onBeforeUnmount(() => appStore.setTenantName(props.selectedTenant.name))
           </li>
           <li class="breadcrumb-item">
             <div class="dropdown">
-              <button class="btn btn-sm dropdown-toggle m-0 p-0 text-gray-600 text-hover-primary" type="button"
-                id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+              <button
+                :class="`btn btn-sm ${props.selectedTenant?.name ? 'dropdown-toggle' : ''} m-0 p-0 text-gray-600 text-hover-primary`"
+                type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                 <span v-if="props.selectedTenant?.name">{{ props.selectedTenant?.name }}</span>
                 <span v-else>
-                  {{ appStore.tenantName }}<span v-if="appStore.tenantName === 'Loading'" v-for="dot in 3" class="dot"
-                    style="font-size: inherit;">.</span>
+                  {{ appStore.tenantName }}<span v-for="dot in 3" class="dot" style="font-size: inherit;">.</span>
                 </span>
               </button>
               <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
