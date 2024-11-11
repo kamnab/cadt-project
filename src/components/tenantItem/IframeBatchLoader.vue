@@ -86,20 +86,20 @@ function startIframeTimeout(index) {
         props.iframeList[index].status = 'loading';
         props.iframeList[index].src = `${host}/article/${props.iframeList[index].itemId}/embed?retry=${props.iframeList[index].retryCount}`;
 
-        console.log(`[startIframeTimeout] Iframe ${index} loading started, retry: ${props.iframeList[index].retryCount}`);
+        //console.log(`[startIframeTimeout] Iframe ${index} loading started, retry: ${props.iframeList[index].retryCount}`);
 
         // Start a timeout to detect loading failure after TIMEOUT_DURATION
         props.iframeList[index].timeoutId = setTimeout(() => {
             if (props.iframeList[index].status === 'loading') {
                 // Iframe is still in loading state after TIMEOUT_DURATION, mark as error
-                console.log(`[startIframeTimeout]-2 Iframe ${index} timed out with ${props.iframeList[index].retryCount} retries.`);
+                //console.log(`[startIframeTimeout]-2 Iframe ${index} timed out with ${props.iframeList[index].retryCount} retries.`);
                 if (props.iframeList[index].retryCount < MAX_RETRIES) {
-                    console.log(`[startIframeTimeout]-3A Iframe ${index}, automatic retry.`);
+                    //console.log(`[startIframeTimeout]-3A Iframe ${index}, automatic retry.`);
                     retryIframe(index); // Automatic retry
                 } else {
                     props.iframeList[index].status = 'error'; // Mark as error after max retries
                     props.iframeList[index].hasOfferedRetry = true; // Offer retry button
-                    console.log(`[startIframeTimeout]-3B Iframe ${index} offered Retry button.`);
+                    //console.log(`[startIframeTimeout]-3B Iframe ${index} offered Retry button.`);
                 }
             }
         }, TIMEOUT_DURATION); // Check for load failure after 5 seconds (5000ms)
@@ -110,14 +110,13 @@ function startIframeTimeout(index) {
     updateGlobalLoadingState();  // Update the global loading state after starting a timeout
 }
 
-
 // Clear timeout for successful loads
 function clearIframeTimeout(index) {
     if (props.iframeList[index].timeoutId) {
-        console.log(`Clearing timeout for iframe ${index}, timeoutId: ${props.iframeList[index].timeoutId}, status: ${props.iframeList[index].status}`);
+        //console.log(`Clearing timeout for iframe ${index}, timeoutId: ${props.iframeList[index].timeoutId}, status: ${props.iframeList[index].status}`);
         clearTimeout(props.iframeList[index].timeoutId);
         props.iframeList[index].timeoutId = null;
-        console.log(`Timeout cleared for iframe ${index}, timeoutId reset to null`);
+        //console.log(`Timeout cleared for iframe ${index}, timeoutId reset to null`);
     }
 }
 
@@ -140,7 +139,7 @@ function retryIframe(index) {
     // Start a new timeout for the retry
     startIframeTimeout(index);
 
-    console.log(`Retrying iframe ${index}...`);
+    //console.log(`Retrying iframe ${index}...`);
 }
 
 // Initialize loading
