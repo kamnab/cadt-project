@@ -297,7 +297,7 @@ const scrollToSection = (sectionId, offset = 90) => {
 						<div id="tenant-content" class="card mb-5 mb-xxl-8"
 							style="position: sticky; top: 80px; max-height: 85vh; overflow-y: auto;">
 							<div class="card-header">
-								<h3 class="my-6 mb-0 text-gray-700">ចំណងជើងមាតិកា</h3>
+								<h4 class="my-6 mb-0 text-gray-700">ចំណងជើងមាតិកា</h4>
 							</div>
 							<!--begin::Body-->
 							<div class="card-body pt-0">
@@ -307,7 +307,7 @@ const scrollToSection = (sectionId, offset = 90) => {
 											<td style="width:1%;" class="px-0">{{ index + 1 }}.</td>
 											<td class="border-bottom ps-1">
 												<button @click="scrollToSection(`__${item.id}`)"
-													class="fw-normal text-gray-800 btn btn-link p-0 text-start">{{
+													class="fw-normal text-gray-800 btn btn-link p-0 text-start fs-7">{{
 														item.title
 													}}</button>
 											</td>

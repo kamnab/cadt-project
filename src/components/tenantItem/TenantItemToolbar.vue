@@ -120,7 +120,7 @@ onBeforeUnmount(() => appStore.setTenantName(props.selectedTenant.name))
 </style>
 
 <template>
-  <div class="toolbar" id="kt_toolbar" style="padding-top: 20px">
+  <div class="toolbar" id="kt_toolbar" style="padding-top: 20px;">
     <div class="container d-flex flex-stack flex-wrap flex-sm-nowrap">
       <div class="w-425px d-flex flex-column align-items-start justify-content-center flex-wrap me-1">
         <ul class="breadcrumb breadcrumb-line bg-transparent text-muted fw-bold my-1 fs-7">
