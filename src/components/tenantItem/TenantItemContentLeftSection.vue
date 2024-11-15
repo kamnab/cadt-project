@@ -82,42 +82,4 @@ onMounted(async () => {
 	</div>
 	<!--end::Stats Widget 5-->
 
-	<!--begin::Stats Widget 8-->
-	<div class="card mb-5 mb-xxl-8">
-		<!--begin::Body-->
-		<div class="card-body">
-			<div id="kt_stats_widget_8_carousel" class="carousel carousel-custom slide" data-bs-ride="carousel"
-				data-bs-interval="8000">
-
-				<!--begin::Carousel-->
-				<div class="carousel-inner pt-8">
-					<!--begin::Item-->
-					<div class="carousel-item active">
-						<!--begin::Section-->
-						<div class="d-flex flex-column justify-content-between h-100">
-							<!--begin::Title-->
-							<h3 class="fs-3 text-gray-800 text-hover-primary fw-bolder cursor-pointer">Homework 1</h3>
-							<!--end::Title-->
-							<!--begin::Text-->
-							<p class="text-gray-600 fw-bold pt-3 mb-0">Task for your group discussion</p>
-							<!--end::Text-->
-						</div>
-						<!--end::Section-->
-					</div>
-					<!--end::Item-->
-
-				</div>
-				<!--end::Carousel-->
-			</div>
-		</div>
-		<!--end::Body-->
-		<!--begin::Footer-->
-		<div class="card-footer border-0 pt-0 pb-10">
-
-		</div>
-		<!--end::Footer-->
-	</div>
-	<!--end::Stats Widget 8-->
-
-
 </template>

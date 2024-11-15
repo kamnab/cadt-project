@@ -5,7 +5,7 @@ import { onMounted, onBeforeUnmount, ref, onBeforeMount, watch } from 'vue';
 import { loggedInUser } from '@/services/authService';
 import { RouterLink, useRoute } from 'vue-router';
 import { getTenantById } from '@/services/tenantService'
-import { getTenantItems, getTenantItemIdsByTerm } from '@/services/tenantItemService';
+import { getTenantItems, getTenantItemIdsByTerm, getTenantItemList } from '@/services/tenantItemService';
 import IframeBatchLoader from '@/components/tenantItem/IframeBatchLoader.vue'
 
 import { useTenantItemStore } from '@/stores/tenantItemStore'
@@ -22,6 +22,7 @@ const iframeEdit = ref(null)
 const iframeEditSrc = `${host}/embed/article/edit`;
 const tenantItems = ref([])
 const searchQuery = ref('');
+const tenantItemList = ref([]); // The filtered tenants list
 
 onBeforeMount(async () => {
 	selectedTenant.value = await getTenantById(tenantId);
@@ -34,7 +35,7 @@ onBeforeMount(async () => {
 	await loadTenantItems();
 })
 
-onMounted(() => {
+onMounted(async () => {
 	appGlobalStore.setLoading(true);
 
 	// Set iframe src early
@@ -71,6 +72,14 @@ onMounted(() => {
 			await handleIframeEditOnLoad();
 		};
 	}
+
+
+	// for content listing
+	const items = await getTenantItems(tenantId);
+	const postIds = items.map((x) => x.itemId);
+	console.log(postIds);
+	tenantItemList.value = [...await getTenantItemList(postIds, tenantId)];
+
 });
 
 onBeforeUnmount(() => {
@@ -245,6 +254,23 @@ const performSearch = async () => {
 	}
 };
 
+
+const scrollToSection = (sectionId, offset = 90) => {
+	const element = document.getElementById(sectionId);
+	if (element) {
+		const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+		const offsetPosition = elementPosition - offset;
+
+		// Smooth scroll with offset
+		window.scrollTo({
+			top: offsetPosition,
+			behavior: 'smooth',
+		});
+	}
+};
+
+
+
 </script>
 
 <template>
@@ -266,6 +292,38 @@ const performSearch = async () => {
 					<div class="col-xl-4 d-none d-xl-block">
 
 						<TenantItemContentLeftSection :active-section="1"></TenantItemContentLeftSection>
+
+						<!--begin::Stats Widget 8-->
+						<div id="tenant-content" class="card mb-5 mb-xxl-8"
+							style="position: sticky; top: 80px; max-height: 85vh; overflow-y: auto;">
+							<div class="card-header">
+								<h3 class="my-6 mb-0 text-gray-700">ចំណងជើងមាតិកា</h3>
+							</div>
+							<!--begin::Body-->
+							<div class="card-body pt-0">
+								<div class="table table-sm">
+									<tbody>
+										<tr v-for="(item, index) in tenantItemList">
+											<td style="width:1%;" class="px-0">{{ index + 1 }}.</td>
+											<td class="border-bottom ps-1">
+												<button @click="scrollToSection(`__${item.id}`)"
+													class="fw-normal text-gray-800 btn btn-link p-0 text-start">{{
+														item.title
+													}}</button>
+											</td>
+										</tr>
+									</tbody>
+								</div>
+
+							</div>
+							<!--end::Body-->
+							<!--begin::Footer-->
+							<!-- <div class="card-footer border-0 pt-0 pb-10">
+
+							</div> -->
+							<!--end::Footer-->
+						</div>
+						<!--end::Stats Widget 8-->
 
 					</div>
 

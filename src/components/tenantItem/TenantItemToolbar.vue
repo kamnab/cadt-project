@@ -122,7 +122,7 @@ onBeforeUnmount(() => appStore.setTenantName(props.selectedTenant.name))
 <template>
   <div class="toolbar" id="kt_toolbar" style="padding-top: 20px">
     <div class="container d-flex flex-stack flex-wrap flex-sm-nowrap">
-      <div class="d-flex flex-column align-items-start justify-content-center flex-wrap me-1">
+      <div class="w-425px d-flex flex-column align-items-start justify-content-center flex-wrap me-1">
         <ul class="breadcrumb breadcrumb-line bg-transparent text-muted fw-bold my-1 fs-7">
           <li class="breadcrumb-item">
             <RouterLink to="/" class="text-hover-primary" style="position: relative;">
@@ -167,8 +167,25 @@ onBeforeUnmount(() => appStore.setTenantName(props.selectedTenant.name))
         <button @click="handleToggleSearch" class="btn btn-sm btn-icon btn-active-accent me-3">
           <i class="fas fa-search"></i> </button>
 
-        <a href="#" class="btn btn-sm btn-active-accent active fw-bolder" data-bs-toggle="modal"
-          data-bs-target="#modal_tenant">Add New</a>
+        <!-- <a href="#" class="btn btn-sm btn-active-accent active fw-bolder" data-bs-toggle="modal"
+          data-bs-target="#modal_tenant">Add New</a> -->
+
+        <!--begin::Radio group-->
+        <div class="btn-group w-100" data-kt-buttons="true" data-kt-buttons-target="[data-kt-button]">
+          <a href="#" class="btn btn-sm btn-active-accent active fw-bolder px-3" data-bs-toggle="modal"
+            data-bs-target="#modal_tenant">Add New</a>
+          <div style="border: 1px solid gainsboro;">
+          </div>
+          <a href="#" class="btn btn-sm btn-active-accent active fw-bolder px-0 ps-1" data-bs-toggle="modal"
+            data-bs-target="#modal_tenant">
+            <i class="bi bi-three-dots-vertical"></i>
+          </a>
+
+
+
+        </div>
+        <!--end::Radio group-->
+
       </div>
     </div>
   </div>
