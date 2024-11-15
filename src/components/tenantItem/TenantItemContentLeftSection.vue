@@ -1,7 +1,6 @@
 <script setup>
 
 import { RouterLink, useRoute } from 'vue-router';
-import { getTenantById } from '@/services/tenantService'
 import { computed, onMounted, ref } from 'vue';
 
 const route = useRoute()
@@ -100,8 +99,7 @@ onMounted(async () => {
 							<h3 class="fs-3 text-gray-800 text-hover-primary fw-bolder cursor-pointer">Homework 1</h3>
 							<!--end::Title-->
 							<!--begin::Text-->
-							<p class="text-gray-600 fw-bold pt-3 mb-0">To start a blog, think of a topic about and first
-								brainstorm ways to write details</p>
+							<p class="text-gray-600 fw-bold pt-3 mb-0">Task for your group discussion</p>
 							<!--end::Text-->
 						</div>
 						<!--end::Section-->

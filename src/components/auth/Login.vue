@@ -55,10 +55,10 @@
             <!--begin::Menu-->
             <div class="dropdown-menu menu menu-sub menu-sub-dropdown menu-column menu-rounded fw-semibold menu-title-gray-800 menu-hover-bg menu-state-title-primary w-300px w-md-350px"
                 data-kt-menu="true">
-                <div class="menu-item mx-3">
-                    <div class="menu-content fs-6 text-dark fw-bold py-6">
+                <div class="menu-item mx-0 d-flex">
+                    <div class="menu-content text-dark fw-bold py-6">
                         <!--begin::Svg Icon | path: /var/www/preview.keenthemes.com/keenthemes/start/docs/core/html/src/media/icons/duotune/technology/teh002.svg-->
-                        <span class="svg-icon svg-icon-muted svg-icon-2hx">
+                        <!-- <span class="svg-icon svg-icon-muted">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <path opacity="0.3"
@@ -68,7 +68,7 @@
                                     d="M9.2 12.9C9.1 12.8 9.10001 12.7 9.10001 12.6C9.00001 12.2 9.3 11.7 9.7 11.6C10.1 11.5 10.6 11.8 10.7 12.2C10.7 12.3 10.7 12.4 10.7 12.5L9.2 12.9ZM14.8 12.9C14.9 12.8 14.9 12.7 14.9 12.6C15 12.2 14.7 11.7 14.3 11.6C13.9 11.5 13.4 11.8 13.3 12.2C13.3 12.3 13.3 12.4 13.3 12.5L14.8 12.9ZM16 7.29998C16.3 6.99998 16.5 6.69998 16.7 6.29998C16.3 6.29998 15.8 6.30001 15.4 6.20001C15 6.10001 14.7 5.90001 14.4 5.70001C13.8 5.20001 13 5.00002 12.2 4.90002C9.9 4.80002 8.10001 6.79997 8.10001 9.09997V11.4C8.90001 10.7 9.40001 9.8 9.60001 9C11 9.1 13.4 8.69998 14.5 8.29998C14.7 9.39998 15.3 10.5 16.1 11.4V9C16.1 8.5 16 8 15.8 7.5C15.8 7.5 15.9 7.39998 16 7.29998Z"
                                     fill="currentColor" />
                             </svg>
-                        </span>
+                        </span> -->
                         <!--end::Svg Icon-->
                         <span class="mx-3">{{ user.profile.name }}</span>
 
@@ -80,7 +80,7 @@
                 <div class="menu-item mx-3">
                     <a href="https://my.codemie.dev" class="menu-link px-4 py-3">
                         <div class="symbol symbol-35px">
-                            <span class="symbol-label bg-light-info">
+                            <span class="symbol-label ">
                                 <!--begin::Svg Icon | path: /var/www/preview.keenthemes.com/keenthemes/start/docs/core/html/src/media/icons/duotune/files/fil003.svg-->
                                 <span class="svg-icon svg-icon-muted svg-icon-2">
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -105,7 +105,7 @@
                 <div class="menu-item mx-3">
                     <a href="https://blog.codemie.dev" class="menu-link px-4 py-3">
                         <div class="symbol symbol-35px">
-                            <span class="symbol-label bg-light-info">
+                            <span class="symbol-label">
                                 <img style="" alt="Logo" src="@/assets/media/logos/logo-default.png" class="h-30px" />
                             </span>
                         </div>
@@ -119,10 +119,10 @@
 
                 <div class="separator mt-3"></div>
                 <div class="menu-item mx-3">
-                    <a href="https://classroom-learning.netlify.app" class="menu-link px-4 py-3">
+                    <a href="https://classroom-learning.netlify.app" class="menu-link px-4 py-3 my-3">
                         <div class="symbol symbol-35px">
-                            <span class="symbol-label bg-light-info">
-                                <img style="" alt="Logo" src="@/assets/media/logos/logo-forum.png" class="h-30px" />
+                            <span class="symbol-label">
+                                <img style="" alt="Logo" src="@/assets/media/logos/logo-forum.png" class="h-25px" />
                             </span>
                         </div>
 
@@ -133,10 +133,10 @@
                     </a>
                 </div>
 
-                <div class="separator mt-3"></div>
+                <div class="separator"></div>
                 <div class="menu-item mx-2">
                     <div class="menu-content py-5 d-flex justify-content-center">
-                        <button @click="logoutRedirect" v-if="user" class="btn btn-light-danger btn-sm">Logout</button>
+                        <button @click="logoutRedirect" v-if="user" class="btn btn-light btn-sm">Logout</button>
                     </div>
                 </div>
             </div>
