@@ -4,7 +4,7 @@ import Login from "@/components/auth/Login.vue";
 
 <template>
   <div id="kt_header" class="header" data-kt-sticky="true" data-kt-sticky-name="header"
-    data-kt-sticky-offset="{default: '200px', lg: '300px'}">
+    data-kt-sticky-offset="{default: '250px'}">
     <!--begin::Container-->
     <div class="container d-flex align-items-stretch justify-content-between">
       <!--begin::Left-->
