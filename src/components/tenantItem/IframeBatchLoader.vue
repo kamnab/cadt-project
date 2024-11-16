@@ -18,7 +18,7 @@
         <div v-for="(iframe, index) in props.iframeList" :key="index" :id="`__${iframe.itemId}`" class="iframe-wrapper">
             <div class="iframe-container">
                 <iframe :id="`_${iframe.itemId}`" :src="iframe.src" style="width: 100%; min-height: 30vh;"
-                    @error="onIframeError(index)" loading="lazy">
+                    @error="onIframeError(index)">
                 </iframe>
 
                 <!-- Show loading spinner while iframe is loading -->

@@ -269,8 +269,6 @@ const scrollToSection = (sectionId, offset = 90) => {
 	}
 };
 
-
-
 </script>
 
 <template>
@@ -306,10 +304,20 @@ const scrollToSection = (sectionId, offset = 90) => {
 										<tr v-for="(item, index) in tenantItemList">
 											<td style="width:1%;" class="px-0">{{ index + 1 }}.</td>
 											<td class="border-bottom ps-1">
-												<button @click="scrollToSection(`__${item.id}`)"
-													class="fw-normal text-gray-800 btn btn-link p-0 text-start fs-7">{{
+
+												<div v-if="!tenantItems.some(x => x.itemId ==
+													item.id)" class="fw-normal text-gray-600 p-0 text-start fs-7">
+													{{
 														item.title
-													}}</button>
+													}}
+												</div>
+
+												<button v-else @click="scrollToSection(`__${item.id}`)"
+													:class="`fw-normal text-gray-900 btn btn-link p-0 text-start fs-7`">{{
+														item.title
+													}}<span style="font-size: inherit;" class="dot" v-if="!tenantItems.some(x => x.itemId ==
+														item.id && x.status == 'loaded')" v-for="i in 3">.</span>
+												</button>
 											</td>
 										</tr>
 									</tbody>
@@ -326,6 +334,9 @@ const scrollToSection = (sectionId, offset = 90) => {
 						<!--end::Stats Widget 8-->
 
 					</div>
+
+
+
 
 					<div class="col-xl-8">
 
@@ -393,6 +404,78 @@ const scrollToSection = (sectionId, offset = 90) => {
 	</div>
 
 
+	<!-- custom aside -->
+	<div>
+		<!-- Drawer aside -->
+		<aside :class="['drawer', { 'drawer-active': appGlobalStore.tenantActivityDrawerOpen }]">
+			<div class="drawer-content">
+				<div class="d-flex justify-content-end border-0 h-50px">
+					<!--begin::Close-->
+					<div style="position: absolute; top: 0; right: 5px;" class="btn btn-icon btn-sm btn-light"
+						@click="appGlobalStore.setTenantActivityDrawerOpen(!appGlobalStore.tenantActivityDrawerOpen)">
+						<!--begin::Svg Icon | path: icons/duotone/Navigation/Close.svg-->
+						<span class="svg-icon svg-icon-1">
+							<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+								width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+								<g transform="translate(12.000000, 12.000000) rotate(-45.000000) translate(-12.000000, -12.000000) translate(4.000000, 4.000000)"
+									fill="#000000">
+									<rect fill="#000000" x="0" y="7" width="16" height="2" rx="1"></rect>
+									<rect fill="#000000" opacity="0.5"
+										transform="translate(8.000000, 8.000000) rotate(-270.000000) translate(-8.000000, -8.000000)"
+										x="0" y="7" width="16" height="2" rx="1"></rect>
+								</g>
+							</svg>
+						</span>
+						<!--end::Svg Icon-->
+					</div>
+					<!--end::Close-->
+				</div>
+
+				<TenantItemContentLeftSection :active-section="1"></TenantItemContentLeftSection>
+
+				<!--begin::Stats Widget 8-->
+				<div id="tenant-content" class="card mb-5 mb-xxl-8"
+					style="position: sticky; top: 80px; max-height: 85vh; overflow-y: auto;">
+					<div class="card-header">
+						<h4 class="my-6 mb-0 text-gray-700">ចំណងជើងមាតិកា</h4>
+					</div>
+					<!--begin::Body-->
+					<div class="card-body pt-0">
+						<div class="table table-sm">
+							<tbody>
+								<tr v-for="(item, index) in tenantItemList">
+									<td style="width:1%;" class="px-0">{{ index + 1 }}.</td>
+									<td class="border-bottom ps-1">
+										<button @click="scrollToSection(`__${item.id}`)"
+											class="fw-normal text-gray-800 btn btn-link p-0 text-start fs-7">{{
+												item.title
+											}}<span style="font-size: inherit;" class="dot" v-if="!tenantItems.some(x => x.itemId ==
+												item.id && x.status == 'loaded')" v-for="i in 3">.</span>
+										</button>
+									</td>
+								</tr>
+							</tbody>
+						</div>
+
+					</div>
+					<!--end::Body-->
+					<!--begin::Footer-->
+					<!-- <div class="card-footer border-0 pt-0 pb-10">
+
+							</div> -->
+					<!--end::Footer-->
+				</div>
+				<!--end::Stats Widget 8-->
+
+
+			</div>
+		</aside>
+
+		<!-- Overlay to close the drawer by clicking outside -->
+		<div v-if="appGlobalStore.tenantActivityDrawerOpen" class="drawer-overlay"
+			@click="appGlobalStore.setTenantActivityDrawerOpen(!appGlobalStore.tenantActivityDrawerOpen)"></div>
+	</div>
+	<!-- custom aside -->
 
 </template>
 
@@ -406,5 +489,46 @@ const scrollToSection = (sectionId, offset = 90) => {
 .fade-enter,
 .fade-leave-to {
 	opacity: 0;
+}
+</style>
+
+<style scoped>
+/* Drawer styles */
+.drawer {
+	position: fixed;
+	top: 0;
+	left: -330px;
+	/* Initially hidden on the left side */
+	width: 325px;
+	height: 100%;
+	background-color: #f8f9fa;
+	box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+	transition: left 0.3s ease;
+	/* Smooth transition */
+	z-index: 1000;
+}
+
+.drawer-active {
+	left: 0;
+	/* Drawer slides in when active */
+}
+
+.drawer-content {
+	padding-left: 20px;
+	padding-right: 20px;
+	width: 100%;
+}
+
+.drawer-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.5);
+	/* Semi-transparent overlay */
+	z-index: 999;
+	/* Ensure overlay is below the drawer */
+	transition: opacity 0.3s ease;
 }
 </style>
