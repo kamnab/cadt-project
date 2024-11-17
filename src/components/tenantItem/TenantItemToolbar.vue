@@ -307,7 +307,7 @@ onUnmounted(() => {
 <style scoped>
 #display-on-scroll {
   position: sticky;
-  top: 60px;
+  top: 59px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   /* border-radius: 5px; */
   transition: opacity 0.3s ease;

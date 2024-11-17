@@ -7,7 +7,8 @@ const route = useRoute()
 var id = route.params.id;
 
 const props = defineProps({
-	activeSection: Number
+	activeSection: Number,
+	numberOfPost: { type: Number, default: 0 }
 })
 
 import { useClassItemStore } from '@/stores/classItemStore'
@@ -60,7 +61,7 @@ onMounted(async () => {
 				<div>
 					<RouterLink @click="handleClick" :to="{ name: 'tenant-content', params: { id } }"
 						class="fs-4 text-gray-800 text-hover-primary fw-bolder">Activity</RouterLink>
-					<div class="fs-7 text-muted fw-bold mt-1">3 Post</div>
+					<div class="fs-7 text-muted fw-bold mt-1">{{ numberOfPost }} Post</div>
 				</div>
 				<!--end::Title-->
 			</div>
@@ -68,7 +69,7 @@ onMounted(async () => {
 			<!--begin::Info-->
 			<div class="fw-bolder text-muted pt-7">
 				<span class="d-block">4 Persons</span>
-				<span class="d-block pt-2">2 Comments</span>
+				<!-- <span class="d-block pt-2">2 Comments</span> -->
 			</div>
 			<!--end::Info-->
 			<!--begin::Progress-->

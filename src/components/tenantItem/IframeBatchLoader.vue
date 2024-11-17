@@ -167,6 +167,11 @@ const debouncedUpdateIframeList = debounce((newIframeList) => {
             return {
                 ...newIframe,
                 src: `${host}/article/${newIframe.itemId}/embed`, // Set the source URL
+                // ------ 
+                status: 'loading',
+                retryCount: 0, // Track retries
+                hasOfferedRetry: false, // Control if retry button is shown
+                timeoutId: null,
             };
         }
     });

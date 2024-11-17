@@ -77,7 +77,7 @@ onMounted(async () => {
 	// for content listing
 	const items = await getTenantItems(tenantId);
 	const postIds = items.map((x) => x.itemId);
-	console.log(postIds);
+	//console.log(postIds);
 	tenantItemList.value = await getTenantItemList(postIds, tenantId);
 
 });
@@ -289,7 +289,8 @@ const scrollToSection = (sectionId, offset = 90) => {
 				<div class="row g-0 g-xl-5 g-xxl-8">
 					<div class="col-xl-4 d-none d-xl-block">
 
-						<TenantItemContentLeftSection :active-section="1"></TenantItemContentLeftSection>
+						<TenantItemContentLeftSection :active-section="1" :number-of-post="tenantItemList.length">
+						</TenantItemContentLeftSection>
 
 						<!--begin::Stats Widget 8-->
 						<div id="tenant-content" class="card mb-5 mb-xxl-8"
@@ -431,7 +432,8 @@ const scrollToSection = (sectionId, offset = 90) => {
 					<!--end::Close-->
 				</div>
 
-				<TenantItemContentLeftSection :active-section="1"></TenantItemContentLeftSection>
+				<TenantItemContentLeftSection :active-section="1" :number-of-post="tenantItemList.length">
+				</TenantItemContentLeftSection>
 
 				<!--begin::Stats Widget 8-->
 				<div id="tenant-content" class="card mb-5 mb-xxl-8"
