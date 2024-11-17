@@ -198,7 +198,7 @@ onUnmounted(() => {
 
 
 
-        <!--begin::Radio group-->
+        <!--begin::Control group-->
         <!-- <div class="btn-group w-100" data-kt-buttons="true" data-kt-buttons-target="[data-kt-button]">
           <a href="#" class="btn btn-sm btn-active-accent active fw-bolder px-3" data-bs-toggle="modal"
             data-bs-target="#modal_tenant">Add New</a>
@@ -208,11 +208,9 @@ onUnmounted(() => {
             data-bs-target="#modal_tenant">
             <i class="bi bi-three-dots-vertical"></i>
           </a>
-
-
-
         </div> -->
-        <!--end::Radio group-->
+        <!--end::Control group-->
+
 
         <!-- begin::Aside -->
         <button @click="appStore.setTenantActivityDrawerOpen(!appStore.tenantActivityDrawerOpen)"
@@ -237,7 +235,7 @@ onUnmounted(() => {
     </div>
   </div>
 
-  <div v-show="isVisible" id="display-on-scroll" class=" d-xl-none" style="background-color: white;">
+  <div v-show="isVisible" id="display-on-scroll" class="d-xl-none" style="background-color: white;">
 
     <!-- The div that will appear after scrolling 200px -->
     <div class="container">

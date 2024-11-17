@@ -78,7 +78,7 @@ onMounted(async () => {
 	const items = await getTenantItems(tenantId);
 	const postIds = items.map((x) => x.itemId);
 	console.log(postIds);
-	tenantItemList.value = [...await getTenantItemList(postIds, tenantId)];
+	tenantItemList.value = await getTenantItemList(postIds, tenantId);
 
 });
 
@@ -295,7 +295,7 @@ const scrollToSection = (sectionId, offset = 90) => {
 						<div id="tenant-content" class="card mb-5 mb-xxl-8"
 							style="position: sticky; top: 80px; max-height: 85vh; overflow-y: auto;">
 							<div class="card-header">
-								<h4 class="my-6 mb-0 text-gray-700">ចំណងជើងមាតិកា</h4>
+								<h4 class="my-6 mb-0 text-gray-800">ចំណងជើងមាតិកា</h4>
 							</div>
 							<!--begin::Body-->
 							<div class="card-body pt-0">
@@ -405,7 +405,7 @@ const scrollToSection = (sectionId, offset = 90) => {
 
 
 	<!-- custom aside -->
-	<div>
+	<div class="d-xl-none">
 		<!-- Drawer aside -->
 		<aside :class="['drawer', { 'drawer-active': appGlobalStore.tenantActivityDrawerOpen }]">
 			<div class="drawer-content">
@@ -437,7 +437,7 @@ const scrollToSection = (sectionId, offset = 90) => {
 				<div id="tenant-content" class="card mb-5 mb-xxl-8"
 					style="position: sticky; top: 80px; max-height: 85vh; overflow-y: auto;">
 					<div class="card-header">
-						<h4 class="my-6 mb-0 text-gray-700">ចំណងជើងមាតិកា</h4>
+						<h4 class="my-6 mb-0 text-gray-800">ចំណងជើងមាតិកា</h4>
 					</div>
 					<!--begin::Body-->
 					<div class="card-body pt-0">
@@ -446,8 +446,16 @@ const scrollToSection = (sectionId, offset = 90) => {
 								<tr v-for="(item, index) in tenantItemList">
 									<td style="width:1%;" class="px-0">{{ index + 1 }}.</td>
 									<td class="border-bottom ps-1">
-										<button @click="scrollToSection(`__${item.id}`)"
-											class="fw-normal text-gray-800 btn btn-link p-0 text-start fs-7">{{
+
+										<div v-if="!tenantItems.some(x => x.itemId ==
+											item.id)" class="fw-normal text-gray-600 p-0 text-start fs-7">
+											{{
+												item.title
+											}}
+										</div>
+
+										<button v-else @click="scrollToSection(`__${item.id}`)"
+											:class="`fw-normal text-gray-900 btn btn-link p-0 text-start fs-7`">{{
 												item.title
 											}}<span style="font-size: inherit;" class="dot" v-if="!tenantItems.some(x => x.itemId ==
 												item.id && x.status == 'loaded')" v-for="i in 3">.</span>
@@ -466,7 +474,6 @@ const scrollToSection = (sectionId, offset = 90) => {
 					<!--end::Footer-->
 				</div>
 				<!--end::Stats Widget 8-->
-
 
 			</div>
 		</aside>
