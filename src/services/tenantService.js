@@ -11,10 +11,10 @@ const getTenantById = async (id) => {
                 },
             });
 
-            const { id: _id, name, description } = response.data;
-            return { id, name, description };
+            const { id: _id, name, description, createdByUserId } = response.data;
+            return { id, name, description, createdByUserId };
 
-            //console.log(tenants.value);
+            //console.log(response.data);
         } catch (error) {
             console.error('API call failed:', error);
         }

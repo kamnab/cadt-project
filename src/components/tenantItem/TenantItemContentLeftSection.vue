@@ -9,7 +9,8 @@ var id = route.params.id;
 const props = defineProps({
 	activeSection: Number,
 	numberOfPost: { type: Number, default: 0 },
-	numberofUser: { type: Number, default: 0 }
+	members: { type: Array, default: [] },
+	adminUserId: String
 })
 
 import { useClassItemStore } from '@/stores/classItemStore'
@@ -69,7 +70,9 @@ onMounted(async () => {
 			<!--end::Section-->
 			<!--begin::Info-->
 			<div class="fw-bolder text-muted pt-7">
-				<span class="d-block">{{ numberofUser }} {{ numberOfPost <= 1 ? 'Member' : 'Members' }}</span>
+				<span data-bs-toggle="modal" data-bs-target="#modal_tenant_members" class="d-block">{{ members.length }}
+					{{
+						members.length <= 1 ? 'Member' : 'Members' }}</span>
 						<!-- <span class="d-block pt-2">2 Comments</span> -->
 			</div>
 			<!--end::Info-->
@@ -83,5 +86,6 @@ onMounted(async () => {
 		<!--end::Body-->
 	</div>
 	<!--end::Stats Widget 5-->
+
 
 </template>

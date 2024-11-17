@@ -8,6 +8,7 @@ import { getTenantById } from '@/services/tenantService'
 import { getTenantItems, getTenantItemIdsByTerm, getTenantItemList } from '@/services/tenantItemService';
 import { getTenantUsers } from '@/services/tenantUserService';
 import IframeBatchLoader from '@/components/tenantItem/IframeBatchLoader.vue'
+import formatDate from '@/utilities/dateHelper';
 
 import { useTenantItemStore } from '@/stores/tenantItemStore'
 const tenantItemStore = useTenantItemStore()
@@ -292,11 +293,11 @@ const scrollToSection = (sectionId, offset = 90) => {
 					<div class="col-xl-4 d-none d-xl-block">
 
 						<TenantItemContentLeftSection :active-section="1" :number-of-post="tenantItemList.length"
-							:numberof-user="tenantUsers.length">
+							:members="tenantUsers" :admin-user-id="selectedTenant.createdByUserId">
 						</TenantItemContentLeftSection>
 
 						<!--begin::Stats Widget 8-->
-						<div id="tenant-content" class="card mb-5 mb-xxl-8"
+						<div class="card mb-5 mb-xxl-8"
 							style="position: sticky; top: 80px; max-height: 85vh; overflow-y: auto;">
 							<div class="card-header">
 								<h4 class="my-6 mb-0 text-gray-800">ចំណងជើងមាតិកា</h4>
@@ -436,11 +437,11 @@ const scrollToSection = (sectionId, offset = 90) => {
 				</div>
 
 				<TenantItemContentLeftSection :active-section="1" :number-of-post="tenantItemList.length"
-					:numberof-user="tenantUsers.length">
+					:members="tenantUsers" :admin-user-id="selectedTenant.createdByUserId">
 				</TenantItemContentLeftSection>
 
 				<!--begin::Stats Widget 8-->
-				<div id="tenant-content" class="card mb-5 mb-xxl-8"
+				<div class="card mb-5 mb-xxl-8"
 					style="position: sticky; top: 80px; max-height: 85vh; overflow-y: auto;">
 					<div class="card-header">
 						<h4 class="my-6 mb-0 text-gray-800">ចំណងជើងមាតិកា</h4>
@@ -489,6 +490,80 @@ const scrollToSection = (sectionId, offset = 90) => {
 			@click="appGlobalStore.setTenantActivityDrawerOpen(!appGlobalStore.tenantActivityDrawerOpen)"></div>
 	</div>
 	<!-- custom aside -->
+
+
+	<!--begin::Modal - Tenant Members-->
+	<div class="modal fade" id="modal_tenant_members" data-bs-backdrop="static" tabindex="-1" role="dialog"
+		aria-hidden="true">
+		<div class="modal-dialog modal-dialog-scrollable" role="document" style="z-index: 2000;">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Members</h5>
+					<!--begin::Close-->
+					<div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal">
+						<!--begin::Svg Icon | path: icons/duotone/Navigation/Close.svg-->
+						<span class="svg-icon svg-icon-2x">
+							<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+								width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+								<g transform="translate(12.000000, 12.000000) rotate(-45.000000) translate(-12.000000, -12.000000) translate(4.000000, 4.000000)"
+									fill="#000000">
+									<rect fill="#000000" x="0" y="7" width="16" height="2" rx="1" />
+									<rect fill="#000000" opacity="0.5"
+										transform="translate(8.000000, 8.000000) rotate(-270.000000) translate(-8.000000, -8.000000)"
+										x="0" y="7" width="16" height="2" rx="1" />
+								</g>
+							</svg>
+						</span>
+						<!--end::Svg Icon-->
+					</div>
+					<!--end::Close-->
+				</div>
+				<div class="modal-body pt-2 pb-0">
+					<!--begin::Table-->
+					<div class="table-responsive">
+						<table class="table table-borderless align-middle">
+							<thead>
+								<tr>
+									<th class="p-0 w-50px">No.</th>
+									<th class="p-0 min-w-150px">Email</th>
+								</tr>
+							</thead>
+							<tbody>
+								<!-- .sort((a, b) => a.createdOn === b.createdOn ? 0 : a.createdOn ? -1 : 1) -->
+								<tr v-for="(member, index) in tenantUsers
+									// Sort alphabetically, case-insensitive
+									.sort((a, b) => a.userName.toLowerCase().localeCompare(b.userName.toLowerCase()))">
+									<td class="px-0 py-3">
+										<div class="symbol symbol-55px mt-1 me-5">
+											<span class="symbol-label bg-light-primary align-items-center ">
+												<!-- <img alt="Logo" src="" class="mh-40px" /> -->
+												{{ index + 1 }}
+											</span>
+										</div>
+									</td>
+									<td class="px-0">
+										<a href="#" class="text-gray-800 fw-bolder text-hover-primary">{{
+											member.userName }}</a>
+										<div class="d-flex justify-content-between">
+											<span class="text-muted fw-bold d-block mt-1" style="width: 100%;">{{
+												formatDate(member.createdOn)
+											}} </span>
+											<span class="text-primary fw-bold"
+												v-if="selectedTenant.createdByUserId === member.createdByUserId">admin</span>
+										</div>
+									</td>
+								</tr>
+
+							</tbody>
+						</table>
+					</div>
+					<!--end::Table-->
+				</div>
+
+			</div>
+		</div>
+	</div>
+	<!--end::Modal - Tenant Members-->
 
 </template>
 

@@ -196,8 +196,6 @@ onUnmounted(() => {
             style="position: absolute; right: 11px; transform: scale(1.35);"></i>
         </button>
 
-
-
         <!--begin::Control group-->
         <!-- <div class="btn-group w-100" data-kt-buttons="true" data-kt-buttons-target="[data-kt-button]">
           <a href="#" class="btn btn-sm btn-active-accent active fw-bolder px-3" data-bs-toggle="modal"
