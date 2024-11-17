@@ -6,6 +6,7 @@ import { loggedInUser } from '@/services/authService';
 import { RouterLink, useRoute } from 'vue-router';
 import { getTenantById } from '@/services/tenantService'
 import { getTenantItems, getTenantItemIdsByTerm, getTenantItemList } from '@/services/tenantItemService';
+import { getTenantUsers } from '@/services/tenantUserService';
 import IframeBatchLoader from '@/components/tenantItem/IframeBatchLoader.vue'
 
 import { useTenantItemStore } from '@/stores/tenantItemStore'
@@ -23,10 +24,11 @@ const iframeEditSrc = `${host}/embed/article/edit`;
 const tenantItems = ref([])
 const searchQuery = ref('');
 const tenantItemList = ref([]); // The filtered tenants list
+const tenantUsers = ref([])
 
 onBeforeMount(async () => {
 	selectedTenant.value = await getTenantById(tenantId);
-
+	tenantUsers.value = await getTenantUsers(tenantId);
 	// 
 	if (iframeEdit.value) {
 		iframeEdit.value.src = iframeEditSrc;
@@ -289,7 +291,8 @@ const scrollToSection = (sectionId, offset = 90) => {
 				<div class="row g-0 g-xl-5 g-xxl-8">
 					<div class="col-xl-4 d-none d-xl-block">
 
-						<TenantItemContentLeftSection :active-section="1" :number-of-post="tenantItemList.length">
+						<TenantItemContentLeftSection :active-section="1" :number-of-post="tenantItemList.length"
+							:numberof-user="tenantUsers.length">
 						</TenantItemContentLeftSection>
 
 						<!--begin::Stats Widget 8-->
@@ -432,7 +435,8 @@ const scrollToSection = (sectionId, offset = 90) => {
 					<!--end::Close-->
 				</div>
 
-				<TenantItemContentLeftSection :active-section="1" :number-of-post="tenantItemList.length">
+				<TenantItemContentLeftSection :active-section="1" :number-of-post="tenantItemList.length"
+					:numberof-user="tenantUsers.length">
 				</TenantItemContentLeftSection>
 
 				<!--begin::Stats Widget 8-->

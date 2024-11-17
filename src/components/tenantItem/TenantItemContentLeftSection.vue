@@ -8,7 +8,8 @@ var id = route.params.id;
 
 const props = defineProps({
 	activeSection: Number,
-	numberOfPost: { type: Number, default: 0 }
+	numberOfPost: { type: Number, default: 0 },
+	numberofUser: { type: Number, default: 0 }
 })
 
 import { useClassItemStore } from '@/stores/classItemStore'
@@ -68,8 +69,8 @@ onMounted(async () => {
 			<!--end::Section-->
 			<!--begin::Info-->
 			<div class="fw-bolder text-muted pt-7">
-				<span class="d-block">4 Persons</span>
-				<!-- <span class="d-block pt-2">2 Comments</span> -->
+				<span class="d-block">{{ numberofUser }} {{ numberOfPost <= 1 ? 'Member' : 'Members' }}</span>
+						<!-- <span class="d-block pt-2">2 Comments</span> -->
 			</div>
 			<!--end::Info-->
 			<!--begin::Progress-->
