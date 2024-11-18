@@ -261,7 +261,7 @@ const performSearch = async () => {
 const scrollToSection = (sectionId, offset = 90) => {
 	const element = document.getElementById(sectionId);
 	if (element) {
-		const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+		const elementPosition = element.getBoundingClientRect().top + window.scrollY;
 		const offsetPosition = elementPosition - offset;
 
 		// Smooth scroll with offset

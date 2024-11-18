@@ -18,7 +18,7 @@
         <div v-for="(iframe, index) in props.iframeList" :key="index" :id="`__${iframe.itemId}`" class="iframe-wrapper">
             <div class="iframe-container">
                 <iframe :id="`_${iframe.itemId}`" :src="iframe.src" style="width: 100%; min-height: 30vh;"
-                    @error="onIframeError(index)">
+                    @error="onIframeError(index)" @load="setupMessageListener">
                 </iframe>
 
                 <!-- Show loading spinner while iframe is loading -->
@@ -40,7 +40,7 @@
                     </div>
 
                 </div>
-
+                <div style="position: absolute; bottom: 300px;" :id="`goto_${iframe.itemId}`"></div>
             </div>
         </div>
     </div>
@@ -195,6 +195,41 @@ watch(() => props.iframeList, (newIframeList) => {
     debouncedUpdateIframeList(newIframeList);
     updateGlobalLoadingState(); // Update global loading state when prop changes
 });
+
+
+const setupMessageListener = () => {
+    window.addEventListener('message', (event) => {
+        // Ensure the message is coming from the correct iframe domain
+        //if (event.origin !== 'https://blog.codemie.dev') return;
+
+        const { action, top, id } = event.data;
+
+        if (action === 'scrollTo' && typeof top === 'number') {
+            // Scroll the parent window based on the position of the element in the iframe
+            // window.scrollTo({
+            //     top: window.scrollY + top,  // Adjusting the scroll position
+            //     behavior: 'smooth',
+            // });
+
+            scrollToSection(id)
+        }
+    });
+};
+
+const scrollToSection = (sectionId, offset = 90) => {
+    const element = document.getElementById('goto' + sectionId);
+    if (element) {
+        const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+        const offsetPosition = elementPosition - offset;
+
+        // Smooth scroll with offset
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth',
+        });
+    }
+};
+
 </script>
 
 <style scoped>
