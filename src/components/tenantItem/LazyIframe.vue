@@ -29,7 +29,7 @@ let observer;
 // Function to set the iframe src when it is in the viewport
 const loadIframe = () => {
     if (iframeElement.value) {
-        iframeElement.value.src = `${host}/article/${props.itemId}/embed`;
+        iframeElement.value.src = `${host}/embed/article/${props.itemId}`;
     }
 };
 

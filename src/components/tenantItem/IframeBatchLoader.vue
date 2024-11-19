@@ -84,7 +84,7 @@ function startIframeTimeout(index) {
 
         // Start loading the iframe immediately
         props.iframeList[index].status = 'loading';
-        props.iframeList[index].src = `${host}/article/${props.iframeList[index].itemId}/embed?retry=${props.iframeList[index].retryCount}`;
+        props.iframeList[index].src = `${host}/embed/article/${props.iframeList[index].itemId}?retry=${props.iframeList[index].retryCount}`;
 
         //console.log(`[startIframeTimeout] Iframe ${index} loading started, retry: ${props.iframeList[index].retryCount}`);
 
@@ -134,7 +134,7 @@ function retryIframe(index) {
     props.iframeList[index].retryCount++; // Increment retry count
     props.iframeList[index].status = 'loading'; // Set back to loading
     props.iframeList[index].hasOfferedRetry = false; // Hide retry button during retry
-    props.iframeList[index].src = `${host}/article/${props.iframeList[index].itemId}/embed?retry=${props.iframeList[index].retryCount}`;
+    props.iframeList[index].src = `${host}/embed/article/${props.iframeList[index].itemId}?retry=${props.iframeList[index].retryCount}`;
 
     // Start a new timeout for the retry
     startIframeTimeout(index);
@@ -160,13 +160,13 @@ const debouncedUpdateIframeList = debounce((newIframeList) => {
             // If iframe exists, preserve its status and retry count
             return {
                 ...existingIframe,
-                src: `${host}/article/${newIframe.itemId}/embed`, // Update src if needed
+                src: `${host}/embed/article/${newIframe.itemId}`, // Update src if needed
             };
         } else {
             // If iframe is new, initialize with default loading state
             return {
                 ...newIframe,
-                src: `${host}/article/${newIframe.itemId}/embed`, // Set the source URL
+                src: `${host}/embed/article/${newIframe.itemId}`, // Set the source URL
                 // ------ 
                 status: 'loading',
                 retryCount: 0, // Track retries
