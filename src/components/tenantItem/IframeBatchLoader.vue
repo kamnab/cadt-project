@@ -40,7 +40,7 @@
                     </div>
 
                 </div>
-                <div style="position: absolute; bottom: 300px;" :id="`goto_${iframe.itemId}`"></div>
+                <div style="position: absolute; bottom: 350px;" :id="`goto_${iframe.itemId}`"></div>
             </div>
         </div>
     </div>
