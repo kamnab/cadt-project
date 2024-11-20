@@ -35,7 +35,7 @@
                         <button
                             v-if="(iframe.status === 'error' && iframe.hasOfferedRetry) || iframe.status === 'loaded'"
                             class="btn btn-icon btn-active-accent" style="background-color: white; color: black;"
-                            :disabled="iframe.status === 'loading'" @click="retryIframe(index)">
+                            :disabled="iframe.status === 'loading'" @click="manualRetryIframe(index)">
                             <i class="bi bi-arrow-clockwise fs-2"></i></button>
                     </div>
 
@@ -127,6 +127,19 @@ function onIframeError(index) {
     clearIframeTimeout(index);  // Clear timeout on error
 
     updateGlobalLoadingState();  // Update global loading state on error
+}
+
+// Retry loading the iframe
+function manualRetryIframe(index) {
+    props.iframeList[index].retryCount = 0;
+    props.iframeList[index].status = 'loading'; // Set back to loading
+    props.iframeList[index].hasOfferedRetry = false; // Hide retry button during retry
+    props.iframeList[index].src = `${host}/embed/article/${props.iframeList[index].itemId}?retry=${props.iframeList[index].retryCount}`;
+
+    // Start a new timeout for the retry
+    startIframeTimeout(index);
+
+    //console.log(`Retrying iframe ${index}...`);
 }
 
 // Retry loading the iframe
