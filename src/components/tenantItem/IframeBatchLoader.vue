@@ -117,6 +117,7 @@ function clearIframeTimeout(index) {
         clearTimeout(props.iframeList[index].timeoutId);
         props.iframeList[index].timeoutId = null;
         //console.log(`Timeout cleared for iframe ${index}, timeoutId reset to null`);
+
     }
 }
 
@@ -131,7 +132,14 @@ function onIframeError(index) {
 
 // Retry loading the iframe
 function manualRetryIframe(index) {
-    props.iframeList[index].retryCount = 0;
+    // this is do the trick to balance between service worker
+    // network request first then fetch the update
+    if (props.iframeList[index].retryCount == 0) {
+        props.iframeList[index].retryCount = 1;
+    } else if (props.iframeList[index].retryCount == 1) {
+        props.iframeList[index].retryCount = 0;
+    }
+
     props.iframeList[index].status = 'loading'; // Set back to loading
     props.iframeList[index].hasOfferedRetry = false; // Hide retry button during retry
     props.iframeList[index].src = `${host}/embed/article/${props.iframeList[index].itemId}?retry=${props.iframeList[index].retryCount}`;
@@ -140,6 +148,7 @@ function manualRetryIframe(index) {
     startIframeTimeout(index);
 
     //console.log(`Retrying iframe ${index}...`);
+
 }
 
 // Retry loading the iframe
@@ -198,6 +207,7 @@ const debouncedUpdateIframeList = debounce((newIframeList) => {
             startIframeTimeout(index); // Only start timeout if it's still loading
         } else if (iframe.status === 'loaded') {
             clearIframeTimeout(index);
+
         }
     });
 
