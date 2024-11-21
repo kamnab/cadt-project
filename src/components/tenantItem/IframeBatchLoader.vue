@@ -134,7 +134,7 @@ function onIframeError(index) {
 function manualRetryIframe(index) {
     // this is do the trick to balance between service worker
     // network request first then fetch the update
-    props.iframeList[index].retryCount = props.iframeList[index].retryCount == 0 ? 0 : 1;
+    props.iframeList[index].retryCount = props.iframeList[index].retryCount == 0 ? 1 : 0;
 
 
     props.iframeList[index].status = 'loading'; // Set back to loading
