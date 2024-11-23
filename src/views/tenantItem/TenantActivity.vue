@@ -139,9 +139,9 @@ async function handleMessage(event) {
 			if (foundIframe) {
 				foundIframe.status = 'loaded';
 				setTimeout(() => {
-					iframe.style.position = 'unset';
-					iframe.style.left = 'unset';
-				}, 500);
+					iframe.style.opacity = '1';
+					iframe.style.transition = 'all 300ms ease-in';
+				}, 100);
 
 				//console.log(`[1-] ${foundIframe.id}` + event.data.status);
 			}

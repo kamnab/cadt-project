@@ -18,7 +18,7 @@
         <div v-for="(iframe, index) in props.iframeList" :key="index" :id="`__${iframe.itemId}`" class="iframe-wrapper">
             <div class="iframe-container">
                 <iframe :id="`_${iframe.itemId}`" :src="iframe.src" loading="eager"
-                    style="width: 100%; min-height: 30vh;position:absolute;left: -9999px;" @error="onIframeError(index)"
+                    style="width: 100%; min-height: 30vh;opacity: 0;" @error="onIframeError(index)"
                     @load="setupMessageListener">
                 </iframe>
 
