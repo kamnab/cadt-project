@@ -162,14 +162,6 @@ function retryIframe(index) {
     //console.log(`Retrying iframe ${index}...`);
 }
 
-// Initialize loading
-onMounted(() => {
-    props.iframeList.forEach((iframe, index) => {
-        startIframeTimeout(index); // Start timeout for each iframe
-    });
-    updateGlobalLoadingState(); // Update global loading state after mount
-});
-
 // Debounce the handler for prop updates
 const debouncedUpdateIframeList = debounce((newIframeList) => {
     const updatedIframes = newIframeList.map(newIframe => {
@@ -250,6 +242,17 @@ const scrollToSection = (sectionId, offset = 90) => {
         });
     }
 };
+
+// Initialize loading
+onMounted(() => {
+    // props.iframeList.forEach((iframe, index) => {
+    //     startIframeTimeout(index); // Start timeout for each iframe
+    // });
+    //updateGlobalLoadingState(); // Update global loading state after mount
+
+});
+
+
 
 </script>
 
