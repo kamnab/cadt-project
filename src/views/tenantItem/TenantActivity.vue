@@ -138,6 +138,8 @@ async function handleMessage(event) {
 			var foundIframe = tenantItems.value.find((i) => i.itemId == iframeId);
 			if (foundIframe) {
 				foundIframe.status = 'loaded';
+				iframe.style.position = 'unset';
+				iframe.style.left = 'unset';
 				//console.log(`[1-] ${foundIframe.id}` + event.data.status);
 			}
 			postMessageToIframe(iframe, await loggedInUser());
