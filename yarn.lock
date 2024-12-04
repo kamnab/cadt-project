@@ -722,6 +722,11 @@ vue-demi@>=0.14.5:
   resolved "https://registry.npmjs.org/vue-demi/-/vue-demi-0.14.8.tgz"
   integrity sha512-Uuqnk9YE9SsWeReYqK2alDI5YzciATE0r2SkA6iMAtuXvNTMNACJLJEXNXaEy94ECuBe4Sk6RzRU80kjdbIo1Q==
 
+vue-multiselect@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.npmjs.org/vue-multiselect/-/vue-multiselect-3.1.0.tgz"
+  integrity sha512-+i/fjTqFBpaay9NP+lU7obBeNaw2DdFDFs4mqhsM0aEtKRdvIf7CfREAx2o2B4XDmPrBt1r7x1YCM3BOMLaUgQ==
+
 vue-router@^4.3.3:
   version "4.4.0"
   resolved "https://registry.npmjs.org/vue-router/-/vue-router-4.4.0.tgz"

@@ -30,17 +30,45 @@
                     <!-- Add debug logs -->
                     <!-- <p>Status: {{ iframe.status }} | Retry Offered: {{ iframe.hasOfferedRetry }}</p> -->
                     <div class="d-flex align-items-center">
-                        <div v-if="iframe.status === 'error' && iframe.hasOfferedRetry">
+                        <div v-if="iframe.status === 'error' && iframe.hasOfferedRetry" class="me-10">
                             Loading<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
                         </div>
-                        <button
-                            v-if="(iframe.status === 'error' && iframe.hasOfferedRetry) || iframe.status === 'loaded'"
-                            class="btn btn-icon btn-active-accent" style="background-color: white; color: black;"
-                            :disabled="iframe.status === 'loading'" @click="manualRetryIframe(index)">
-                            <i class="bi bi-arrow-clockwise fs-2"></i></button>
+
                     </div>
 
                 </div>
+                <div style="position: absolute;right: 0; top: -10px;">
+                    <div class="dropdown">
+                        <button class="dropdown-toggle p-2"
+                            style="background-color: transparent; color: blue; opacity: 0.3;" type="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <button
+                                    v-if="(iframe.status === 'error' && iframe.hasOfferedRetry) || iframe.status === 'loaded'"
+                                    class="btn btn-sm btn-active-accent"
+                                    style="background-color: white; color: black;display: flex; align-items: center; padding-left: 20px;"
+                                    :disabled="iframe.status === 'loading'" @click="manualRetryIframe(index)">
+                                    <i class="bi bi-arrow-clockwise" style="transform: scale(1.2);"></i>
+                                    Retry</button>
+                            </li>
+                            <li>
+                                <button class="btn btn-sm btn-active-accent"
+                                    style="background-color: white; color: black;display: flex;align-items: center;padding-left: 20px;"
+                                    aria-expanded="false" data-bs-toggle="modal"
+                                    data-bs-target="#modal_tenant_categories" :data-my-item-id="iframe.itemId">
+                                    <i class="bi bi-plus-circle" style="transform: scale(1);"></i>
+                                    Add to</button>
+                                <!-- <TenantItemDropdownMenu :categories="props.categories"
+                                    :selected-category-id="props.selectedCategoryId" :iframe-id="iframe.id">
+                                </TenantItemDropdownMenu> -->
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+
                 <div style="position: absolute; bottom: 350px;" :id="`goto_${iframe.itemId}`"></div>
             </div>
         </div>
@@ -54,6 +82,7 @@ const appGlobalStore = useAppGlobalStore()
 
 import { onMounted, watch, computed, ref } from 'vue';
 import { debounce } from 'lodash';
+import TenantItemDropdownMenu from './TenantItemDropdownMenu.vue';
 const host = import.meta.env.VITE_API_TENANT_CONENT_ENDPOINT;
 
 const props = defineProps({
@@ -61,6 +90,11 @@ const props = defineProps({
         type: Array,
         required: true,
     },
+    categories: {
+        type: Array,
+        default: []
+    },
+    selectedCategoryId: String
 });
 
 // Maximum retries allowed
@@ -295,7 +329,7 @@ onMounted(() => {
 .error-message {
     position: absolute;
     top: -10px;
-    left: 10px;
+    left: 0px;
     /* transform: translate(-50%, -50%); */
     font-weight: bold;
     color: #333;

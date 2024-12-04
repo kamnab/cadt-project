@@ -7,6 +7,7 @@ export const useAppGlobalStore = defineStore('appGlobal', {
         tenantName: 'Loading',
         iframeEditModalOpen: false,
         tenantActivityDrawerOpen: false,
+        selectedTenantCategory: null,
     }),
     actions: {
         setToggleSearch(toggle) {
@@ -23,6 +24,9 @@ export const useAppGlobalStore = defineStore('appGlobal', {
         },
         setTenantActivityDrawerOpen(val) {
             this.tenantActivityDrawerOpen = val;
+        },
+        setSelectedTenantCategory(val) {
+            this.selectedTenantCategory = val;
         }
     }
 })

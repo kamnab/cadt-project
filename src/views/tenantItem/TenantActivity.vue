@@ -1,284 +1,3 @@
-<script setup>
-import TenantItemToolbar from '@/components/tenantItem/TenantItemToolbar.vue'
-import TenantItemContentLeftSection from '@/components/tenantItem/TenantItemContentLeftSection.vue';
-import { onMounted, onBeforeUnmount, ref, onBeforeMount, watch } from 'vue';
-import { loggedInUser } from '@/services/authService';
-import { RouterLink, useRoute } from 'vue-router';
-import { getTenantById } from '@/services/tenantService'
-import { getTenantItems, getTenantItemIdsByTerm, getTenantItemList } from '@/services/tenantItemService';
-import { getTenantUsers } from '@/services/tenantUserService';
-import IframeBatchLoader from '@/components/tenantItem/IframeBatchLoader.vue'
-import formatDate from '@/utilities/dateHelper';
-
-import { useTenantItemStore } from '@/stores/tenantItemStore'
-const tenantItemStore = useTenantItemStore()
-import { useAppGlobalStore } from '@/stores/appGlobalStore'
-const appGlobalStore = useAppGlobalStore()
-
-const route = useRoute()
-
-const host = import.meta.env.VITE_API_TENANT_CONENT_ENDPOINT;
-const tenantId = route.params.id;
-const selectedTenant = ref({})
-const iframeEdit = ref(null)
-const iframeEditSrc = `${host}/embed/article/edit`;
-const tenantItems = ref([])
-const searchQuery = ref('');
-const tenantItemList = ref([]); // The filtered tenants list
-const tenantUsers = ref([])
-
-onBeforeMount(async () => {
-	selectedTenant.value = await getTenantById(tenantId);
-	tenantUsers.value = await getTenantUsers(tenantId);
-	// 
-	if (iframeEdit.value) {
-		iframeEdit.value.src = iframeEditSrc;
-	}
-
-	await loadTenantItems();
-})
-
-onMounted(async () => {
-	appGlobalStore.setLoading(true);
-
-	// Set iframe src early
-	iframeEdit.value.src = iframeEditSrc;
-
-	// Execute iframe handling on component mount
-	//await handleIframes();
-
-	// Add the event listener when the component is mounted
-	window.addEventListener('message', handleMessage);
-
-	const modalElement = document.querySelector('#modal_tenant');
-	modalElement.addEventListener('show.bs.modal', async () => {
-		appGlobalStore.setIframeEditModalOpen(true);
-		appGlobalStore.setLoading(true);
-		await handleIframeEditOnLoad()
-	});
-	modalElement.addEventListener('shown.bs.modal', async () => {
-		const status = iframeEdit.value.getAttribute('status');
-		if (status && status === 'loaded') {
-			appGlobalStore.setLoading(false);
-			appGlobalStore.setIframeEditModalOpen(false);
-		}
-	});
-
-	/*
-		Instead of relying on DOMContentLoaded, 
-		it might be better to attach the onload event directly to the iframe in the modal, 
-		to ensure that you interact with it only after it's completely loaded.
-	*/
-	const newIframe = iframeEdit.value;
-	if (newIframe) {
-		newIframe.onload = async () => {
-			await handleIframeEditOnLoad();
-		};
-	}
-
-
-	// for content listing
-	const items = await getTenantItems(tenantId);
-	const postIds = items.map((x) => x.itemId);
-	//console.log(postIds);
-	tenantItemList.value = await getTenantItemList(postIds, tenantId);
-
-});
-
-onBeforeUnmount(() => {
-	window.removeEventListener('message', handleMessage);
-	window.removeEventListener('DOMContentLoaded', handleIframeEditOnLoad);
-
-	const modalElement = document.querySelector('#modal_tenant');
-	modalElement.removeEventListener('show.bs.modal', handleIframeEditOnLoad);
-});
-
-// Function to post messages to the iframe
-const postMessageToIframe = (iframe, user) => {
-	if (iframe && iframe.contentWindow) {
-		const targetOrigin = '*'; // Specify your target origin
-		const message = {
-			token: user.access_token,
-			email: user.profile.name,
-			userId: user.profile.sub,
-			tenantId: tenantId,
-		};
-		//console.log('Posting message to iframe:', message);
-		iframe.contentWindow.postMessage(message, targetOrigin);
-	} else {
-		console.error('Iframe does not have contentWindow:', iframe);
-	}
-};
-
-async function handleMessage(event) {
-	const url = event.data.url;
-	if (url) {
-		window.open(url, '_blank');  // Open the URL in a new tab
-	}
-
-	if (event.data.closeModal) {
-		const modalElement = document.querySelector('#modal_tenant');
-
-		// Ensure the modal exists before attempting to dismiss it
-		if (modalElement) {
-			const modalInstance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
-			modalInstance.hide();
-			iframeEdit.value.src = '';
-			iframeEdit.value.src = iframeEditSrc;
-
-			loadTenantItems();
-		}
-	}
-
-	const iframeId = event.data.id;
-	if (iframeId) {
-		const iframe = document.getElementById('_' + iframeId);
-		if (iframe && event.data.height) {
-			iframe.style.height = event.data.height + 'px';
-			var foundIframe = tenantItems.value.find((i) => i.itemId == iframeId);
-			if (foundIframe) {
-				foundIframe.status = 'loaded';
-				setTimeout(() => {
-					iframe.style.opacity = '1';
-					iframe.style.transition = 'all 300ms ease-in';
-				}, 100);
-
-				//console.log(`[1-] ${foundIframe.id}` + event.data.status);
-			}
-			postMessageToIframe(iframe, await loggedInUser());
-		}
-
-		if (iframeId === '_edit') {
-			iframeEdit.value.setAttribute('status', 'loaded'); // Add the status attribute
-			appGlobalStore.setLoading(false)
-		}
-
-		//console.log(event.data)
-	}
-}
-
-async function handleIframeEditOnLoad() {
-
-	const newIframe = iframeEdit.value;
-	if (newIframe && newIframe.contentWindow) {
-		postMessageToIframe(newIframe, await loggedInUser());
-	} else {
-		console.error('Iframe does not have contentWindow:', newIframe);
-	}
-}
-
-async function loadTenantItems() {
-	const items = await getTenantItems(tenantId);
-
-	// Map to get only the desired fields (e.g., 'name' and 'id')
-	tenantItems.value = items.map(item => ({
-		id: item._id,
-		itemId: item.itemId, // replace with the actual field name
-		isPin: item.isPin,
-		sortPin: item.sortPin,
-		// ------------------------
-		status: 'loading',
-		retryCount: 0, // Track retries
-		hasOfferedRetry: false, // Control if retry button is shown
-		timeoutId: null,
-	}))
-		/*
-			a.isPin === b.isPin ? 0: 
-			_ If both isPin values are the same, they stay in the same order.
-			
-			a.isPin ? -1 : 1: 
-			_ If a.isPin is true, it comes before b.isPin. 
-				If a.isPin is false, it comes after b.isPin.
-		*/
-		// Sort with true first (even though it's called ascending)
-		.sort((a, b) => a.isPin === b.isPin ? 0 : a.isPin ? -1 : 1);
-
-	//console.log(tenantItems.value)
-}
-
-// Function to perform search action
-const performSearch = async () => {
-	appGlobalStore.setLoading(true);
-
-	const items = await getTenantItems(tenantId);
-
-	if (searchQuery.value === '') {
-		// Map to get only the desired fields (e.g., 'name' and 'id')
-		tenantItems.value = items.map(item => ({
-			id: item._id,
-			itemId: item.itemId, // replace with the actual field name
-			isPin: item.isPin,
-			sortPin: item.sortPin,
-			// ------------------------
-			status: 'loading',
-			retryCount: 0, // Track retries
-			hasOfferedRetry: false, // Control if retry button is shown
-			timeoutId: null,
-		}))
-			/*
-				a.isPin === b.isPin ? 0: 
-				_ If both isPin values are the same, they stay in the same order.
-				
-				a.isPin ? -1 : 1: 
-				_ If a.isPin is true, it comes before b.isPin. 
-					If a.isPin is false, it comes after b.isPin.
-			*/
-			// Sort with true first (even though it's called ascending)
-			.sort((a, b) => a.isPin === b.isPin ? 0 : a.isPin ? -1 : 1);
-
-		//console.log(tenantItems.value)
-	} else if (items.length > 0) {
-		const postIds = items.map((x) => x.itemId);
-		const filteredItems = await getTenantItemIdsByTerm(postIds, tenantId, searchQuery.value);
-
-		// console.log('postIds for:', postIds);
-		// console.log('items for:', filteredItems);
-		// console.log('Searching for:', searchQuery.value);
-		// You can implement the actual search logic here
-
-		// Map to get only the desired fields (e.g., 'name' and 'id')
-		tenantItems.value = items.filter(x => filteredItems.includes(x.itemId)).map(item => ({
-			id: item._id,
-			itemId: item.itemId, // replace with the actual field name
-			isPin: item.isPin,
-			sortPin: item.sortPin,
-			// ------------------------
-			status: 'loading',
-			retryCount: 0, // Track retries
-			hasOfferedRetry: false, // Control if retry button is shown
-			timeoutId: null,
-		}))
-			/*
-				a.isPin === b.isPin ? 0: 
-				_ If both isPin values are the same, they stay in the same order.
-				
-				a.isPin ? -1 : 1: 
-				_ If a.isPin is true, it comes before b.isPin. 
-					If a.isPin is false, it comes after b.isPin.
-			*/
-			// Sort with true first (even though it's called ascending)
-			.sort((a, b) => a.isPin === b.isPin ? 0 : a.isPin ? -1 : 1);
-
-	}
-};
-
-
-const scrollToSection = (sectionId, offset = 90) => {
-	const element = document.getElementById(sectionId);
-	if (element) {
-		const elementPosition = element.getBoundingClientRect().top + window.scrollY;
-		const offsetPosition = elementPosition - offset;
-
-		// Smooth scroll with offset
-		window.scrollTo({
-			top: offsetPosition,
-			behavior: 'smooth',
-		});
-	}
-};
-
-</script>
-
 <template>
 
 	<div class="d-flex flex-column flex-column-fluid">
@@ -297,7 +16,7 @@ const scrollToSection = (sectionId, offset = 90) => {
 				<div class="row g-0 g-xl-5 g-xxl-8">
 					<div class="col-xl-4 d-none d-xl-block">
 
-						<TenantItemContentLeftSection :active-section="1" :number-of-post="tenantItemList.length"
+						<TenantItemContentLeftSection :active-section="1" :number-of-post="tenantFilteredItems.length"
 							:members="tenantUsers" :admin-user-id="selectedTenant.createdByUserId">
 						</TenantItemContentLeftSection>
 
@@ -311,7 +30,7 @@ const scrollToSection = (sectionId, offset = 90) => {
 							<div class="card-body pt-0">
 								<div class="table table-sm">
 									<tbody>
-										<tr v-for="(item, index) in tenantItemList">
+										<tr v-for="(item, index) in tenantFilteredItems">
 											<td style="width:1%;" class="px-0">{{ index + 1 }}.</td>
 											<td class="border-bottom ps-1">
 
@@ -345,9 +64,6 @@ const scrollToSection = (sectionId, offset = 90) => {
 
 					</div>
 
-
-
-
 					<div class="col-xl-8">
 
 						<div>
@@ -363,7 +79,10 @@ const scrollToSection = (sectionId, offset = 90) => {
 							</transition>
 						</div>
 
-						<IframeBatchLoader :iframe-list="tenantItems"></IframeBatchLoader>
+						<TenantCategory :categories="tenantCategories" :selected-category-id="selectedCategoryId">
+						</TenantCategory>
+						<IframeBatchLoader :iframe-list="tenantItems" :categories="tenantCategories"
+							:selected-category-id="selectedCategoryId"></IframeBatchLoader>
 
 					</div>
 				</div>
@@ -441,7 +160,7 @@ const scrollToSection = (sectionId, offset = 90) => {
 					<!--end::Close-->
 				</div>
 
-				<TenantItemContentLeftSection :active-section="1" :number-of-post="tenantItemList.length"
+				<TenantItemContentLeftSection :active-section="1" :number-of-post="tenantFilteredItems.length"
 					:members="tenantUsers" :admin-user-id="selectedTenant.createdByUserId">
 				</TenantItemContentLeftSection>
 
@@ -455,7 +174,7 @@ const scrollToSection = (sectionId, offset = 90) => {
 					<div class="card-body pt-0">
 						<div class="table table-sm">
 							<tbody>
-								<tr v-for="(item, index) in tenantItemList">
+								<tr v-for="(item, index) in tenantFilteredItems">
 									<td style="width:1%;" class="px-0">{{ index + 1 }}.</td>
 									<td class="border-bottom ps-1">
 
@@ -570,7 +289,418 @@ const scrollToSection = (sectionId, offset = 90) => {
 	</div>
 	<!--end::Modal - Tenant Members-->
 
+	<!--begin::Modal - Tenant Categories-->
+	<div class="modal fade" id="modal_tenant_categories" data-bs-backdrop="static" tabindex="-1" role="dialog"
+		aria-hidden="true" :item="selectedItem" @close="closeModal">
+		<div class="modal-dialog modal-dialog-scrollable" role="document" style="z-index: 2000;">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Categories</h5>
+					<!--begin::Close-->
+					<div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal">
+						<!--begin::Svg Icon | path: icons/duotone/Navigation/Close.svg-->
+						<span class="svg-icon svg-icon-2x">
+							<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+								width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+								<g transform="translate(12.000000, 12.000000) rotate(-45.000000) translate(-12.000000, -12.000000) translate(4.000000, 4.000000)"
+									fill="#000000">
+									<rect fill="#000000" x="0" y="7" width="16" height="2" rx="1" />
+									<rect fill="#000000" opacity="0.5"
+										transform="translate(8.000000, 8.000000) rotate(-270.000000) translate(-8.000000, -8.000000)"
+										x="0" y="7" width="16" height="2" rx="1" />
+								</g>
+							</svg>
+						</span>
+						<!--end::Svg Icon-->
+					</div>
+					<!--end::Close-->
+				</div>
+				<div class="modal-body pt-2 pb-0">
+					<!-- <multiselect v-model="selectedCategories" :options="tenantCategories" :multiple="true"
+						:searchable="true" placeholder="Select categories" label="name" track-by="_id" /> -->
+
+					<!--begin::Table-->
+					<div class="table-responsive">
+						<table class="table table-sm align-middle">
+							<thead>
+								<tr>
+									<th class="pe-5 py-0 text-center" style="width: 1%;">No.</th>
+									<th class="p-0 min-w-150px">Name</th>
+								</tr>
+							</thead>
+							<tbody>
+								<!-- .sort((a, b) => a.createdOn === b.createdOn ? 0 : a.createdOn ? -1 : 1) -->
+								<tr v-for="(category, index) in tenantCategories
+									// Sort alphabetically, case-insensitive
+									.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()))">
+									<td class="pe-5 py-0 text-center">
+										{{ index + 1 }}
+									</td>
+									<td class="px-0 border-bottom ps-1">
+										<!-- Anchor tag that sends data -->
+										<a href="#" @click.prevent="makePostRequest(category._id)"
+											class="text-gray-800 fw-bolder">{{
+												category.name }}</a>
+
+									</td>
+								</tr>
+
+							</tbody>
+						</table>
+					</div>
+					<!--end::Table-->
+				</div>
+
+			</div>
+		</div>
+	</div>
+	<!--end::Modal - Tenant Categories-->
 </template>
+
+<script setup>
+import TenantItemToolbar from '@/components/tenantItem/TenantItemToolbar.vue'
+import TenantItemContentLeftSection from '@/components/tenantItem/TenantItemContentLeftSection.vue';
+import { onMounted, onBeforeUnmount, ref, onBeforeMount, watch } from 'vue';
+import { loggedInUser } from '@/services/authService';
+import { RouterLink, useRoute } from 'vue-router';
+import { getTenantById } from '@/services/tenantService'
+import { getTenantItems, getTenantItemIdsByTerm, getTenantFilteredItems } from '@/services/tenantItemService';
+import { getTenantUsers } from '@/services/tenantUserService';
+import IframeBatchLoader from '@/components/tenantItem/IframeBatchLoader.vue'
+import formatDate from '@/utilities/dateHelper';
+
+import { useTenantItemStore } from '@/stores/tenantItemStore'
+const tenantItemStore = useTenantItemStore()
+import { useAppGlobalStore } from '@/stores/appGlobalStore'
+import TenantCategory from '@/components/tenantCategory/TenantCategory.vue';
+import { getTenantCategories } from '@/services/tenantCategoryService';
+import { addTenantItemToCategory, getTenantCategoryItems } from '@/services/tenantCategoryItemService';
+import Multiselect from 'vue-multiselect';
+import 'vue-multiselect/dist/vue-multiselect.min.css';
+
+const appGlobalStore = useAppGlobalStore()
+
+const route = useRoute()
+
+const host = import.meta.env.VITE_API_TENANT_CONENT_ENDPOINT;
+const tenantId = route.params.id;
+const selectedCategoryId = route.params.categoryId;
+
+const selectedTenant = ref({})
+const iframeEdit = ref(null)
+const iframeEditSrc = `${host}/embed/article/edit`;
+const tenantItems = ref([])
+const searchQuery = ref('');
+const tenantFilteredItems = ref([]); // The filtered tenants list
+const tenantUsers = ref([])
+const tenantCategories = ref([])
+const selectedCategories = ref([]);
+
+const selectedItem = ref(null);
+
+// Function to make the post request
+const makePostRequest = async (categoryId) => {
+
+	const response = await addTenantItemToCategory(tenantId, categoryId, selectedItem.value);
+
+	const modalCategoryElement = document.querySelector('#modal_tenant_categories');
+	var modal = bootstrap.Modal.getInstance(modalCategoryElement)
+	if (modal) {
+		modal.hide();
+	}
+};
+
+onBeforeMount(async () => {
+	selectedTenant.value = await getTenantById(tenantId);
+	tenantUsers.value = await getTenantUsers(tenantId);
+	tenantCategories.value = [{ _id: '', name: 'ទាំងអស់', tenantId: tenantId }, ...await getTenantCategories(tenantId)];
+	if (selectedCategoryId) {
+		await loadTenantItemsByCategoryId()
+	} else {
+		await loadTenantItems();
+	}
+
+	// 
+	if (iframeEdit.value) {
+		iframeEdit.value.src = iframeEditSrc;
+	}
+
+})
+
+onMounted(async () => {
+	appGlobalStore.setLoading(true);
+
+	// Set iframe src early
+	iframeEdit.value.src = iframeEditSrc;
+
+	// Execute iframe handling on component mount
+	//await handleIframes();
+
+	// Add the event listener when the component is mounted
+	window.addEventListener('message', handleMessage);
+
+	const modalElement = document.querySelector('#modal_tenant');
+	modalElement.addEventListener('show.bs.modal', async () => {
+		appGlobalStore.setIframeEditModalOpen(true);
+		appGlobalStore.setLoading(true);
+		await handleIframeEditOnLoad()
+	});
+	modalElement.addEventListener('shown.bs.modal', async () => {
+		const status = iframeEdit.value.getAttribute('status');
+		if (status && status === 'loaded') {
+			appGlobalStore.setLoading(false);
+			appGlobalStore.setIframeEditModalOpen(false);
+		}
+	});
+
+	/*
+		Instead of relying on DOMContentLoaded, 
+		it might be better to attach the onload event directly to the iframe in the modal, 
+		to ensure that you interact with it only after it's completely loaded.
+	*/
+	const newIframe = iframeEdit.value;
+	if (newIframe) {
+		newIframe.onload = async () => {
+			await handleIframeEditOnLoad();
+		};
+	}
+
+
+	// for content listing
+	const items = await getTenantItems(tenantId);
+	const postIds = items.map((x) => x.itemId);
+	//console.log(postIds);
+	tenantFilteredItems.value = await getTenantFilteredItems(postIds, tenantId);
+
+	const modalCategoryElement = document.querySelector('#modal_tenant_categories');
+	modalCategoryElement.addEventListener('show.bs.modal', (event) => {
+		selectedItem.value = event.relatedTarget.dataset.myItemId;
+	});
+});
+
+onBeforeUnmount(() => {
+	window.removeEventListener('message', handleMessage);
+	window.removeEventListener('DOMContentLoaded', handleIframeEditOnLoad);
+
+	const modalElement = document.querySelector('#modal_tenant');
+	modalElement.removeEventListener('show.bs.modal', handleIframeEditOnLoad);
+});
+
+// Function to post messages to the iframe
+const postMessageToIframe = (iframe, user) => {
+	if (iframe && iframe.contentWindow) {
+		const targetOrigin = '*'; // Specify your target origin
+		const message = {
+			token: user.access_token,
+			email: user.profile.name,
+			userId: user.profile.sub,
+			tenantId: tenantId,
+		};
+		//console.log('Posting message to iframe:', message);
+		iframe.contentWindow.postMessage(message, targetOrigin);
+	} else {
+		console.error('Iframe does not have contentWindow:', iframe);
+	}
+};
+
+async function handleMessage(event) {
+	const url = event.data.url;
+	if (url) {
+		window.open(url, '_blank');  // Open the URL in a new tab
+	}
+
+	if (event.data.closeModal) {
+		const modalElement = document.querySelector('#modal_tenant');
+
+		// Ensure the modal exists before attempting to dismiss it
+		if (modalElement) {
+			const modalInstance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+			modalInstance.hide();
+			iframeEdit.value.src = '';
+			iframeEdit.value.src = iframeEditSrc;
+
+			loadTenantItems();
+		}
+	}
+
+	const iframeId = event.data.id;
+	if (iframeId) {
+		const iframe = document.getElementById('_' + iframeId);
+		if (iframe && event.data.height) {
+			iframe.style.height = event.data.height + 'px';
+			var foundIframe = tenantItems.value.find((i) => i.itemId == iframeId);
+			if (foundIframe) {
+				foundIframe.status = 'loaded';
+				setTimeout(() => {
+					iframe.style.opacity = '1';
+					iframe.style.transition = 'all 300ms ease-in';
+				}, 100);
+
+				//console.log(`[1-] ${foundIframe.id}` + event.data.status);
+			}
+			postMessageToIframe(iframe, await loggedInUser());
+		}
+
+		if (iframeId === '_edit') {
+			iframeEdit.value.setAttribute('status', 'loaded'); // Add the status attribute
+			appGlobalStore.setLoading(false)
+		}
+
+		//console.log(event.data)
+	}
+}
+
+async function handleIframeEditOnLoad() {
+
+	const newIframe = iframeEdit.value;
+	if (newIframe && newIframe.contentWindow) {
+		postMessageToIframe(newIframe, await loggedInUser());
+	} else {
+		console.error('Iframe does not have contentWindow:', newIframe);
+	}
+}
+
+async function loadTenantItems() {
+	const items = await getTenantItems(tenantId);
+
+	// Map to get only the desired fields (e.g., 'name' and 'id')
+	tenantItems.value = items.map(item => ({
+		id: item._id,
+		itemId: item.itemId, // replace with the actual field name
+		isPin: item.isPin,
+		sortPin: item.sortPin,
+		// ------------------------
+		status: 'loading',
+		retryCount: 0, // Track retries
+		hasOfferedRetry: false, // Control if retry button is shown
+		timeoutId: null,
+	}))
+		/*
+			a.isPin === b.isPin ? 0: 
+			_ If both isPin values are the same, they stay in the same order.
+			
+			a.isPin ? -1 : 1: 
+			_ If a.isPin is true, it comes before b.isPin. 
+				If a.isPin is false, it comes after b.isPin.
+		*/
+		// Sort with true first (even though it's called ascending)
+		.sort((a, b) => a.isPin === b.isPin ? 0 : a.isPin ? -1 : 1);
+
+	//console.log(tenantItems.value)
+}
+
+async function loadTenantItemsByCategoryId() {
+	const items = await getTenantCategoryItems(tenantId, selectedCategoryId);
+
+
+	// Map to get only the desired fields (e.g., 'name' and 'id')
+	tenantItems.value = items.map(item => ({
+		id: item._id,
+		itemId: item.itemId, // replace with the actual field name
+		isPin: item.isPin,
+		sortPin: item.sortPin,
+		// ------------------------
+		status: 'loading',
+		retryCount: 0, // Track retries
+		hasOfferedRetry: false, // Control if retry button is shown
+		timeoutId: null,
+	}))
+		/*
+			a.isPin === b.isPin ? 0: 
+			_ If both isPin values are the same, they stay in the same order.
+			
+			a.isPin ? -1 : 1: 
+			_ If a.isPin is true, it comes before b.isPin. 
+				If a.isPin is false, it comes after b.isPin.
+		*/
+		// Sort with true first (even though it's called ascending)
+		.sort((a, b) => a.isPin === b.isPin ? 0 : a.isPin ? -1 : 1);
+
+	//console.log(tenantItems.value)
+}
+
+// Function to perform search action
+const performSearch = async () => {
+	appGlobalStore.setLoading(true);
+
+	const items = await getTenantItems(tenantId);
+
+	if (searchQuery.value === '') {
+		// Map to get only the desired fields (e.g., 'name' and 'id')
+		tenantItems.value = items.map(item => ({
+			id: item._id,
+			itemId: item.itemId, // replace with the actual field name
+			isPin: item.isPin,
+			sortPin: item.sortPin,
+			// ------------------------
+			status: 'loading',
+			retryCount: 0, // Track retries
+			hasOfferedRetry: false, // Control if retry button is shown
+			timeoutId: null,
+		}))
+			/*
+				a.isPin === b.isPin ? 0: 
+				_ If both isPin values are the same, they stay in the same order.
+				
+				a.isPin ? -1 : 1: 
+				_ If a.isPin is true, it comes before b.isPin. 
+					If a.isPin is false, it comes after b.isPin.
+			*/
+			// Sort with true first (even though it's called ascending)
+			.sort((a, b) => a.isPin === b.isPin ? 0 : a.isPin ? -1 : 1);
+
+		//console.log(tenantItems.value)
+	} else if (items.length > 0) {
+		const postIds = items.map((x) => x.itemId);
+		const filteredItems = await getTenantItemIdsByTerm(postIds, tenantId, searchQuery.value);
+
+		// console.log('postIds for:', postIds);
+		// console.log('items for:', filteredItems);
+		// console.log('Searching for:', searchQuery.value);
+		// You can implement the actual search logic here
+
+		// Map to get only the desired fields (e.g., 'name' and 'id')
+		tenantItems.value = items.filter(x => filteredItems.includes(x.itemId)).map(item => ({
+			id: item._id,
+			itemId: item.itemId, // replace with the actual field name
+			isPin: item.isPin,
+			sortPin: item.sortPin,
+			// ------------------------
+			status: 'loading',
+			retryCount: 0, // Track retries
+			hasOfferedRetry: false, // Control if retry button is shown
+			timeoutId: null,
+		}))
+			/*
+				a.isPin === b.isPin ? 0: 
+				_ If both isPin values are the same, they stay in the same order.
+				
+				a.isPin ? -1 : 1: 
+				_ If a.isPin is true, it comes before b.isPin. 
+					If a.isPin is false, it comes after b.isPin.
+			*/
+			// Sort with true first (even though it's called ascending)
+			.sort((a, b) => a.isPin === b.isPin ? 0 : a.isPin ? -1 : 1);
+
+	}
+};
+
+
+const scrollToSection = (sectionId, offset = 90) => {
+	const element = document.getElementById(sectionId);
+	if (element) {
+		const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+		const offsetPosition = elementPosition - offset;
+
+		// Smooth scroll with offset
+		window.scrollTo({
+			top: offsetPosition,
+			behavior: 'smooth',
+		});
+	}
+};
+
+</script>
 
 <style scoped>
 /* Smooth fade transition */

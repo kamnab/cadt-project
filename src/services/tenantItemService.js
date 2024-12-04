@@ -52,7 +52,7 @@ const getTenantItemIdsByTerm = async (postIds, tenantId, term) => {
     return null
 };
 
-const getTenantItemList = async (postIds, tenantId) => {
+const getTenantFilteredItems = async (postIds, tenantId) => {
     var user = await loggedInUser();
     if (user) {
         try {
@@ -82,5 +82,5 @@ const getTenantItemList = async (postIds, tenantId) => {
     return null
 };
 
-export { getTenantItems, getTenantItemIdsByTerm, getTenantItemList }
+export { getTenantItems, getTenantItemIdsByTerm, getTenantFilteredItems }
 

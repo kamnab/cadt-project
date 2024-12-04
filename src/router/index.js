@@ -73,6 +73,12 @@ const router = createRouter({
       component: TenantActivity,
       beforeEnter: requiredAuthentication
     },
+    {
+      path: '/tenants/:id/c/:categoryId',
+      name: 'tenant-content-by-categoryId',
+      component: TenantActivity,
+      beforeEnter: requiredAuthentication
+    },
     { path: '/:pathMatch(.*)*', component: NotFound }, // 404 route
   ]
 })
