@@ -5,7 +5,7 @@ const addTenantItemToCategory = async (tenantId, categoryId, itemId) => {
     var user = await loggedInUser();
     if (user) {
         try {
-            const response = await axios.post(`${import.meta.env.VITE_API_BACKEND_ENDPOINT}/tenants/${tenantId}/categories/${categoryId}`, { itemId }, {
+            const response = await axios.post(`${import.meta.env.VITE_API_BACKEND_ENDPOINT}/tenants/${tenantId}/categories`, { itemId, categoryId }, {
                 headers: {
                     Authorization: `Bearer ${user.access_token}`,
                 }
