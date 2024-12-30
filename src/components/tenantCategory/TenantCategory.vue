@@ -30,10 +30,42 @@
 
                         <li class="dropdown-items">
                             <div class="dropdown-item-list">
-                                <a class="dropdown-item" href="#" v-for="(category, index) in filteredTenantCategories"
-                                    :key="index" @click.prevent="handleCategorySelection(category)">{{
-                                        category.name
-                                    }}</a>
+                                <div v-for="(category, index) in filteredTenantCategories"
+                                    style="display: flex; justify-content: space-between;">
+                                    <a class="dropdown-item" href="#" :key="index"
+                                        @click.prevent="handleCategorySelection(category)">{{
+                                            category.name
+                                        }}</a>
+
+                                    <!-- Sub Dropdown Button for Edit/Delete actions -->
+                                    <div class="dropdown">
+                                        <button
+                                            class="btn btn-sm btn-link text-gray-600 text-hover-primary subDropdownButton"
+                                            type="button" data-bs-toggle="dropdown" :id="'subDropdownButton' + index"
+                                            aria-expanded="false" @click.stop="toggleSubDropdown(index)">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+
+                                        <!-- Sub Dropdown Menu with Edit/Delete -->
+                                        <ul class="dropdown-menu dropdown-submenu subDropdownButton"
+                                            :aria-labelledby="'subDropdownButton' + index">
+                                            <li>
+                                                <a class="dropdown-item" href="#"
+                                                    @click.prevent="editCategory(category)">
+                                                    Edit
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item text-danger" href="#"
+                                                    @click.prevent="deleteCategory(category)">
+                                                    Delete
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                </div>
+
                             </div>
                         </li>
 
@@ -115,6 +147,36 @@ const handleCategorySelection = (category) => {
     })
 }
 
+// Handle the toggling of sub-dropdowns
+const openSubDropdown = ref(null);
+
+function toggleSubDropdown(index) {
+    const dropdown = document.querySelectorAll('ul.subDropdownButton.show');
+    dropdown.forEach((e) => {
+        e.classList.remove('show');
+        setTimeout(() => {
+            const btn = document.querySelector('button.subDropdownButton.show');
+            if (btn) {
+                btn.classList.remove('show');
+            }
+        }, 1)
+    });
+
+}
+
+// Edit category
+const editCategory = (category) => {
+    console.log('Edit category:', category.name);
+    // Add your edit logic here
+};
+
+// Delete category
+const deleteCategory = (category) => {
+    console.log('Delete category:', category.name);
+    // Add your delete logic here
+};
+
+
 // Watch for changes in categories
 watch(
     () => props.categories,
@@ -136,12 +198,6 @@ onMounted(() => {
 
 
 <style scoped>
-/* Dropdown menu container */
-.dropdown-menu {
-    min-width: 250px;
-    /* Full width */
-}
-
 /* Input group containing the search input and clear button */
 .dropdown-search-item {
     padding: 10px;
@@ -169,20 +225,5 @@ onMounted(() => {
     color: #ccc;
     z-index: 10;
     /* Ensure it's above the input */
-}
-
-/* Scrollable list of items */
-.dropdown-items {
-    max-height: 250px;
-    /* Set height limit for the item list */
-    overflow-y: auto;
-    /* Enable scrolling if items exceed the height */
-    padding: 0;
-    /* Remove default padding */
-}
-
-/* Optional: style for individual items */
-.dropdown-item {
-    padding: 8px 16px;
 }
 </style>
