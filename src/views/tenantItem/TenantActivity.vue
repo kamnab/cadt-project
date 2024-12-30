@@ -355,6 +355,8 @@
 		</div>
 	</div>
 	<!--end::Modal - Tenant Categories-->
+
+	<CreateCategoryModel :tenant-id="tenantId"></CreateCategoryModel>
 </template>
 
 <script setup>
@@ -377,6 +379,7 @@ import { getTenantCategories } from '@/services/tenantCategoryService';
 import { addTenantItemToCategory, getTenantCategoryItems } from '@/services/tenantCategoryItemService';
 import Multiselect from 'vue-multiselect';
 import 'vue-multiselect/dist/vue-multiselect.min.css';
+import CreateCategoryModel from '@/components/tenantCategory/CreateCategoryModel.vue';
 
 const appGlobalStore = useAppGlobalStore()
 

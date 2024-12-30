@@ -36,6 +36,13 @@
                                     }}</a>
                             </div>
                         </li>
+
+                        <li class="dropdown-items border-top mt-3">
+                            <div class="dropdown-item-list mt-3">
+                                <a class="dropdown-item text-gray-600" href="#" @click.prevent="" data-bs-toggle="modal"
+                                    data-bs-target="#modal_tenant_category_create_new">Create new</a>
+                            </div>
+                        </li>
                     </ul>
                 </div>
             </div>

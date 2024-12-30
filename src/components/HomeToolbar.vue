@@ -68,7 +68,7 @@ onBeforeMount(async () => {
   <!--end::toolbar-->
 
 
-  <!--begin::Modal - Select Location-->
+  <!--begin::Modal - Join Tenant-->
   <div class="modal fade" id="modal_join_tenant" data-bs-backdrop="static" tabindex="-1" role="dialog"
     aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -101,6 +101,6 @@ onBeforeMount(async () => {
       </div>
     </div>
   </div>
-  <!--end::Modal - Select Location-->
+  <!--end::Modal - Join Tenant-->
 
 </template>
