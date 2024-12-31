@@ -81,6 +81,11 @@
         </div>
     </div>
 
+    <DeleteCategoryModel ref="deleteModalRef" :category="{
+        id: selectedCategoryToDelete._id,
+        name: selectedCategoryToDelete.name
+    }" @operation-success="handleSuccess" @operation-fail="handleFailure">
+    </DeleteCategoryModel>
 
 </template>
 
@@ -89,6 +94,9 @@ import { RouterLink, stringifyQuery, useRouter, useRoute } from 'vue-router';
 import { onBeforeMount, onMounted, ref, nextTick, computed, watch, onBeforeUnmount, onUnmounted } from 'vue';
 import { getTenantCategories } from '@/services/tenantCategoryService';
 import { useAppGlobalStore } from '@/stores/appGlobalStore';
+import DeleteCategoryModel from './DeleteCategoryModel.vue';
+
+const emit = defineEmits(['reload-categories']);
 
 const router = useRouter();
 const route = useRoute();
@@ -106,6 +114,7 @@ const filteredTenantCategories = ref([]);
 const searchInput = ref(''); // The search term bound to input
 const searchInputRef = ref(null); // Declare the reference for the search input
 const clearButtonVisible = ref(false); // Control visibility of the clear button
+const selectedCategoryToDelete = ref({});
 
 // Handle search input change
 const handleSearch = () => {
@@ -147,9 +156,6 @@ const handleCategorySelection = (category) => {
     })
 }
 
-// Handle the toggling of sub-dropdowns
-const openSubDropdown = ref(null);
-
 function toggleSubDropdown(index) {
     const dropdown = document.querySelectorAll('ul.subDropdownButton.show');
     dropdown.forEach((e) => {
@@ -161,30 +167,49 @@ function toggleSubDropdown(index) {
             }
         }, 1)
     });
-
 }
 
+/* Begin handle category CRUD */
 // Edit category
 const editCategory = (category) => {
     console.log('Edit category:', category.name);
     // Add your edit logic here
 };
 
+const deleteModalRef = ref(null);
 // Delete category
 const deleteCategory = (category) => {
-    console.log('Delete category:', category.name);
-    // Add your delete logic here
+    //console.log('Delete category:', category);
+    selectedCategoryToDelete.value = category;
+
+    // trigger modal
+    deleteModalRef.value.toggleModal('show');
 };
 
+// Handle success event
+const handleSuccess = (message) => {
+    //alert(message); // Or any other logic you want
+    // Example: reload data, show notification, etc.
+    emit('reload-categories')
+}
 
-// Watch for changes in categories
+// Handle failure event
+const handleFailure = (message) => {
+    alert(message); // Or any other logic you want
+    // Example: log error, show error message, etc.
+}
+
+/* end handle category CRUD */
+
+// Watch for changes in categories and call the reload function
 watch(
     () => props.categories,
     (newCategories) => {
         filteredTenantCategories.value = newCategories;
     },
-    { immediate: true } // Trigger the watcher immediately on mount
+    { immediate: true }
 );
+
 
 onMounted(() => {
     // Bootstrap dropdown event to trigger the focus

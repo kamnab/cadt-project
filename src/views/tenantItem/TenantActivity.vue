@@ -79,7 +79,8 @@
 							</transition>
 						</div>
 
-						<TenantCategory :categories="tenantCategories" :selected-category-id="selectedCategoryId">
+						<TenantCategory @reload-categories="reloadCategories" :categories="tenantCategories"
+							:selected-category-id="selectedCategoryId">
 						</TenantCategory>
 						<IframeBatchLoader :iframe-list="tenantItems" :categories="tenantCategories"
 							:selected-category-id="selectedCategoryId"></IframeBatchLoader>
@@ -357,6 +358,7 @@
 	<!--end::Modal - Tenant Categories-->
 
 	<CreateCategoryModel :tenant-id="tenantId"></CreateCategoryModel>
+
 </template>
 
 <script setup>
@@ -401,10 +403,20 @@ const selectedCategories = ref([]);
 
 const selectedItem = ref(null);
 
+// // Reference to the child component (Delete.vue)
+// const deleteCategoryRef = ref(null);
+// // Method to submit the form from the parent component
+// const triggerDeleteCategory = () => {
+// 	// Trigger the submitForm method in the child component
+// 	const success = deleteCategoryRef.value.deleteCategory();
+// 	if (success) {
+// 		document.querySelector('#kt_modal_tenant button[data-bs-dismiss="modal"]').click();
+// 	}
+// };
+
 // Function to make the post request
 const makePostRequest = async (categoryId) => {
-
-	const response = await addTenantItemToCategory(tenantId, categoryId, selectedItem.value);
+	//const response = await addTenantItemToCategory(tenantId, categoryId, selectedItem.value);
 
 	const modalCategoryElement = document.querySelector('#modal_tenant_categories');
 	var modal = bootstrap.Modal.getInstance(modalCategoryElement)
@@ -412,6 +424,11 @@ const makePostRequest = async (categoryId) => {
 		modal.hide();
 	}
 };
+
+const reloadCategories = async () => {
+	const newCategories = await getTenantCategories(tenantId);
+	tenantCategories.value = [{ _id: '', name: 'ទាំងអស់', tenantId: tenantId }, ...newCategories];
+}
 
 onBeforeMount(async () => {
 	selectedTenant.value = await getTenantById(tenantId);
