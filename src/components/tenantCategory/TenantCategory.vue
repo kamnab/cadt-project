@@ -9,7 +9,7 @@
                         :class="`btn btn-sm btn-link dropdown-toggle mx-0 pb-1 pt-1 text-gray-600 text-hover-primary`"
                         style="border-bottom: .5px solid grey;" type="button" id="categoryDropdownMenuButton"
                         data-bs-toggle="dropdown" aria-expanded="false">
-                        <span>{{ props.categories.find(x => x._id ==
+                        <span style="display: inline-flex; min-width: 75px;">{{ props.categories.find(x => x._id ==
                             props.selectedCategoryId)?.name || ' ទាំងអស់'
                             }}<span v-if="appStore.globalLoading" v-for="dot in 3" class="dot"
                                 style="font-size: inherit;">.</span>
@@ -32,13 +32,13 @@
                             <div class="dropdown-item-list">
                                 <div v-for="(category, index) in filteredTenantCategories"
                                     style="display: flex; justify-content: space-between;">
-                                    <a class="dropdown-item" href="#" :key="index"
+                                    <a class="dropdown-item d-flex align-items-center" href="#" :key="index"
                                         @click.prevent="handleCategorySelection(category)">{{
                                             category.name
                                         }}</a>
 
                                     <!-- Sub Dropdown Button for Edit/Delete actions -->
-                                    <div class="dropdown">
+                                    <div class="dropdown" v-if="category._id !== ''">
                                         <button
                                             class="btn btn-sm btn-link text-gray-600 text-hover-primary subDropdownButton"
                                             type="button" data-bs-toggle="dropdown" :id="'subDropdownButton' + index"
@@ -69,10 +69,10 @@
                             </div>
                         </li>
 
-                        <li class="dropdown-items border-top mt-3">
-                            <div class="dropdown-item-list mt-3">
-                                <a class="dropdown-item text-gray-600" href="#" @click.prevent="" data-bs-toggle="modal"
-                                    data-bs-target="#modal_tenant_category_create_new">Create new</a>
+                        <li class="dropdown-items border-top mt-2">
+                            <div class="dropdown-item-list">
+                                <a class="dropdown-item text-gray-600 py-3 mt-2" href="#" data-bs-toggle="modal"
+                                    data-bs-target="#modal_create_category">Create new</a>
                             </div>
                         </li>
                     </ul>
@@ -87,6 +87,9 @@
     }" @operation-success="handleSuccess" @operation-fail="handleFailure">
     </DeleteCategoryModel>
 
+    <CreateCategoryModel :tenant-id="props.tenantId" @operation-success="handleSuccess" @operation-fail="handleFailure">
+    </CreateCategoryModel>
+
 </template>
 
 <script setup>
@@ -95,6 +98,7 @@ import { onBeforeMount, onMounted, ref, nextTick, computed, watch, onBeforeUnmou
 import { getTenantCategories } from '@/services/tenantCategoryService';
 import { useAppGlobalStore } from '@/stores/appGlobalStore';
 import DeleteCategoryModel from './DeleteCategoryModel.vue';
+import CreateCategoryModel from './CreateCategoryModel.vue';
 
 const emit = defineEmits(['reload-categories']);
 
@@ -103,6 +107,7 @@ const route = useRoute();
 const appStore = useAppGlobalStore();
 
 const props = defineProps({
+    tenantId: String,
     categories: {
         type: Array,
         default: []

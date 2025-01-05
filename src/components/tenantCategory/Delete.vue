@@ -19,7 +19,7 @@ const deleteCategory = async () => {
     });
 
     if (response.status == 200) {
-        console.log(response.data);
+        //console.log(response.data);
         return true;
     }
     return false;

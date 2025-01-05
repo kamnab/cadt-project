@@ -1,8 +1,8 @@
 <template>
 
     <!--begin::Modal - Create new category-->
-    <div class="modal fade" id="modal_tenant_category_create_new" data-bs-backdrop="static" tabindex="-1" role="dialog"
-        aria-hidden="true">
+    <div class="modal fade" ref="createModal" id="modal_create_category" data-bs-backdrop="static" tabindex="-1"
+        role="dialog" aria-hidden="false">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -27,9 +27,16 @@
                     <!--end::Close-->
                 </div>
                 <div class="modal-body pt-2 pb-0">
-                    <Create :tenant-id="props.tenantId"></Create>
+                    <Create ref="frmCreateCategory" :tenant-id="props.tenantId"></Create>
                 </div>
-
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-active-light active" data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn btn-primary" @click="triggerCreateCategory">
+                        Save
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -37,10 +44,26 @@
 </template>
 
 <script setup>
+import { ref } from 'vue';
 import Create from './Create.vue';
 
 const props = defineProps({
     tenantId: String
 });
+
+const emit = defineEmits(['operation-success', 'operation-fail']);
+const frmCreateCategory = ref(null);
+
+// Method to submit the form from the parent component
+const triggerCreateCategory = async () => {
+    // Trigger the submitForm method in the child component
+    const { success, message } = await frmCreateCategory.value.createCategory();
+    if (success) {
+        document.querySelector('#modal_create_category button[data-bs-dismiss="modal"]').click();
+        emit('operation-success', message);
+    } else {
+        emit('operation-fail', message);
+    }
+};
 
 </script>
