@@ -1,6 +1,5 @@
 <template>
     <div class="mb-6">
-
         <form @submit.prevent method="post">
             <div class="d-flex align-items-center justify-content-between flex-nowrap text-nowrap py-1">
                 <div class="flex-fill mb-6">

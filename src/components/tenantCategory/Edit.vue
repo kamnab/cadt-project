@@ -1,18 +1,11 @@
 <template>
     <div class="mb-6">
-
-        <form @submit.prevent="createCategory" id="frmCreateCategory" method="post">
+        <form @submit.prevent method="post">
             <div class="d-flex align-items-center justify-content-between flex-nowrap text-nowrap py-1">
-                <div class="flex-fill mb-11 me-5">
+                <div class="flex-fill mb-6">
                     <label for="category_name" class="form-label">Category name</label>
                     <input class="form-control" type="text" v-model="category.name" id="category_name" />
                 </div>
-
-                <button class="btn btn-primary" type="submit">
-                    <span role="spinner" class="spinner-border spinner-border-sm d-none" aria-hidden="true"></span>
-                    <span role="status">Save</span>
-                </button>
-
             </div>
         </form>
     </div>
@@ -21,40 +14,48 @@
 <script setup>
 
 import axios from 'axios';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { loggedInUser } from '@/services/authService';
-import { useRouter } from 'vue-router';
 
 const props = defineProps({
-    categoryId: String,
-    tenantId: String
+    category: {
+        id: String,
+        name: String
+    }
 });
 
-const router = useRouter();
-const user = ref(null);
+// Initialize category with the prop value
 const category = ref({
-    name: ''
+    name: props.category.name || ''
 });
 
-const createCategory = async () => {
-    if (category.value.code === '') {
-        alert('Category name can not empty.');
-        return;
+// Watch for changes to prop and update local state
+watch(() => props.category.name, (newValue) => {
+    category.value.name = newValue;
+});
+
+const editCategory = async () => {
+    if (!category.value.name || category.value.name.trim() === '') {
+        return { success: false, message: 'Category name cannot be empty.' };
     }
 
-    user.value = await loggedInUser();
+    const user = await loggedInUser();
 
-    const response = await axios.put(`${import.meta.env.VITE_API_BACKEND_ENDPOINT}/tenantCategories/${props.tenantId}`, category.value, {
+    const response = await axios.put(`${import.meta.env.VITE_API_BACKEND_ENDPOINT}/tenantCategories/${props.category.id}`, category.value, {
         headers: {
-            Authorization: `Bearer ${user.value.access_token}`,
+            Authorization: `Bearer ${user.access_token}`,
         }
     });
 
     if (response.status == 200) {
-        console.log(response.data);
-        window.location.reload();
-        router.push('/'); // 
+        //console.log(response.data);
+        category.value.name = '';
+        return { success: true, message: 'Category created successfully.' };
     }
+    return { success: false, message: 'Failed to create category.' };
 }
 
+defineExpose({
+    editCategory
+});
 </script>

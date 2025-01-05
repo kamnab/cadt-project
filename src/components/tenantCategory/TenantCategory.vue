@@ -50,7 +50,8 @@
                                         <ul class="dropdown-menu dropdown-submenu subDropdownButton"
                                             :aria-labelledby="'subDropdownButton' + index">
                                             <li>
-                                                <a class="dropdown-item" href="#"
+                                                <a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                                    data-bs-target="#modal_edit_category"
                                                     @click.prevent="editCategory(category)">
                                                     Edit
                                                 </a>
@@ -90,6 +91,11 @@
     <CreateCategoryModel :tenant-id="props.tenantId" @operation-success="handleSuccess" @operation-fail="handleFailure">
     </CreateCategoryModel>
 
+    <EditCategoryModel :category="{
+        id: selectedCategoryToDelete._id,
+        name: selectedCategoryToDelete.name
+    }" @operation-success="handleSuccess" @operation-fail="handleFailure">
+    </EditCategoryModel>
 </template>
 
 <script setup>
@@ -99,6 +105,7 @@ import { getTenantCategories } from '@/services/tenantCategoryService';
 import { useAppGlobalStore } from '@/stores/appGlobalStore';
 import DeleteCategoryModel from './DeleteCategoryModel.vue';
 import CreateCategoryModel from './CreateCategoryModel.vue';
+import EditCategoryModel from './EditCategoryModel.vue';
 
 const emit = defineEmits(['reload-categories']);
 
@@ -179,6 +186,7 @@ function toggleSubDropdown(index) {
 const editCategory = (category) => {
     console.log('Edit category:', category.name);
     // Add your edit logic here
+    selectedCategoryToDelete.value = category;
 };
 
 const deleteModalRef = ref(null);
