@@ -66,6 +66,10 @@
 
 					<div class="col-xl-8">
 
+						<!-- <ArticleEdit :item-id="`638719096920158290`">
+
+						</ArticleEdit> -->
+
 						<div>
 							<!-- Smooth Transition for Search Input -->
 							<transition name="fade">
@@ -84,14 +88,14 @@
 						</TenantCategory>
 						<IframeBatchLoader :iframe-list="tenantItems" :categories="tenantCategories"
 							:selected-category-id="selectedCategoryId"></IframeBatchLoader>
-
+						<ArticleEditModel :item-id="selectedItem"></ArticleEditModel>
 					</div>
 				</div>
 				<!--end::Row-->
 
 				<!--begin::Modal - Select Location-->
 				<div class="modal fade" id="modal_tenant" data-bs-backdrop="static" tabindex="-1" role="dialog"
-					aria-hidden="true">
+					aria-hidden="false">
 					<div class="modal-dialog mw-800px modal-dialog-scrollable" role="document">
 						<div class="modal-content">
 							<div class="modal-header">
@@ -219,7 +223,7 @@
 
 	<!--begin::Modal - Tenant Members-->
 	<div class="modal fade" id="modal_tenant_members" data-bs-backdrop="static" tabindex="-1" role="dialog"
-		aria-hidden="true">
+		aria-hidden="false">
 		<div class="modal-dialog modal-dialog-scrollable" role="document" style="z-index: 2000;">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -292,7 +296,7 @@
 
 	<!--begin::Modal - Tenant Categories-->
 	<div class="modal fade" id="modal_tenant_categories" data-bs-backdrop="static" tabindex="-1" role="dialog"
-		aria-hidden="true" :item="selectedItem" @close="closeModal">
+		aria-hidden="false" :item="selectedItem" @close="closeModal">
 		<div class="modal-dialog modal-dialog-scrollable" role="document" style="z-index: 2000;">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -379,6 +383,7 @@ import { getTenantCategories } from '@/services/tenantCategoryService';
 import { addTenantItemToCategory, getTenantCategoryItems } from '@/services/tenantCategoryItemService';
 import Multiselect from 'vue-multiselect';
 import 'vue-multiselect/dist/vue-multiselect.min.css';
+import ArticleEditModel from '@/components/tenantItem/articlePost/ArticleEditModel.vue';
 
 const appGlobalStore = useAppGlobalStore()
 
@@ -397,7 +402,7 @@ const tenantFilteredItems = ref([]); // The filtered tenants list
 const tenantUsers = ref([])
 const tenantCategories = ref([])
 const selectedCategories = ref([]);
-
+const count = ref(0);
 const selectedItem = ref(null);
 
 // // Reference to the child component (Delete.vue)
@@ -493,6 +498,11 @@ onMounted(async () => {
 	modalCategoryElement.addEventListener('show.bs.modal', (event) => {
 		selectedItem.value = event.relatedTarget.dataset.myItemId;
 	});
+
+	const modalArticleEditElement = document.querySelector('#modal_article_edit');
+	modalArticleEditElement.addEventListener('show.bs.modal', (event) => {
+		selectedItem.value = event.relatedTarget.dataset.myItemId;
+	});
 });
 
 onBeforeUnmount(() => {
@@ -533,6 +543,7 @@ async function handleMessage(event) {
 		if (modalElement) {
 			const modalInstance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
 			modalInstance.hide();
+
 			iframeEdit.value.src = '';
 			iframeEdit.value.src = iframeEditSrc;
 

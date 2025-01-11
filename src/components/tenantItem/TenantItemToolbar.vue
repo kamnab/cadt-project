@@ -68,7 +68,6 @@ onMounted(() => {
 
 onBeforeUnmount(() => appStore.setTenantName(props.selectedTenant.name))
 
-
 const isVisible = ref(false); // Initially hidden
 
 // Function to handle scroll event

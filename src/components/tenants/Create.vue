@@ -60,7 +60,7 @@
 
                                         <button class="btn btn-primary" type="submit">
                                             <span role="spinner" class="spinner-border spinner-border-sm d-none"
-                                                aria-hidden="true"></span>
+                                                aria-hidden="false"></span>
                                             <span role="status">Save</span>
                                         </button>
                                     </div>

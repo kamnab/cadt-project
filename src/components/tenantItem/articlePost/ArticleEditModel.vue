@@ -1,12 +1,12 @@
 <template>
 
     <!--begin::Modal - Create new category-->
-    <div class="modal fade" id="modal_edit_category" data-bs-backdrop="static" tabindex="-1" role="dialog"
+    <div class="modal fade" id="modal_article_edit" data-bs-backdrop="static" tabindex="-1" role="dialog"
         aria-hidden="false">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog mw-1000px" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Edit Category</h5>
+                    <h5 class="modal-title">Edit Article</h5>
                     <!--begin::Close-->
                     <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal">
                         <!--begin::Svg Icon | path: icons/duotone/Navigation/Close.svg-->
@@ -27,16 +27,9 @@
                     <!--end::Close-->
                 </div>
                 <div class="modal-body pt-2 pb-0">
-                    <Edit ref="frmEditCategory" :category="props.category"></Edit>
+                    <ArticleEdit :item-id="props.itemId"></ArticleEdit>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-active-light active" data-bs-dismiss="modal">
-                        Cancel
-                    </button>
-                    <button type="button" class="btn btn-primary" @click="triggerEditCategory">
-                        Save
-                    </button>
-                </div>
+
             </div>
         </div>
     </div>
@@ -44,25 +37,15 @@
 </template>
 
 <script setup>
-import Edit from './Edit.vue';
-import { ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
+import ArticleEdit from './ArticleEdit.vue';
 
 const props = defineProps({
-    category: { id: String, name: String },
-});
+    itemId: String
+})
 
-const emit = defineEmits(['operation-success', 'operation-fail']);
-const frmEditCategory = ref(null);
+onMounted(() => {
 
-// Method to submit the form from the parent component
-const triggerEditCategory = async () => {
-    // Trigger the submitForm method in the child component
-    const { success, message } = await frmEditCategory.value.editCategory();
-    if (success) {
-        document.querySelector('#modal_edit_category button[data-bs-dismiss="modal"]').click();
-        emit('operation-success', message);
-    } else {
-        emit('operation-fail', message);
-    }
-};
+})
+
 </script>

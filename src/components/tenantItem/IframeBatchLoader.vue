@@ -64,6 +64,14 @@
                                     :selected-category-id="props.selectedCategoryId" :iframe-id="iframe.id">
                                 </TenantItemDropdownMenu> -->
                             </li>
+                            <li>
+                                <button class="btn btn-sm btn-active-accent"
+                                    style="background-color: white; color: black;display: flex;align-items: center;padding-left: 20px;"
+                                    aria-expanded="false" data-bs-toggle="modal" data-bs-target="#modal_article_edit"
+                                    :data-my-item-id="iframe.itemId">
+                                    <i class="bi bi-plus-circle" style="transform: scale(1);"></i>
+                                    Edit</button>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -82,7 +90,6 @@ const appGlobalStore = useAppGlobalStore()
 
 import { onMounted, watch, computed, ref } from 'vue';
 import { debounce } from 'lodash';
-import TenantItemDropdownMenu from './TenantItemDropdownMenu.vue';
 const host = import.meta.env.VITE_API_TENANT_CONENT_ENDPOINT;
 
 const props = defineProps({

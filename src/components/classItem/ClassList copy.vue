@@ -79,7 +79,7 @@ onMounted(() => {
 
   <!--begin::Modal - Select Location-->
   <div class="modal fade" id="modal_join_tenant" data-bs-backdrop="static" tabindex="-1" role="dialog"
-    aria-hidden="true">
+    aria-hidden="false">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">

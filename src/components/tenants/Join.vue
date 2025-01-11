@@ -9,7 +9,7 @@
                 </div>
 
                 <button class="btn btn-primary" type="submit">
-                    <span role="spinner" class="spinner-border spinner-border-sm d-none" aria-hidden="true"></span>
+                    <span role="spinner" class="spinner-border spinner-border-sm d-none" aria-hidden="false"></span>
                     <span role="status">Join</span>
                 </button>
 

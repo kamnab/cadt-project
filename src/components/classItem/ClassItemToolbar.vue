@@ -67,7 +67,7 @@ const store = useClassItemStore()
 
 
   <!--begin::Header Search-->
-  <div class="modal fade" id="kt_header_search_modal" aria-hidden="true" style="background-color: #FBF9F6;">
+  <div class="modal fade" id="kt_header_search_modal" aria-hidden="false" style="background-color: #FBF9F6;">
     <div class="modal-dialog modal-fullscreen">
       <div class="modal-content shadow-none" style="background-color: #FBF9F6;">
         <div class="container w-lg-800px">
