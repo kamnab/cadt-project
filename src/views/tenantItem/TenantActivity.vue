@@ -94,8 +94,7 @@
 				<!--end::Row-->
 
 				<!--begin::Modal - Select Location-->
-				<div class="modal fade" id="modal_tenant" data-bs-backdrop="static" tabindex="-1" role="dialog"
-					aria-hidden="false">
+				<div class="modal fade" id="modal_tenant" data-bs-backdrop="static" tabindex="-1" role="dialog">
 					<div class="modal-dialog mw-800px modal-dialog-scrollable" role="document">
 						<div class="modal-content">
 							<div class="modal-header">
@@ -395,14 +394,13 @@ const selectedCategoryId = route.params.categoryId;
 
 const selectedTenant = ref({})
 const iframeEdit = ref(null)
-const iframeEditSrc = `${host}/embed/article/edit`;
+const iframeEditSrc = ref(`${host}/embed/article/edit`);
 const tenantItems = ref([])
 const searchQuery = ref('');
 const tenantFilteredItems = ref([]); // The filtered tenants list
 const tenantUsers = ref([])
 const tenantCategories = ref([])
 const selectedCategories = ref([]);
-const count = ref(0);
 const selectedItem = ref(null);
 
 // // Reference to the child component (Delete.vue)
@@ -444,7 +442,7 @@ onBeforeMount(async () => {
 
 	// 
 	if (iframeEdit.value) {
-		iframeEdit.value.src = iframeEditSrc;
+		iframeEdit.value.src = iframeEditSrc.value;
 	}
 
 })
@@ -453,7 +451,7 @@ onMounted(async () => {
 	appGlobalStore.setLoading(true);
 
 	// Set iframe src early
-	iframeEdit.value.src = iframeEditSrc;
+	iframeEdit.value.src = iframeEditSrc.value;
 
 	// Execute iframe handling on component mount
 	//await handleIframes();
@@ -544,8 +542,11 @@ async function handleMessage(event) {
 			const modalInstance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
 			modalInstance.hide();
 
+			//iframeEdit.value.contentWindow.postMessage({ id: '_edit', reload: 'reload' }, '*')
 			iframeEdit.value.src = '';
-			iframeEdit.value.src = iframeEditSrc;
+			setTimeout(() => {
+				iframeEdit.value.src = iframeEditSrc.value
+			}, 100);
 
 			loadTenantItems();
 		}

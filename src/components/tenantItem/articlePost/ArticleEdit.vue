@@ -64,15 +64,16 @@ const postMessageToIframe = async (iframe, user) => {
 
 
 async function handleMessage(event) {
-    console.log(event.data);
+    //console.log(event.data);
 
-    if (event.data.closeModal) {
+    if (event.data.closeModal && event.data.id == '_update') {
         const modalElement = document.querySelector('#modal_article_edit');
 
         // Ensure the modal exists before attempting to dismiss it
         if (modalElement) {
             const modalInstance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
-            modalInstance.hide();
+            //modalInstance.hide();
+            iframeEdit.value.contentWindow.postMessage({ id: '_update', reload: 'reload' }, '*')
         }
     }
 
