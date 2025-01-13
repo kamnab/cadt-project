@@ -560,7 +560,7 @@ async function handleMessage(event) {
 	const iframeId = event.data.id;
 	if (iframeId) {
 		const iframe = document.getElementById('_' + iframeId);
-		if (iframe && event.data.height) {
+		if (iframe && event.data.height && iframeId !== '_edit') {
 			iframe.style.height = event.data.height + 'px';
 			var foundIframe = tenantItems.value.find((i) => i.itemId == iframeId);
 			if (foundIframe) {
