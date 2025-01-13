@@ -542,11 +542,13 @@ async function handleMessage(event) {
 			const modalInstance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
 			modalInstance.hide();
 
-			//iframeEdit.value.contentWindow.postMessage({ id: '_edit', reload: 'reload' }, '*')
+			/* begin::reload the modal after saved */
+			iframeEdit.value.contentWindow.postMessage({ id: '_edit', reload: 'reload' }, '*')
 			iframeEdit.value.src = '';
 			setTimeout(() => {
 				iframeEdit.value.src = iframeEditSrc.value
 			}, 100);
+			/* end::reload the modal after saved */
 
 			loadTenantItems();
 		}
