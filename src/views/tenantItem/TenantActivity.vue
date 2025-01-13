@@ -464,6 +464,7 @@ onMounted(async () => {
 		appGlobalStore.setIframeEditModalOpen(true);
 		appGlobalStore.setLoading(true);
 		await handleIframeEditOnLoad()
+
 	});
 	modalElement.addEventListener('shown.bs.modal', async () => {
 		const status = iframeEdit.value.getAttribute('status');
@@ -529,6 +530,8 @@ const postMessageToIframe = (iframe, user) => {
 };
 
 async function handleMessage(event) {
+	console.log(event.data);
+
 	const url = event.data.url;
 	if (url) {
 		window.open(url, '_blank');  // Open the URL in a new tab
@@ -540,17 +543,17 @@ async function handleMessage(event) {
 		// Ensure the modal exists before attempting to dismiss it
 		if (modalElement) {
 			const modalInstance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
-			modalInstance.hide();
 
 			/* begin::reload the modal after saved */
 			iframeEdit.value.contentWindow.postMessage({ id: '_edit', reload: 'reload' }, '*')
-			iframeEdit.value.src = '';
-			setTimeout(() => {
-				iframeEdit.value.src = iframeEditSrc.value
-			}, 100);
+			// iframeEdit.value.src = '';
+			// setTimeout(() => {
+			// 	iframeEdit.value.src = iframeEditSrc.value
+			// }, 100);
 			/* end::reload the modal after saved */
 
-			loadTenantItems();
+			await loadTenantItems();
+			modalInstance.toggle();
 		}
 	}
 
@@ -585,6 +588,7 @@ async function handleIframeEditOnLoad() {
 
 	const newIframe = iframeEdit.value;
 	if (newIframe && newIframe.contentWindow) {
+
 		postMessageToIframe(newIframe, await loggedInUser());
 	} else {
 		console.error('Iframe does not have contentWindow:', newIframe);
