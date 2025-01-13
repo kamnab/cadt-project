@@ -23,7 +23,7 @@ watch(() => props.itemId, async (newValue) => {
     const user = await loggedInUser();
     const token = user.access_token;
 
-    iframeEditSrc.value = `${host}/embed/article/edit/${newValue}?update=true&x_token=${token}`;
+    iframeEditSrc.value = `${host}/embed/article/edit/${newValue}?update=true&x_token=${encodeURIComponent(token)}`;
 });
 
 onMounted(async () => {
