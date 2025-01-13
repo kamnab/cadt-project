@@ -537,7 +537,34 @@ async function handleMessage(event) {
 		window.open(url, '_blank');  // Open the URL in a new tab
 	}
 
-	if (event.data.closeModal) {
+	const iframeId = event.data.id;
+	if (iframeId) {
+		const iframe = document.getElementById('_' + iframeId);
+		if (iframe && event.data.height) {
+			iframe.style.height = event.data.height + 'px';
+			var foundIframe = tenantItems.value.find((i) => i.itemId == iframeId);
+			if (foundIframe) {
+				foundIframe.status = 'loaded';
+				setTimeout(() => {
+					iframe.style.opacity = '1';
+					iframe.style.transition = 'all 300ms ease-in';
+				}, 100);
+
+				//console.log(`[1-] ${foundIframe.id}` + event.data.status);
+			}
+		}
+
+		if (iframeId === '_edit') {
+			//postMessageToIframe(iframe, await loggedInUser());
+
+			iframeEdit.value.setAttribute('status', 'loaded'); // Add the status attribute
+			appGlobalStore.setLoading(false)
+		}
+
+		//console.log(event.data)
+	}
+
+	if (event.data.closeModal && iframeId === '_edit') {
 		const modalElement = document.querySelector('#modal_tenant');
 
 		// Ensure the modal exists before attempting to dismiss it
@@ -557,31 +584,6 @@ async function handleMessage(event) {
 		}
 	}
 
-	const iframeId = event.data.id;
-	if (iframeId) {
-		const iframe = document.getElementById('_' + iframeId);
-		if (iframe && event.data.height && iframeId !== '_edit') {
-			iframe.style.height = event.data.height + 'px';
-			var foundIframe = tenantItems.value.find((i) => i.itemId == iframeId);
-			if (foundIframe) {
-				foundIframe.status = 'loaded';
-				setTimeout(() => {
-					iframe.style.opacity = '1';
-					iframe.style.transition = 'all 300ms ease-in';
-				}, 100);
-
-				//console.log(`[1-] ${foundIframe.id}` + event.data.status);
-			}
-			postMessageToIframe(iframe, await loggedInUser());
-		}
-
-		if (iframeId === '_edit') {
-			iframeEdit.value.setAttribute('status', 'loaded'); // Add the status attribute
-			appGlobalStore.setLoading(false)
-		}
-
-		//console.log(event.data)
-	}
 }
 
 async function handleIframeEditOnLoad() {
