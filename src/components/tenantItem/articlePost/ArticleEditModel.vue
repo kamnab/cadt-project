@@ -3,7 +3,7 @@
     <!--begin::Modal - Create new category-->
     <div class="modal fade" id="modal_article_edit" data-bs-backdrop="static" tabindex="-1" role="dialog"
         aria-hidden="false">
-        <div class="modal-dialog mw-1000px" role="document">
+        <div class="modal-dialog modal-dialog-scrollable mw-1000px" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Edit Article</h5>

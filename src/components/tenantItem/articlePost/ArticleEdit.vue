@@ -30,7 +30,6 @@ onMounted(async () => {
     // Add the event listener when the component is mounted
     window.addEventListener('message', handleMessage);
 
-
     const newIframe = iframeEdit.value;
     if (newIframe) {
         newIframe.onload = async () => {
@@ -55,6 +54,7 @@ const postMessageToIframe = async (iframe, user) => {
             token: user.access_token,
             email: user.profile.name,
             userId: user.profile.sub,
+            innerHeight: window.innerHeight * 0.75,
         };
         iframe.contentWindow.postMessage(message, targetOrigin);
     } else {
@@ -62,11 +62,8 @@ const postMessageToIframe = async (iframe, user) => {
     }
 };
 
-
 async function handleMessage(event) {
     //console.log(event.data);
-
-
 
     const iframeId = event.data.id;
     if (iframeId === '_update') {

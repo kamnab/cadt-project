@@ -95,7 +95,7 @@
 
 				<!--begin::Modal - Select Location-->
 				<div class="modal fade" id="modal_tenant" data-bs-backdrop="static" tabindex="-1" role="dialog">
-					<div class="modal-dialog mw-800px modal-dialog-scrollable" role="document">
+					<div class="modal-dialog mw-1000px modal-dialog-scrollable" role="document">
 						<div class="modal-content">
 							<div class="modal-header">
 								<h5 class="modal-title">Add New</h5>
