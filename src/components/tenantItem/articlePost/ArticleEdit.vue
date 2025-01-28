@@ -54,7 +54,7 @@ const postMessageToIframe = async (iframe, user) => {
             token: user.access_token,
             email: user.profile.name,
             userId: user.profile.sub,
-            innerHeight: window.innerHeight * 0.75,
+            innerHeight: window.innerHeight * 0.88,
         };
         iframe.contentWindow.postMessage(message, targetOrigin);
     } else {

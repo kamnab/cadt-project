@@ -79,7 +79,7 @@ const getTenantFilteredItems = async (postIds, tenantId) => {
         }
     }
 
-    return null
+    return []
 };
 
 export { getTenantItems, getTenantItemIdsByTerm, getTenantFilteredItems }
