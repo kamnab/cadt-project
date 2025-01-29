@@ -17,7 +17,6 @@ const host = import.meta.env.VITE_API_TENANT_CONENT_ENDPOINT;
 
 const iframeEdit = ref(null);
 const iframeEditSrc = ref(null); // Change iframeEditSrc to a ref
-const height = ref(0);
 
 // Watch for changes to prop and update local state
 watch(() => props.itemId, async (newValue) => {
@@ -72,7 +71,7 @@ async function handleMessage(event) {
         const iframe = document.getElementById('_' + iframeId);
         if (iframe && event.data.height) {
             iframe.style.height = event.data.height + 'px';
-            alert(event.data.width);
+
 
             //postMessageToIframe(iframe, await loggedInUser());
         }
