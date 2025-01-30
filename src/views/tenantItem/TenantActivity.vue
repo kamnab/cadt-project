@@ -530,7 +530,7 @@ const postMessageToIframe = (iframe, user) => {
 };
 
 async function handleMessage(event) {
-	console.log(event.data);
+	//console.log(event.data);
 
 	const url = event.data.url;
 	if (url) {
@@ -538,7 +538,7 @@ async function handleMessage(event) {
 	}
 
 	const iframeId = event.data.id;
-	if (iframeId) {
+	if (iframeId && iframeId === '_edit') {
 		const iframe = document.getElementById('_' + iframeId);
 		if (iframe && event.data.height) {
 			iframe.style.height = event.data.height + 'px';
