@@ -50,6 +50,8 @@ async function handleIframeEditOnLoad() {
     if (newIframe && newIframe.contentWindow) {
 
         postMessageToIframe(newIframe, await loggedInUser());
+
+        appGlobalStore.setLoading(false)
     } else {
         console.error('Iframe does not have contentWindow:', newIframe);
     }
@@ -105,7 +107,6 @@ async function handleMessage(event) {
         }
 
         iframe.setAttribute('status', 'loaded'); // Add the status attribute
-        appGlobalStore.setLoading(false)
     }
 }
 
