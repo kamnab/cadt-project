@@ -538,7 +538,7 @@ async function handleMessage(event) {
 	}
 
 	const iframeId = event.data.id;
-	if (iframeId && iframeId === '_edit') {
+	if (iframeId && iframeId !== '_update') {
 		const iframe = document.getElementById('_' + iframeId);
 		if (iframe && event.data.height) {
 			iframe.style.height = event.data.height + 'px';
