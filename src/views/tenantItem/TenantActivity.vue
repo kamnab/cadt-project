@@ -95,7 +95,7 @@
 
 				<!--begin::Modal - Select Location-->
 				<div class="modal fade" id="modal_tenant" data-bs-backdrop="static" tabindex="-1" role="dialog">
-					<div class="modal-dialog mw-1000px modal-dialog-scrollable" role="document">
+					<div class="modal-dialog modal-fullscreen-lg-down mw-1000px" role="document">
 						<div class="modal-content">
 							<div class="modal-header">
 								<h5 class="modal-title">Add New</h5>
@@ -121,8 +121,8 @@
 							</div>
 							<div class="modal-body pt-2 pb-0">
 								<!-- <iframe :src="host" style="width: 100%;" frameborder="0" loading="lazy"></iframe> -->
-								<iframe id="__edit" ref="iframeEdit" style="width: 100%;" frameborder="0"
-									loading="lazy"></iframe>
+								<iframe id="__edit" ref="iframeEdit" style="width: 100%;height: 100%;"
+									frameborder="0"></iframe>
 
 							</div>
 
@@ -448,6 +448,8 @@ onBeforeMount(async () => {
 })
 
 onMounted(async () => {
+	makeModalBodyFullHeight();
+
 	appGlobalStore.setLoading(true);
 
 	// Set iframe src early
@@ -515,12 +517,23 @@ onBeforeUnmount(() => {
 // Function to post messages to the iframe
 const postMessageToIframe = (iframe, user) => {
 	if (iframe && iframe.contentWindow) {
+		const modal = document.querySelector('#modal_tenant');
+		const modalBody = modal.querySelector('.modal-body');
+
+		const modalBodyStyles = window.getComputedStyle(modalBody);
+		const modalBodyHeight = modalBody.offsetHeight; // height including padding
+		const marginTop = parseInt(modalBodyStyles.marginTop);
+		const marginBottom = parseInt(modalBodyStyles.marginBottom);
+		const totalHeight = modalBodyHeight + marginTop + marginBottom;
+
 		const targetOrigin = '*'; // Specify your target origin
 		const message = {
 			token: user.access_token,
 			email: user.profile.name,
 			userId: user.profile.sub,
 			tenantId: tenantId,
+			innerHeight: totalHeight,
+			innerWidth: window.innerWidth,
 		};
 		//console.log('Posting message to iframe:', message);
 		iframe.contentWindow.postMessage(message, targetOrigin);
@@ -556,7 +569,7 @@ async function handleMessage(event) {
 
 		if (iframeId === '_edit') {
 			//postMessageToIframe(iframe, await loggedInUser());
-
+			handleEditPost(event);
 			iframeEdit.value.setAttribute('status', 'loaded'); // Add the status attribute
 			appGlobalStore.setLoading(false)
 		}
@@ -736,6 +749,43 @@ const scrollToSection = (sectionId, offset = 90) => {
 		});
 	}
 };
+
+function makeModalBodyFullHeight() {
+	const modal = document.querySelector('#modal_tenant');
+	const modalBody = modal.querySelector('.modal-body');
+
+	// Apply full height to modal body
+	modalBody.style.height = 'calc(100vh - 90px)';
+	modalBody.style.overflowY = 'auto'; // Add scroll if needed
+}
+
+
+async function handleEditPost(event) {
+	//console.log(event.data);
+
+	const iframeId = event.data.id;
+	if (iframeId === '_edit') {
+		const iframe = document.getElementById('_' + iframeId);
+		if (iframe && event.data.height) {
+			iframe.style.height = '98%'; //event.data.height + 'px';
+
+			//postMessageToIframe(iframe, await loggedInUser());
+		}
+
+		if (event.data.closeModal) {
+			const modalElement = document.querySelector('#modal_tenant');
+
+			// Ensure the modal exists before attempting to dismiss it
+			if (modalElement) {
+				//const modalInstance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+				//modalInstance.hide();
+				iframeEdit.value.contentWindow.postMessage({ id: '_edit', reload: 'reload' }, '*')
+			}
+		}
+
+		iframe.setAttribute('status', 'loaded'); // Add the status attribute
+	}
+}
 
 </script>
 
