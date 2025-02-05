@@ -468,12 +468,15 @@ onMounted(async () => {
 		await handleIframeEditOnLoad()
 
 	});
+
 	modalElement.addEventListener('shown.bs.modal', async () => {
 		const status = iframeEdit.value.getAttribute('status');
 		if (status && status === 'loaded') {
 			appGlobalStore.setLoading(false);
 			appGlobalStore.setIframeEditModalOpen(false);
 		}
+
+		postMessageToIframe(iframeEdit.value, await loggedInUser());
 	});
 
 	/*
@@ -487,7 +490,6 @@ onMounted(async () => {
 			await handleIframeEditOnLoad();
 		};
 	}
-
 
 	// for content listing
 	const items = await getTenantItems(tenantId);
@@ -542,6 +544,20 @@ const postMessageToIframe = (iframe, user) => {
 	}
 };
 
+function makeModalBodyFullHeight() {
+	const modal = document.querySelector('#modal_tenant');
+	const modalBody = modal.querySelector('.modal-body');
+
+	// Apply full height to modal body
+	modalBody.style.height = 'calc(100vh - 90px)';
+	modalBody.style.overflowY = 'auto'; // Add scroll if needed
+
+	// const iframe = document.getElementById('__edit');
+	// if (iframe) {
+	// 	iframe.style.height = '100%';
+	// }
+}
+
 async function handleMessage(event) {
 	//console.log(event.data);
 
@@ -552,9 +568,11 @@ async function handleMessage(event) {
 
 	const iframeId = event.data.id;
 	if (iframeId && iframeId !== '_update') {
+
 		const iframe = document.getElementById('_' + iframeId);
 		if (iframe && event.data.height) {
-			iframe.style.height = event.data.height + 'px';
+			iframe.style.height = iframeId !== '_edit' ? event.data.height + 'px' : '98%';
+
 			var foundIframe = tenantItems.value.find((i) => i.itemId == iframeId);
 			if (foundIframe) {
 				foundIframe.status = 'loaded';
@@ -568,8 +586,6 @@ async function handleMessage(event) {
 		}
 
 		if (iframeId === '_edit') {
-			//postMessageToIframe(iframe, await loggedInUser());
-			handleEditPost(event);
 			iframeEdit.value.setAttribute('status', 'loaded'); // Add the status attribute
 			appGlobalStore.setLoading(false)
 		}
@@ -603,7 +619,6 @@ async function handleIframeEditOnLoad() {
 
 	const newIframe = iframeEdit.value;
 	if (newIframe && newIframe.contentWindow) {
-
 		postMessageToIframe(newIframe, await loggedInUser());
 	} else {
 		console.error('Iframe does not have contentWindow:', newIframe);
@@ -749,43 +764,6 @@ const scrollToSection = (sectionId, offset = 90) => {
 		});
 	}
 };
-
-function makeModalBodyFullHeight() {
-	const modal = document.querySelector('#modal_tenant');
-	const modalBody = modal.querySelector('.modal-body');
-
-	// Apply full height to modal body
-	modalBody.style.height = 'calc(100vh - 90px)';
-	modalBody.style.overflowY = 'auto'; // Add scroll if needed
-}
-
-
-async function handleEditPost(event) {
-	//console.log(event.data);
-
-	const iframeId = event.data.id;
-	if (iframeId === '_edit') {
-		const iframe = document.getElementById('_' + iframeId);
-		if (iframe && event.data.height) {
-			iframe.style.height = '98%'; //event.data.height + 'px';
-
-			//postMessageToIframe(iframe, await loggedInUser());
-		}
-
-		if (event.data.closeModal) {
-			const modalElement = document.querySelector('#modal_tenant');
-
-			// Ensure the modal exists before attempting to dismiss it
-			if (modalElement) {
-				//const modalInstance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
-				//modalInstance.hide();
-				iframeEdit.value.contentWindow.postMessage({ id: '_edit', reload: 'reload' }, '*')
-			}
-		}
-
-		iframe.setAttribute('status', 'loaded'); // Add the status attribute
-	}
-}
 
 </script>
 
