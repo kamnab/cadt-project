@@ -431,6 +431,9 @@ const reloadCategories = async () => {
 }
 
 onBeforeMount(async () => {
+
+	appGlobalStore.setLoading(true);
+
 	selectedTenant.value = await getTenantById(tenantId);
 	tenantUsers.value = await getTenantUsers(tenantId);
 	tenantCategories.value = [{ _id: '', name: 'ទាំងអស់', tenantId: tenantId }, ...await getTenantCategories(tenantId)];
@@ -449,8 +452,6 @@ onBeforeMount(async () => {
 
 onMounted(async () => {
 	makeModalBodyFullHeight();
-
-	appGlobalStore.setLoading(true);
 
 	// Set iframe src early
 	iframeEdit.value.src = iframeEditSrc.value;
@@ -587,7 +588,7 @@ async function handleMessage(event) {
 
 		if (iframeId === '_edit') {
 			iframeEdit.value.setAttribute('status', 'loaded'); // Add the status attribute
-			appGlobalStore.setLoading(false)
+			//appGlobalStore.setLoading(false)
 		}
 
 		//console.log(event.data)

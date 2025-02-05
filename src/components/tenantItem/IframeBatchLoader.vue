@@ -88,7 +88,7 @@
 import { useAppGlobalStore } from '@/stores/appGlobalStore'
 const appGlobalStore = useAppGlobalStore()
 
-import { onMounted, watch, computed, ref } from 'vue';
+import { onMounted, watch, computed, ref, onBeforeMount } from 'vue';
 import { debounce } from 'lodash';
 const host = import.meta.env.VITE_API_TENANT_CONENT_ENDPOINT;
 
@@ -112,9 +112,9 @@ const TIMEOUT_DURATION = 15000;
 
 // Update global loading state based on iframe loading status
 const updateGlobalLoadingState = () => {
-    const anyIframeLoading = props.iframeList.some(iframe => iframe.status === 'loading' || iframe.status === 'error');
+    const anyIframeLoading = props.iframeList.length == 0 || props.iframeList.some(iframe => iframe.status === 'loading' || iframe.status === 'error');
 
-    appGlobalStore.setLoading(!(anyIframeLoading || props.iframeList.length == 0));
+    appGlobalStore.setLoading(!(anyIframeLoading));
 };
 
 // Start timeout for each iframe
@@ -292,8 +292,6 @@ onMounted(() => {
     //updateGlobalLoadingState(); // Update global loading state after mount
 
 });
-
-
 
 </script>
 
