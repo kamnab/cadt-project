@@ -121,7 +121,7 @@
 							</div>
 							<div class="modal-body pt-2 pb-0">
 								<!-- <iframe :src="host" style="width: 100%;" frameborder="0" loading="lazy"></iframe> -->
-								<iframe id="__edit" ref="iframeEdit" style="width: 100%;height: 100%;"
+								<iframe id="__edit" ref="iframeEdit" style="width: 100%;height: 100%;opacity: 0;"
 									frameborder="0"></iframe>
 
 							</div>
@@ -477,7 +477,7 @@ onMounted(async () => {
 			appGlobalStore.setIframeEditModalOpen(false);
 		}
 
-		postMessageToIframe(iframeEdit.value, await loggedInUser());
+		postMessageToIframe(iframeEdit.value, await loggedInUser(), 'reloading-ui');
 	});
 
 	/*
@@ -518,7 +518,7 @@ onBeforeUnmount(() => {
 });
 
 // Function to post messages to the iframe
-const postMessageToIframe = (iframe, user) => {
+const postMessageToIframe = (iframe, user, action = '') => {
 	if (iframe && iframe.contentWindow) {
 		const modal = document.querySelector('#modal_tenant');
 		const modalBody = modal.querySelector('.modal-body');
@@ -537,6 +537,7 @@ const postMessageToIframe = (iframe, user) => {
 			tenantId: tenantId,
 			innerHeight: totalHeight,
 			innerWidth: window.innerWidth,
+			action
 		};
 		//console.log('Posting message to iframe:', message);
 		iframe.contentWindow.postMessage(message, targetOrigin);
@@ -587,8 +588,15 @@ async function handleMessage(event) {
 		}
 
 		if (iframeId === '_edit') {
+			console.log(event.data)
 			iframeEdit.value.setAttribute('status', 'loaded'); // Add the status attribute
 			//appGlobalStore.setLoading(false)
+			if (event.data.tag == 'reloading-ui') {
+				setTimeout(() => {
+					iframeEdit.value.style.opacity = '1';
+					iframeEdit.value.style.transition = 'all 300ms ease-in';
+				}, 100);
+			}
 		}
 
 		//console.log(event.data)
