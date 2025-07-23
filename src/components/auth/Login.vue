@@ -102,7 +102,7 @@
                     </a>
                 </div>
 
-                <div class="menu-item mx-3">
+                <!-- <div class="menu-item mx-3">
                     <a href="https://blog.codemie.dev" class="menu-link px-4 py-3">
                         <div class="symbol symbol-35px">
                             <span class="symbol-label">
@@ -115,7 +115,7 @@
                             <span class="text-muted fw-semibold d-block fs-7"></span>
                         </div>
                     </a>
-                </div>
+                </div> -->
 
                 <div class="separator mt-3"></div>
                 <div class="menu-item mx-3">
