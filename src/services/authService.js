@@ -1,34 +1,16 @@
 import { UserManager, WebStorageStateStore, Log } from "oidc-client-ts";
 
-// In-memory storage for tokens
-class MemoryStore {
-    constructor() {
-        this._user = null;
-    }
-    getItem(key) {
-        return this._user;
-    }
-    setItem(key, value) {
-        this._user = value;
-    }
-    removeItem(key) {
-        this._user = null;
-    }
-}
-
 const userManager = new UserManager({
     // authorization server URL
     authority: import.meta.env.VITE_API_AUTHORITY,
     // Registered client ID in authorization server           
     client_id: import.meta.env.VITE_API_CLIENT_ID,
-    // Registered client secret in authorization server                
-    client_secret: import.meta.env.VITE_API_CLIENT_SECRET,
     // Vue app's callback URI after login
     redirect_uri: import.meta.env.VITE_APP_REDIRECT_URI,
     // Using Authorization Code Flow
     response_type: "code",
     // The [fapi] scope for accessing to api resource server (cadt-project2-backend express.js project)
-    scope: "openid profile offline_access fapi",
+    scope: "openid profile fapi",
     // Redirect after logout           
     post_logout_redirect_uri: import.meta.env.VITE_API_POST_LOGOUT_REDIRECT_URI,
     // Automatically renew the token
@@ -36,8 +18,7 @@ const userManager = new UserManager({
     // For token renewal              
     silent_redirect_uri: import.meta.env.VITE_API_SILENT_REDIRECT_URI,
     // For cross tabs login/logout
-    // userStore: new WebStorageStateStore({ store: window.localStorage })
-    userStore: new MemoryStore()     // tokens stored in memory only
+    userStore: new WebStorageStateStore({ store: window.sessionStorage })
 });
 
 // Set up logging (optional)
@@ -57,7 +38,7 @@ const initAuthListeners = () => {
         try {
             await userManager.signinSilent();  // attempt silent renew
         } catch {
-            await logout();                   // fallback logout
+            await login();                   // fallback logout
         }
     });
 
@@ -75,13 +56,12 @@ const initAuthListeners = () => {
 };
 
 // Login redirect
-const login = () => userManager.signinRedirect();
+const login = async () => await userManager.signinRedirect();
 
 // Handle callback after login
 const loginCallback = async () => {
     const user = await userManager.signinCallback();
-    // Tokens are now in memory (MemoryStore)
-    // Remove URL code/state
+    // Remove code/state from URL
     window.history.replaceState({}, document.title, '/');
     return user;
 };
