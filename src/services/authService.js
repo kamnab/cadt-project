@@ -1,5 +1,21 @@
 import { UserManager, WebStorageStateStore, Log } from "oidc-client-ts";
 
+// In-memory storage for tokens
+class MemoryStore {
+    constructor() {
+        this._user = null;
+    }
+    getItem(key) {
+        return this._user;
+    }
+    setItem(key, value) {
+        this._user = value;
+    }
+    removeItem(key) {
+        this._user = null;
+    }
+}
+
 const userManager = new UserManager({
     // authorization server URL
     authority: import.meta.env.VITE_API_AUTHORITY,
@@ -31,18 +47,22 @@ Log.setLevel(Log.DEBUG);
 const initAuthListeners = () => {
     // Listen for access token expiring
     userManager.events.addAccessTokenExpiring(() => {
-        console.log('Access token is about to expire...');
+        console.log('[OIDC] Access token expiring soon...');
     });
 
     // Listen for access token expired
     userManager.events.addAccessTokenExpired(async () => {
-        console.warn('Access token has expired.');
-        await logout();
+        console.warn('[OIDC] Access token expired.');
+        try {
+            await userManager.signinSilent();  // attempt silent renew
+        } catch {
+            await logout();                   // fallback logout
+        }
     });
 
     // Listen for silent renew errors
     userManager.events.addSilentRenewError(async (err) => {
-        console.error('Silent renew error:', err);
+        console.error('[OIDC] Silent renew error:', err);
         await logout();  // Auto-logout the user
     });
 
@@ -53,8 +73,19 @@ const initAuthListeners = () => {
     });
 };
 
+// Login redirect
 const login = () => userManager.signinRedirect();
-const loginCallback = () => userManager.signinCallback();
+
+// Handle callback after login
+const loginCallback = async () => {
+    const user = await userManager.signinCallback();
+    // Tokens are now in memory (MemoryStore)
+    // Remove URL code/state
+    window.history.replaceState({}, document.title, '/');
+    return user;
+};
+
+// Get currently logged-in user (from memory)
 const loggedInUser = () => userManager.getUser();
 
 const logout = async () => {
@@ -67,4 +98,14 @@ const logout = async () => {
     }
 };
 
-export { initAuthListeners, login, loginCallback, loggedInUser, logout };
+// Get access token for API calls
+const getAccessToken = async () => {
+    const user = await loggedInUser();
+    if (!user) throw new Error('User not authenticated');
+    return user.access_token;
+};
+
+export {
+    initAuthListeners, login, loginCallback, loggedInUser, logout,
+    getAccessToken
+};
