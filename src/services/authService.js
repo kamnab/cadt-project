@@ -36,7 +36,8 @@ const userManager = new UserManager({
     // For token renewal              
     silent_redirect_uri: import.meta.env.VITE_API_SILENT_REDIRECT_URI,
     // For cross tabs login/logout
-    userStore: new WebStorageStateStore({ store: window.localStorage })
+    // userStore: new WebStorageStateStore({ store: window.localStorage })
+    userStore: new MemoryStore()     // tokens stored in memory only
 });
 
 // Set up logging (optional)
